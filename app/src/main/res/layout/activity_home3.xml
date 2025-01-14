@@ -84,6 +84,7 @@
 
             <!-- Action Button 2 -->
             <LinearLayout
+                android:id="@+id/btn_action2"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_rowWeight="1"
@@ -112,6 +113,7 @@
 
             <!-- Action Button 3 -->
             <LinearLayout
+                android:id="@+id/btn_action3"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_rowWeight="1"
@@ -140,6 +142,7 @@
 
             <!-- Action Button 4 -->
             <LinearLayout
+                android:id="@+id/btn_action4"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_rowWeight="1"
