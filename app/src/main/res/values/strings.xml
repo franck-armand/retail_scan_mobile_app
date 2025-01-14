@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MafScan</string>
+    <string name="action_2">Action 2</string>
+    <string name="scan">Scan</string>
+    <string name="action_3">Action 3</string>
+    <string name="action_4">Action 4</string>
+    <string name="maf_logo">maf_logo</string>
+    <string name="scan_icon_desc">scan_img_view_desc</string>
+    <string name="action_2_icon_desc">btn2_icon_desc</string>
+    <string name="action_3_icon_desc">action_3_icon_desc</string>
+    <string name="action_4_icon_desc">action_4_icon_desc</string>
+    <string name="scan_0_validate">Validate</string>
+    <string name="scan_0_from_label">From</string>
+    <string name="scan_0_to_label">To</string>
+</resources>
