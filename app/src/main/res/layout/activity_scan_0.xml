@@ -45,6 +45,18 @@
             android:layout_height="48dp"
             android:backgroundTint="@color/primary_color" />
 
+        <!-- Description From-->
+        <TextView
+            android:id="@+id/fromDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zone de fin filtration"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:background="@color/gray"
+            android:layout_marginBottom="15dp"/>
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -61,6 +73,18 @@
             android:layout_height="48dp"
             android:backgroundTint="@color/primary_color" />
 
+        <!-- Description To-->
+        <TextView
+            android:id="@+id/toDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Zone de fin filtration"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:textStyle="italic"
+            android:background="@color/gray"
+            android:layout_marginBottom="15dp"/>
+
         <!-- Validate Button -->
         <Button
             android:id="@+id/validateButton"
@@ -70,5 +94,6 @@
             android:backgroundTint="@color/primary_color"
             android:text="@string/scan_0_validate"
             android:textColor="@android:color/black" />
+
     </LinearLayout>
 </LinearLayout>
