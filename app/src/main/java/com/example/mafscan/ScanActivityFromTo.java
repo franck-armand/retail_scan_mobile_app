@@ -24,6 +24,10 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import android.content.DialogInterface;
+import androidx.appcompat.app.AlertDialog;
+
+
 public class ScanActivityFromTo extends AppCompatActivity {
     private Spinner fromSpinner, toSpinner;
     private TextView fromDescription, toDescription;
@@ -53,7 +57,24 @@ public class ScanActivityFromTo extends AppCompatActivity {
 
         // Handle button click
         findViewById(R.id.validateButton).setOnClickListener(v -> {
-            Toast.makeText(this,"validation button clicked", Toast.LENGTH_LONG).show();
+            String fromlocation = fromSpinner.getSelectedItem().toString();
+            String tolocation = toSpinner.getSelectedItem().toString();
+
+            if (fromlocation.equals(tolocation))
+            {
+                DialogUtils.showInvalideSelectionDialog(
+                        this,
+                        "Invalid Selection",
+                        "The 'From' and 'To' locations cannot be the same.",
+                        "Retry",
+                        (dialog, which) -> dialog.dismiss(),
+                        null,
+                        null
+                );
+            }else {
+                Toast.makeText(this,"validation button clicked", Toast.LENGTH_LONG).show();
+            }
+
         });
     }
 

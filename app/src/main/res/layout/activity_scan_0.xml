@@ -52,7 +52,7 @@
             android:layout_height="wrap_content"
             android:text="Zone de fin filtration"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="italic"
             android:background="@color/gray"
             android:layout_marginBottom="15dp"/>
@@ -80,7 +80,7 @@
             android:layout_height="wrap_content"
             android:text="Zone de fin filtration"
             android:textColor="@color/black"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textStyle="italic"
             android:background="@color/gray"
             android:layout_marginBottom="15dp"/>
