@@ -24,9 +24,6 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import android.content.DialogInterface;
-import androidx.appcompat.app.AlertDialog;
-
 
 public class ScanActivityFromTo extends AppCompatActivity {
     private Spinner fromSpinner, toSpinner;
@@ -74,7 +71,6 @@ public class ScanActivityFromTo extends AppCompatActivity {
             }else {
                 Toast.makeText(this,"validation button clicked", Toast.LENGTH_LONG).show();
             }
-
         });
     }
 
