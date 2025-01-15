@@ -1,99 +1,287 @@
-<LinearLayout
+<!--<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    android:id="@+id/linearLayout"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="match_parent"-->
+<!--    android:background="@color/light_gray"-->
+<!--    android:orientation="vertical">-->
+
+<!--    &lt;!&ndash; App Bar &ndash;&gt;-->
+<!--    <androidx.appcompat.widget.Toolbar-->
+<!--        android:id="@+id/toolbar_scan0"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:background="@color/black"-->
+<!--        android:minHeight="?attr/actionBarSize"-->
+<!--        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toTopOf="parent"-->
+<!--        app:logo="@drawable/baseline_home_24"-->
+<!--        app:title="scan Activity"-->
+<!--        app:titleTextColor="@color/white" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/fromTextView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="60dp"-->
+<!--        android:text="@string/scan_0_from_label"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:textSize="20sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/fromSpinnerContainer"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/fromSpinnerContainer"-->
+<!--        app:layout_constraintHorizontal_bias="0.468"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/fromSpinnerContainer"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/toolbar_scan0"-->
+<!--        app:layout_constraintVertical_bias="0.5" />-->
+<!--    -->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/fromSpinnerContainer"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:background="@drawable/spinner_border"-->
+<!--        android:padding="4dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/fromTextView">-->
+
+<!--        <Spinner-->
+<!--            android:id="@+id/fromSpinner"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:minHeight="48dp"-->
+<!--            android:backgroundTint="@color/primary_color" />-->
+<!--    </LinearLayout>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/fromDescription"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:background="@color/gray"-->
+<!--        android:text=""-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textSize="16sp"-->
+<!--        android:textStyle="italic"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/toTextView"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/toTextView"-->
+<!--        app:layout_constraintHorizontal_bias="0.494"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/toTextView"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/fromSpinnerContainer"-->
+<!--        app:layout_constraintVertical_bias="0.5" />-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/toTextView"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="32dp"-->
+<!--        android:text="@string/scan_0_to_label"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:textSize="20sp"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toTopOf="@+id/toSpinnerContainer"-->
+<!--        app:layout_constraintEnd_toEndOf="@+id/toSpinnerContainer"-->
+<!--        app:layout_constraintHorizontal_bias="0.506"-->
+<!--        app:layout_constraintStart_toStartOf="@+id/toSpinnerContainer"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/fromDescription"-->
+<!--        app:layout_constraintVertical_bias="0.5" />-->
+<!--    -->
+<!--    <LinearLayout-->
+<!--        android:id="@+id/toSpinnerContainer"-->
+<!--        android:layout_width="0dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="8dp"-->
+<!--        android:background="@drawable/spinner_border"-->
+<!--        android:padding="4dp"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/toTextView">-->
+
+<!--        <Spinner-->
+<!--            android:id="@+id/toSpinner"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="match_parent"-->
+<!--            android:minHeight="48dp"-->
+<!--            android:backgroundTint="@color/primary_color" />-->
+<!--    </LinearLayout>-->
+
+<!--    <TextView-->
+<!--        android:id="@+id/toDescription"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="20dp"-->
+<!--        android:background="@color/gray"-->
+<!--        android:text=""-->
+<!--        android:textColor="@color/black"-->
+<!--        android:textSize="16sp"-->
+<!--        android:textStyle="italic"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.511"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/toSpinnerContainer" />-->
+
+
+<!--    <Button-->
+<!--        android:id="@+id/validateButton"-->
+<!--        android:layout_width="264dp"-->
+<!--        android:layout_height="60dp"-->
+<!--        android:layout_marginTop="32dp"-->
+<!--        android:backgroundTint="@color/primary_color"-->
+<!--        android:text="@string/scan_0_validate"-->
+<!--        android:textColor="@android:color/black"-->
+<!--        android:textStyle="bold"-->
+<!--        app:layout_constraintBottom_toBottomOf="parent"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.496"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/toSpinnerContainer"-->
+<!--        app:layout_constraintVertical_bias="0.703" />-->
+
+<!--</androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/mainConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:background="@color/light_gray">
 
     <!-- App Bar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar_scan0"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:background="@color/black"
-        android:minHeight="?attr/actionBarSize"
-        app:title="scan Activity"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:logo="@drawable/baseline_home_24"
-        app:titleTextColor="@color/white"
-        app:contentInsetStart="10dp"
-        android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+        app:title="scan Activity"
+        app:titleTextColor="@color/white" />
 
-    <!-- Content Area -->
-    <LinearLayout
-        android:layout_width="match_parent"
+    <!-- Content Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/contentConstraintLayout"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:paddingHorizontal="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar_scan0">
 
         <!-- From Dropdown -->
         <TextView
+            android:id="@+id/fromTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="32dp"
             android:text="@string/scan_0_from_label"
             android:textColor="@android:color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- To Dropdown -->
-        <Spinner
-            android:id="@+id/fromSpinner"
-            android:layout_width="299dp"
-            android:layout_height="48dp"
-            android:backgroundTint="@color/primary_color" />
+        <LinearLayout
+            android:id="@+id/fromSpinnerContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/spinner_border"
+            android:padding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fromTextView">
 
-        <!-- Description From-->
+            <Spinner
+                android:id="@+id/fromSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:backgroundTint="@color/primary_color" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/fromDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Zone de fin filtration"
+            android:layout_marginTop="8dp"
+            android:background="@color/gray"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="italic"
-            android:background="@color/gray"
-            android:layout_marginBottom="15dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fromSpinnerContainer" />
 
+        <!-- To Dropdown -->
         <TextView
+            android:id="@+id/toTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginTop="32dp"
             android:text="@string/scan_0_to_label"
             android:textColor="@android:color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fromDescription" />
 
-        <Spinner
-            android:id="@+id/toSpinner"
-            android:layout_width="299dp"
-            android:layout_height="48dp"
-            android:backgroundTint="@color/primary_color" />
+        <LinearLayout
+            android:id="@+id/toSpinnerContainer"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/spinner_border"
+            android:padding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toTextView">
 
-        <!-- Description To-->
+            <Spinner
+                android:id="@+id/toSpinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:backgroundTint="@color/primary_color" />
+        </LinearLayout>
+
         <TextView
             android:id="@+id/toDescription"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Zone de fin filtration"
+            android:layout_marginTop="8dp"
+            android:background="@color/gray"
+            android:text=""
             android:textColor="@color/black"
             android:textSize="16sp"
             android:textStyle="italic"
-            android:background="@color/gray"
-            android:layout_marginBottom="15dp"/>
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/toSpinnerContainer" />
 
-        <!-- Validate Button -->
         <Button
             android:id="@+id/validateButton"
-            android:layout_width="300dp"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_gravity="center_horizontal"
+            android:minHeight="60dp"
+            android:maxWidth="310dp"
+            android:layout_marginBottom="32dp"
             android:backgroundTint="@color/primary_color"
             android:text="@string/scan_0_validate"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
-    </LinearLayout>
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
