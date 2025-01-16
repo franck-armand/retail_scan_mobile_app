@@ -30,6 +30,8 @@
         <activity
             android:name=".ScanActivityFromTo"
             />
+        <activity android:name=".ScanActivityMain"
+            android:exported="true"/>
     </application>
 
 </manifest>
