@@ -12,4 +12,5 @@
     <string name="scan_0_validate">Validate</string>
     <string name="scan_0_from_label">--- Select From location ---</string>
     <string name="scan_0_to_label">---- Select To location ----</string>
+    <string name="scan_activity_label">Scanning</string>
 </resources>
