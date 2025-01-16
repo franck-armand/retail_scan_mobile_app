@@ -28,17 +28,11 @@ public class KeyenceUtils implements ScanManager.DataListener {
         return true;
     }
 
-    public static void setScanListener(Context context, ScanListener listener) {
+    public static void setScanListener(ScanListener listener) {
         mScanListener = listener;
     }
 
-    public static void startScanning(Context context) {
-        if (mScanManager != null) {
-            mScanManager.startRead();
-        }
-    }
-
-    public static void stopScanning(Context context) {
+    public static void stopScanning() {
         if (mScanManager != null) {
             mScanManager.stopRead();
         }

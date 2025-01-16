@@ -35,7 +35,7 @@ public class ScanActivityMain extends AppCompatActivity {
 
         //Initialize scanner
         if (KeyenceUtils.initializeScanner(this)) {
-            KeyenceUtils.setScanListener(this, scannedData -> {
+            KeyenceUtils.setScanListener(scannedData -> {
                 runOnUiThread(() -> {
                     Log.d(TAG, "Scanned data: " + scannedData);
                     if (scannedData != null && !scannedData.isEmpty()) {
@@ -52,7 +52,7 @@ public class ScanActivityMain extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        KeyenceUtils.stopScanning(this);
+        KeyenceUtils.stopScanning();
         KeyenceUtils.releaseScanner();
 
     }
