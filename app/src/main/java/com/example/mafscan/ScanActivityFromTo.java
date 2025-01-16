@@ -1,5 +1,6 @@
 package com.example.mafscan;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -70,6 +71,9 @@ public class ScanActivityFromTo extends AppCompatActivity {
                 );
             }else {
                 Toast.makeText(this,"validation button clicked", Toast.LENGTH_LONG).show();
+                // Navigate to scanning activity
+                Intent intent = new Intent(ScanActivityFromTo.this, ScanActivityMain.class);
+                startActivity(intent);
             }
         });
     }
