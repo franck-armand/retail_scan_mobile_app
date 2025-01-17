@@ -2,7 +2,9 @@ package com.example.mafscan;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -16,6 +18,8 @@ public class ScanActivityMain extends AppCompatActivity {
     private static final String TAG = "ScanActivityMain";
     private ArrayList<String> scannedDataList;
     private ArrayAdapter<String> adapter;
+    private boolean hasValidScan = false;
+    private Button validateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,6 +37,10 @@ public class ScanActivityMain extends AppCompatActivity {
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, scannedDataList);
         listView.setAdapter(adapter);
 
+        // Initialize the validate button and set its visibility
+        validateButton = findViewById(R.id.validateScanButton);
+        validateButton.setVisibility(View.GONE);
+
         //Initialize scanner
         if (KeyenceUtils.initializeScanner(this)) {
             KeyenceUtils.setScanListener(scannedData -> {
@@ -41,8 +49,13 @@ public class ScanActivityMain extends AppCompatActivity {
                     if (scannedData != null && !scannedData.isEmpty()) {
                         scannedDataList.add(scannedData);
                         adapter.notifyDataSetChanged();
+                        if (!hasValidScan) {
+                            hasValidScan = true;
+                            validateButton.setVisibility(View.VISIBLE);
+                        }
                     } else {
-                        Toast.makeText(this, "Empty Scan", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, "Empty Scan",
+                                Toast.LENGTH_SHORT).show();
                     }
                 });
             });
