@@ -9,7 +9,7 @@ import com.keyence.autoid.sdk.scan.ScanManager;
 public class KeyenceUtils implements ScanManager.DataListener {
     private static ScanManager mScanManager;
     private static ScanListener mScanListener;
-
+    private static final String TAG = "KeyenceUtils";
     public interface ScanListener {
         void onScan(String scannedData);
     }
@@ -19,9 +19,10 @@ public class KeyenceUtils implements ScanManager.DataListener {
             mScanManager = ScanManager.createScanManager(context);
             if (mScanManager != null) {
                 mScanManager.addDataListener(new KeyenceUtils());
+                Log.d(TAG, "Scanner initialized successfully");
                 return true;
             } else {
-                Log.e("KeyenceUtils", "Failed to initialize scanner");
+                Log.e(TAG, "Failed to initialize scanner");
                 return false;
             }
         }
@@ -34,20 +35,27 @@ public class KeyenceUtils implements ScanManager.DataListener {
 
     public static void stopScanning() {
         if (mScanManager != null) {
+            Log.d(TAG, "Stopping scanning");
             mScanManager.stopRead();
+        } else{
+            Log.e(TAG, "Scanner not initialized");
         }
     }
 
     public static void releaseScanner() {
         if (mScanManager != null) {
+            Log.d(TAG, "Releasing scanner");
             mScanManager.releaseScanManager();
             mScanManager = null;
+        } else{
+            Log.e(TAG, "Scanner not initialized");
         }
     }
 
     @Override
     public void onDataReceived(DecodeResult decodeResult) {
         String scannedData = decodeResult.getData();
+        Log.d(TAG, "OnDataReceived: " + scannedData);
         if (mScanListener != null) {
             mScanListener.onScan(scannedData);
         }
