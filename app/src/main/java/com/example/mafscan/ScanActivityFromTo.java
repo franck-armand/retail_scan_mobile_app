@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -32,6 +33,7 @@ public class ScanActivityFromTo extends AppCompatActivity {
     private HashMap<String, String> locationMap = new HashMap<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
+    private static final String TAG = "ScanActivityFromTo";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,8 @@ public class ScanActivityFromTo extends AppCompatActivity {
                         null
                 );
             }else {
-                Toast.makeText(this,"validation button clicked", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Start Scanning: From Location: " + fromlocation + ", To Location: " + tolocation);
+                //Toast.makeText(this,"validation button clicked", Toast.LENGTH_LONG).show();
                 // Navigate to scanning activity
                 Intent intent = new Intent(ScanActivityFromTo.this, ScanActivityMain.class);
                 startActivity(intent);
