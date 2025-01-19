@@ -55,9 +55,11 @@ public class KeyenceUtils implements ScanManager.DataListener {
     @Override
     public void onDataReceived(DecodeResult decodeResult) {
         String scannedData = decodeResult.getData();
-        Log.d(TAG, "OnDataReceived: " + scannedData);
-        if (mScanListener != null) {
-            mScanListener.onScan(scannedData);
+        Log.d(TAG, "onDataReceived: " + scannedData);
+        if (mScanManager.isReading()) {
+            if (mScanListener != null) {
+                mScanListener.onScan(scannedData);
+            }
         }
     }
 }
