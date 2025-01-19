@@ -2,6 +2,7 @@ package com.example.mafscan;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -20,6 +21,9 @@ public class ScanActivityMain extends AppCompatActivity {
     private ArrayAdapter<String> adapter;
     private boolean hasValidScan = false;
     private Button validateButton;
+    private String lastScannedData = "";
+    private boolean isNewScanSession = true;
+    private int triggerScanCode = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,8 +51,15 @@ public class ScanActivityMain extends AppCompatActivity {
                 runOnUiThread(() -> {
                     Log.d(TAG, "Scanned data: " + scannedData);
                     if (scannedData != null && !scannedData.isEmpty()) {
-                        scannedDataList.add(scannedData);
-                        adapter.notifyDataSetChanged();
+                        if (isNewScanSession) {
+                            lastScannedData = "";
+                            isNewScanSession = false;
+                        }
+                        if (!scannedData.equals(lastScannedData)) {
+                            scannedDataList.add(scannedData);
+                            adapter.notifyDataSetChanged();
+                        }
+                        lastScannedData = scannedData;
                         if (!hasValidScan) {
                             hasValidScan = true;
                             validateButton.setVisibility(View.VISIBLE);
@@ -60,6 +71,29 @@ public class ScanActivityMain extends AppCompatActivity {
                 });
             });
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d(TAG, "onKeyDown: KeyCode: " + keyCode +
+                ", ScanCode: " + event.getScanCode());
+        if (triggerScanCode == 0) {
+            triggerScanCode = event.getScanCode();
+        }
+        if (event.getScanCode() == triggerScanCode) {
+            isNewScanSession = true;
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        Log.d(TAG, "onKeyUp: KeyCode: " + keyCode + ", ScanCode: " + event.getScanCode());
+        if (event.getScanCode() == triggerScanCode) {
+            return true;
+        }
+        return super.onKeyUp(keyCode, event);
     }
 
     @Override
