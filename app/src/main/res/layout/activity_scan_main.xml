@@ -39,9 +39,27 @@
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/item_scan"/>
+            app:layout_constraintVertical_bias="0.0"
+            tools:listitem="@layout/item_scan" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/clear_scan_floating_action_Btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/gray"
+            android:clickable="true"
+            android:contentDescription="@string/fab_cont_des"
+            android:visibility="gone"
+            app:srcCompat="@drawable/round_delete_forever_24"
+            app:layout_constraintBottom_toBottomOf="@+id/recycler_view_scans"
+            app:layout_constraintEnd_toEndOf="@+id/recycler_view_scans"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/recycler_view_scans"
+            app:layout_constraintTop_toTopOf="@+id/recycler_view_scans"
+            app:layout_constraintVertical_bias="1.0"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -49,7 +67,7 @@
         android:id="@+id/validateScanButton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="10dp"
         android:minHeight="60dp"
         android:maxWidth="320dp"
         android:backgroundTint="@color/primary_color"
