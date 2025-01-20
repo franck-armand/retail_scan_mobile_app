@@ -4,21 +4,23 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedList;
 import java.util.Objects;
 
-public class ScanActivityMain extends AppCompatActivity {
+public class ScanActivityMain extends AppCompatActivity implements
+        ScanDataAdapter.OnItemClickListener {
     private static final String TAG = "ScanActivityMain";
-    private ArrayList<String> scannedDataList;
-    private ArrayAdapter<String> adapter;
+    private LinkedList<ScanData> scanDataList;
+    private ScanDataAdapter adapter;
     private boolean hasValidScan = false;
     private Button validateButton;
     private String lastScannedData = "";
@@ -36,10 +38,14 @@ public class ScanActivityMain extends AppCompatActivity {
         Objects.requireNonNull(getSupportActionBar()).setTitle("Scanning");
 
         // Initialize scanned data list
-        scannedDataList = new ArrayList<>();
-        ListView listView = findViewById(R.id.list_scanned_data);
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, scannedDataList);
-        listView.setAdapter(adapter);
+        scanDataList = new LinkedList<>();
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_scans);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ScanDataAdapter(scanDataList, this);
+        recyclerView.setAdapter(adapter);
+
+        // Set the click listener on the adapter
+        adapter.setOnItemClickListener(this);
 
         // Initialize the validate button and set its visibility
         validateButton = findViewById(R.id.validateScanButton);
@@ -47,7 +53,7 @@ public class ScanActivityMain extends AppCompatActivity {
 
         //Initialize scanner
         if (KeyenceUtils.initializeScanner(this)) {
-            KeyenceUtils.setScanListener(scannedData -> {
+            KeyenceUtils.setScanListener((scannedData, codeType) -> {
                 runOnUiThread(() -> {
                     Log.d(TAG, "Scanned data: " + scannedData);
                     if (scannedData != null && !scannedData.isEmpty()) {
@@ -56,7 +62,9 @@ public class ScanActivityMain extends AppCompatActivity {
                             isNewScanSession = false;
                         }
                         if (!scannedData.equals(lastScannedData)) {
-                            scannedDataList.add(scannedData);
+                            Date now = new Date();
+                            ScanData newScan = new ScanData(scannedData, codeType, now);
+                            scanDataList.addFirst(newScan);
                             adapter.notifyDataSetChanged();
                         }
                         lastScannedData = scannedData;
@@ -102,5 +110,18 @@ public class ScanActivityMain extends AppCompatActivity {
         KeyenceUtils.stopScanning();
         KeyenceUtils.releaseScanner();
 
+    }
+
+    // Implement the interface method
+    @Override
+    public void onItemClick(ScanData scanData) {
+        DialogUtils.showItemDialog(this, scanData, new DialogUtils.OnItemClickListener() {
+            @Override
+            public void onValidate(ScanData scanData, int quantity) {
+                int position = scanDataList.indexOf(scanData);
+                adapter.updateItem(position, scanData);
+            }
+
+        });
     }
 }
