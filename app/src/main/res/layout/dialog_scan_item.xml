@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:id="@+id/dialog_scanned_data"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scanned Data"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/dialog_scan_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scan Type"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/dialog_scan_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Scan Date"
+        android:textSize="14sp" />
+
+    <EditText
+        android:id="@+id/dialog_quantity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Quantity"
+        android:inputType="number"
+        android:textSize="20sp" />
+
+    <Button
+        android:id="@+id/dialog_validate_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Validate" />
+</LinearLayout>

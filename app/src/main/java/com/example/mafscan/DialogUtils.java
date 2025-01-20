@@ -2,7 +2,11 @@ package com.example.mafscan;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
@@ -34,6 +38,56 @@ public class DialogUtils {
             }
         });
         dialog.show();
+    }
+
+    public static void showItemDialog(
+            Context context,
+            ScanData scanData,
+            final OnItemClickListener positiveAction)
+    {
+        android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(context,
+                R.style.CustomAlertDialogTheme);
+        LayoutInflater inflater = LayoutInflater.from(context);
+        View dialogView = inflater.inflate(R.layout.dialog_scan_item, null);
+
+        // Initialize dialog views
+        EditText quantityEditText = dialogView.findViewById(R.id.dialog_quantity);
+        TextView scannedDataTextView = dialogView.findViewById(R.id.dialog_scanned_data);
+        TextView scanTypeTextView = dialogView.findViewById(R.id.dialog_scan_type);
+        TextView scanDateTextView = dialogView.findViewById(R.id.dialog_scan_date);
+        Button validateButton = dialogView.findViewById(R.id.dialog_validate_button);
+
+        // Populate views with data
+        scannedDataTextView.setText(scanData.getScannedData());
+        scanTypeTextView.setText(scanData.getCodeType());
+        scanDateTextView.setText(scanData.getFormattedScanDate());
+        quantityEditText.setText(String.valueOf(scanData.getQuantity())); // Default to existing quantity
+
+        dialogBuilder.setView(dialogView);
+        dialogBuilder.setCancelable(true);
+
+        android.app.AlertDialog dialog = dialogBuilder.create();
+
+        validateButton.setOnClickListener(v -> {
+            String quantityString = quantityEditText.getText().toString();
+            if (quantityString.isEmpty() || !quantityString.matches("\\d+")) {
+                // Show error if input is invalid
+                quantityEditText.setError(" Enter a valid quantity.");
+                return;
+            }
+            // Update ScanData and call listener
+            int quantity = Integer.parseInt(quantityString);
+            scanData.setQuantity(quantity);
+            if (positiveAction != null) {
+                positiveAction.onValidate(scanData, quantity);
+            }
+            // Dismiss dialog after successful validation
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+    public interface OnItemClickListener {
+        void onValidate(ScanData scanData, int quantity);
     }
 }
 
