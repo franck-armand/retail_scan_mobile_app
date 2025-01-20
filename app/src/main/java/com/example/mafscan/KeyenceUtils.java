@@ -11,7 +11,7 @@ public class KeyenceUtils implements ScanManager.DataListener {
     private static ScanListener mScanListener;
     private static final String TAG = "KeyenceUtils";
     public interface ScanListener {
-        void onScan(String scannedData);
+        void onScan(String scannedData, String codeType);
     }
 
     public static boolean initializeScanner(Context context) {
@@ -55,10 +55,11 @@ public class KeyenceUtils implements ScanManager.DataListener {
     @Override
     public void onDataReceived(DecodeResult decodeResult) {
         String scannedData = decodeResult.getData();
-        Log.d(TAG, "onDataReceived: " + scannedData);
+        String codeType = decodeResult.getCodeType();
+        Log.d(TAG, "onDataReceived: " + scannedData + ", Code Type: " + codeType);
         if (mScanManager.isReading()) {
             if (mScanListener != null) {
-                mScanListener.onScan(scannedData);
+                mScanListener.onScan(scannedData, codeType);
             }
         }
     }
