@@ -13,4 +13,9 @@
     <string name="scan_0_from_label">--- Select From location ---</string>
     <string name="scan_0_to_label">---- Select To location ----</string>
     <string name="scan_activity_label">Scanning</string>
+    <string name="scan_qty_dialog_first">Scanned Data</string>
+    <string name="scan_qty_dialog_second">Scanned Type</string>
+    <string name="scan_qty_dialog_third">Scanned Date</string>
+    <string name="scan_qty_dialog_hint">Enter Quantity</string>
+    <string name="scan_qty_dialog_btn">Update Quantity</string>
 </resources>

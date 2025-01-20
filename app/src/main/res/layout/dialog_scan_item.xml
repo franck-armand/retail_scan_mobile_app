@@ -42,5 +42,9 @@
         android:id="@+id/dialog_validate_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/scan_qty_dialog_btn" />
+        android:text="@string/scan_qty_dialog_btn"
+        android:layout_gravity="center"
+        android:backgroundTint="@color/primary_color"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"/>
 </LinearLayout>
