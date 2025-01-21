@@ -2,9 +2,9 @@ package com.example.mafscan;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,10 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Objects;
-import java.util.Set;
+
 
 public class ScanActivityMain extends AppCompatActivity implements
         ScanDataAdapter.OnItemClickListener {
@@ -30,7 +29,8 @@ public class ScanActivityMain extends AppCompatActivity implements
     private FloatingActionButton clearScanButton;
     private long lastScanTime = 0;
     private static final long DEBOUNCE_DELAY = 100;
-    private boolean isSessionCleared = false; //
+    private boolean isSessionCleared = false;
+    private TextView emptyHintMessage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +48,10 @@ public class ScanActivityMain extends AppCompatActivity implements
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ScanDataAdapter(scanDataList, this);
         recyclerView.setAdapter(adapter);
+
+        // Set empty activity hint message
+        emptyHintMessage = findViewById(R.id.empty_hint_message);
+        updateHintMessageVisibility();
 
         // Set the click listener on the adapter
         adapter.setOnItemClickListener(this);
@@ -81,6 +85,9 @@ public class ScanActivityMain extends AppCompatActivity implements
                         ScanData newScan = new ScanData(scannedData, codeType, now);
                         scanDataList.addFirst(newScan);
                         adapter.notifyDataSetChanged();
+
+                        // Update the hint message
+                        updateHintMessageVisibility();
 
                         if (!hasValidScan) {
                             hasValidScan = true;
@@ -119,6 +126,14 @@ public class ScanActivityMain extends AppCompatActivity implements
 //        }
 //        return super.onKeyUp(keyCode, event);
 //    }
+
+    private void updateHintMessageVisibility() {
+        if (scanDataList.isEmpty()) {
+            emptyHintMessage.setVisibility(View.VISIBLE);
+        } else {
+            emptyHintMessage.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     protected void onDestroy() {
@@ -159,6 +174,7 @@ public class ScanActivityMain extends AppCompatActivity implements
         adapter.notifyDataSetChanged();
         validateButton.setVisibility(View.GONE);
         clearScanButton.setVisibility(View.GONE);
+        emptyHintMessage.setVisibility(View.VISIBLE);
         hasValidScan = false;
         isSessionCleared = true;
     }
