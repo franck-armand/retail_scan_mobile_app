@@ -18,10 +18,10 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/black"
             android:minHeight="?attr/actionBarSize"
-            app:title="MAF Scan"
+            app:title="@string/app_name"
             app:logo="@drawable/baseline_home_24"
             app:titleTextColor="@color/white"
-            app:contentInsetStart="10dp"
+            app:contentInsetStart="0dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
     </com.google.android.material.appbar.AppBarLayout>

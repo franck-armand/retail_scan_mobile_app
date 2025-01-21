@@ -31,16 +31,26 @@ public class ScanActivityMain extends AppCompatActivity implements
     private static final long DEBOUNCE_DELAY = 100;
     private boolean isSessionCleared = false;
     private TextView emptyHintMessage;
+    private String fromLocation;
+    private String toLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_scan_main);
 
+        // Get the from and to locations from the intent
+        fromLocation = getIntent().getStringExtra("fromLocation");
+        toLocation = getIntent().getStringExtra("toLocation");
+
         // Set up toolbar
         Toolbar toolbar = findViewById(R.id.scanToolbarMain);
         setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Scanning");
+//        Objects.requireNonNull(getSupportActionBar()).setTitle("Scanning");
+        if (getSupportActionBar() != null) {
+            String title = fromLocation + " → " + toLocation;
+            getSupportActionBar().setTitle(title);
+        }
 
         // Initialize scanned data list
         scanDataList = new LinkedList<>();

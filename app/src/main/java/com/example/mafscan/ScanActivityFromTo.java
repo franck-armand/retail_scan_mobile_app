@@ -43,8 +43,10 @@ public class ScanActivityFromTo extends AppCompatActivity {
         // Set up the Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar_scan0);
         setSupportActionBar(toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Scan Activity: From/To");
-        //getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null) {
+            String title = "Provenance" + " → " + "Destination";
+            getSupportActionBar().setTitle(title);
+        }
 
         // Initialize views
         fromSpinner = findViewById(R.id.fromSpinner);
@@ -72,10 +74,12 @@ public class ScanActivityFromTo extends AppCompatActivity {
                         null
                 );
             }else {
-                Log.d(TAG, "Start Scanning: From Location: " + fromlocation + ", To Location: " + tolocation);
-                //Toast.makeText(this,"validation button clicked", Toast.LENGTH_LONG).show();
+                Log.d(TAG, "Start Scanning: From Location: " + fromlocation + "," +
+                        " To Location: " + tolocation);
                 // Navigate to scanning activity
                 Intent intent = new Intent(ScanActivityFromTo.this, ScanActivityMain.class);
+                intent.putExtra("fromLocation", fromlocation);
+                intent.putExtra("toLocation", tolocation);
                 startActivity(intent);
             }
         });

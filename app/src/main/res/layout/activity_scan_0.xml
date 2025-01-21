@@ -162,7 +162,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:logo="@drawable/baseline_home_24"
-        app:title="scan Activity"
+        app:title="@string/scan_activity_label"
+        app:contentInsetStart="0dp"
         app:titleTextColor="@color/white" />
 
     <!-- Content Container -->

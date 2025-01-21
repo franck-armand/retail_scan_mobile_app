@@ -16,9 +16,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:logo="@drawable/baseline_home_24"
+        app:logo="@drawable/outline_barcode_reader_24"
         app:title="@string/scan_activity_label"
         app:titleTextColor="@color/white"
+        app:contentInsetStart="0dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
     <!-- Content Container -->
