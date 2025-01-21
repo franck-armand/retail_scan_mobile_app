@@ -20,4 +20,8 @@
     <string name="scan_qty_dialog_btn">Update Quantity</string>
     <string name="fab_cont_des">Floating Action Button (Clear Scans)</string>
     <string name="scan_hint_msg">Press the trigger to start scanning</string>
+    <string name="place_holder_card_scan_data">Scanned Data</string>
+    <string name="place_holder_card_scan_type">Scan Type</string>
+    <string name="place_holder_card_scan_date">Scan Date</string>
+    <string name="place_holder_card_scan_qty">1</string>
 </resources>
