@@ -8,7 +8,7 @@ public class ScanData {
     private final String scannedData;
     private final String codeType;
     private final Date scanDate;
-    private int quantity;
+    private float quantity;
 
     public ScanData(String scannedData, String codeType, Date scanDate) {
         this.scannedData = scannedData;
@@ -31,11 +31,11 @@ public class ScanData {
         return dateFormat.format(scanDate);
     }
 
-    public int getQuantity() {
+    public float getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(int quantity) {
+    public void setQuantity(float quantity) {
         this.quantity = quantity;
     }
 }

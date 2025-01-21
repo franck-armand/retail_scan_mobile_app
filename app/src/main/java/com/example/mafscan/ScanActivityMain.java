@@ -148,7 +148,7 @@ public class ScanActivityMain extends AppCompatActivity implements
     public void onItemClick(ScanData scanData) {
         DialogUtils.showItemDialog(this, scanData, new DialogUtils.OnItemClickListener() {
             @Override
-            public void onValidate(ScanData scanData, int quantity) {
+            public void onValidate(ScanData scanData, float quantity) {
                 int position = scanDataList.indexOf(scanData);
                 adapter.updateItem(position, scanData);
             }

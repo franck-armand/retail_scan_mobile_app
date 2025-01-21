@@ -70,24 +70,32 @@ public class DialogUtils {
 
         validateButton.setOnClickListener(v -> {
             String quantityString = quantityEditText.getText().toString();
-            if (quantityString.isEmpty() || !quantityString.matches("\\d+")) {
-                // Show error if input is invalid
-                quantityEditText.setError(" Enter a valid quantity.");
+
+            quantityString = quantityString.replace(",", ".");
+
+            if (quantityString.isEmpty() || !quantityString.matches("\\d+((\\.\\d{1,3})?)"))
+            {
+                quantityEditText.setError("Invalid quantity");
                 return;
             }
-            // Update ScanData and call listener
-            int quantity = Integer.parseInt(quantityString);
-            scanData.setQuantity(quantity);
-            if (positiveAction != null) {
-                positiveAction.onValidate(scanData, quantity);
+            try {
+                float quantity = Float.parseFloat(quantityString);
+                scanData.setQuantity(quantity);
+
+                if (positiveAction != null) {
+                    positiveAction.onValidate(scanData, quantity);
+                }
+
+                dialog.dismiss();
+            } catch (NumberFormatException e) {
+                quantityEditText.setError("Invalid quantity format.");
             }
-            // Dismiss dialog after successful validation
-            dialog.dismiss();
         });
+
         dialog.show();
     }
     public interface OnItemClickListener {
-        void onValidate(ScanData scanData, int quantity);
+        void onValidate(ScanData scanData, float quantity);
     }
 }
 
