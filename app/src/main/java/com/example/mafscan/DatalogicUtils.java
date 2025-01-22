@@ -7,7 +7,7 @@ import com.datalogic.decode.BarcodeManager;
 import com.datalogic.decode.DecodeResult;
 import com.datalogic.decode.ReadListener;
 import com.datalogic.device.DeviceException;
-import com.datalogic.device.configuration.DeviceNameSuffix;
+import com.datalogic.device.info.SYSTEM;
 
 public class DatalogicUtils {
     private static BarcodeManager mBarcodeManager;
@@ -119,10 +119,9 @@ public class DatalogicUtils {
      */
     public static String getDeviceInfo() {
         try {
-            DeviceNameSuffix deviceNameSuffix = DeviceNameSuffix.SERIAL_NUMBER;
-            String deviceName = deviceNameSuffix.name();
-            Log.d(TAG, "Device Name: " + deviceName);
-            return deviceName;
+            String deviceSerialNumber = SYSTEM.SERIAL_NUMBER;
+            Log.d(TAG, " Serial Number: " + deviceSerialNumber);
+            return deviceSerialNumber;
         } catch (DeviceException e) {
             Log.e(TAG, "Failed to retrieve device information", e);
             return "Unknown Device";
