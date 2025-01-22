@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class ScanActivityMain extends AppCompatActivity implements
         ScanDataAdapter.OnItemClickListener {
-    private static final String TAG = "ScanActivityMain";
+    private final String TAG = getClass().getName();
     private LinkedList<ScanData> scanDataList;
     private ScanDataAdapter adapter;
     private boolean hasValidScan = false;
@@ -46,7 +46,6 @@ public class ScanActivityMain extends AppCompatActivity implements
         // Set up toolbar
         Toolbar toolbar = findViewById(R.id.scanToolbarMain);
         setSupportActionBar(toolbar);
-//        Objects.requireNonNull(getSupportActionBar()).setTitle("Scanning");
         if (getSupportActionBar() != null) {
             String title = fromLocation + " → " + toLocation;
             getSupportActionBar().setTitle(title);
@@ -66,39 +65,43 @@ public class ScanActivityMain extends AppCompatActivity implements
         // Set the click listener on the adapter
         adapter.setOnItemClickListener(this);
 
-        // Initialize the validate button and set its visibility
+        // Initialize the validate and clear buttons and set theirs visibilities
         validateButton = findViewById(R.id.validateScanButton);
         validateButton.setVisibility(View.GONE);
-
         clearScanButton = findViewById(R.id.clear_scan_floating_action_Btn);
         clearScanButton.setVisibility(View.GONE);
         clearScanButton.setOnClickListener(v -> clearScanSession());
 
         //Initialize scanner
-        if (KeyenceUtils.initializeScanner(this)) {
-            KeyenceUtils.setScanListener((scannedData, codeType) -> {
+//        if (KeyenceUtils.initializeScanner(this)) {
+//            KeyenceUtils.setScanListener((scannedData, codeType) -> {
+            if (DatalogicUtils.initializeScanner(this)) {
+                DatalogicUtils.setScanListener((scannedData, codeType) -> {
                 runOnUiThread(() -> {
 
                     if (scannedData != null && !scannedData.isEmpty()) {
-                        long currentTime = System.currentTimeMillis();
-
-                        // Check debounce timing
-                        if (currentTime - lastScanTime < DEBOUNCE_DELAY) {
-                            Log.d(TAG, "Scan ignored due to debounce: " + scannedData);
-                            return; // Ignore scans that occur too quickly or duplicated
-                        }
-
+//                        long currentTime = System.currentTimeMillis();
+                        // Check debounce timing needed for KeyenceUtils
+//                        if (currentTime - lastScanTime < DEBOUNCE_DELAY) {
+//                            Log.d(TAG, "Scan ignored due to debounce: " + scannedData);
+//                            return; // Ignore scans that occur too quickly or duplicated
+//                        }
                         // Update the timestamp of the last scan
-                        lastScanTime = currentTime;
-
+//                        lastScanTime = currentTime;
                         Date now = new Date();
                         ScanData newScan = new ScanData(scannedData, codeType, now);
                         scanDataList.addFirst(newScan);
                         adapter.notifyDataSetChanged();
+                        Log.d(TAG,
+                                "Scanned Data: " + scannedData + "," +
+                                " Code Type: " + codeType + "," +
+                                " Date: " + now + "," +
+                                " Device Serial Number: " + DatalogicUtils.getDeviceInfo());
 
                         // Update the hint message
                         updateHintMessageVisibility();
 
+                        // Update the validate and clear buttons visibility
                         if (!hasValidScan) {
                             hasValidScan = true;
                             validateButton.setVisibility(View.VISIBLE);
@@ -107,7 +110,6 @@ public class ScanActivityMain extends AppCompatActivity implements
                     } else {
                         Toast.makeText(this, "Empty Scan", Toast.LENGTH_SHORT).show();
                     }
-
                 });
             });
         }
@@ -148,12 +150,14 @@ public class ScanActivityMain extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        KeyenceUtils.stopScanning();
-        KeyenceUtils.releaseScanner();
+        DatalogicUtils.stopScanning();
+        DatalogicUtils.releaseScanner();
+//        KeyenceUtils.stopScanning();
+//        KeyenceUtils.releaseScanner();
 
     }
 
-    // Implement the interface method
+    // Implement the interface method, call the dialog from the item click in the recycler view
     @Override
     public void onItemClick(ScanData scanData) {
         DialogUtils.showItemDialog(this, scanData, new DialogUtils.OnItemClickListener() {
@@ -162,7 +166,6 @@ public class ScanActivityMain extends AppCompatActivity implements
                 int position = scanDataList.indexOf(scanData);
                 adapter.updateItem(position, scanData);
             }
-
         });
     }
 
@@ -178,7 +181,7 @@ public class ScanActivityMain extends AppCompatActivity implements
         }
     }
 
-    // explicitly clear the scan session
+    // Explicitly clear the scan session with floating action button
     private void clearScanSession() {
         scanDataList.clear();
         adapter.notifyDataSetChanged();
