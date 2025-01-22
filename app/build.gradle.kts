@@ -9,7 +9,7 @@ android {
     defaultConfig {
         applicationId = "com.example.mafscan"
         minSdk = 30
-        targetSdk = 34
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -36,6 +36,7 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(files("libs/BT_A700.jar"))
+    implementation("com.github.datalogic:datalogic-android-sdk:1.42")
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
