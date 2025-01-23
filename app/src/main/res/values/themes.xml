@@ -15,4 +15,13 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <!-- Splash screen theme. -->
+    <style name="SplashScreenTheme" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primary_color</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/splash_screen_background</item>
+        <item name="windowSplashScreenAnimationDuration">10000</item>
+        <item name="postSplashScreenTheme">@style/Theme.MafScan</item>
+    </style>
+
 </resources>
