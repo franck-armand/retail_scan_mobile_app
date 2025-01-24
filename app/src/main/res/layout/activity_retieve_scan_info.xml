@@ -22,6 +22,7 @@
             app:contentInsetStart="0dp" />
     </com.google.android.material.appbar.AppBarLayout>
 
+    <!-- Main Content -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -37,16 +38,7 @@
             android:text="@string/scan_hint_message"
             android:textColor="@color/gray"
             android:textSize="14sp"
-            android:gravity="center" android:paddingBottom="8dp" />
-
-        <!-- Table Title -->
-        <TextView
-            android:id="@+id/qr_table_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text=""
             android:textStyle="bold"
-            android:textSize="16sp"
             android:gravity="center"
             android:paddingBottom="8dp" />
 
@@ -64,18 +56,31 @@
                 android:stretchColumns="1">
                 <!-- Dynamic table content will be added here -->
             </TableLayout>
-
         </ScrollView>
 
-        <!-- Floating Action Button -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/clear_scan_floating_action_Btn"
+        <!-- Item Count -->
+        <TextView
+            android:id="@+id/qr_item_count"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end|bottom"
-            android:backgroundTint="@color/gray"
-            android:contentDescription="@string/fab_cont_des"
-            android:visibility="visible"
-            app:srcCompat="@drawable/round_delete_forever_24" />
+            android:text=""
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:gravity="end"
+            android:paddingTop="8dp"
+ />
+
     </LinearLayout>
+
+    <!-- Floating Action Button -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/clear_scan_floating_action_Btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:layout_margin="10dp"
+        android:backgroundTint="@color/gray"
+        android:contentDescription="@string/fab_cont_des"
+        app:srcCompat="@drawable/round_delete_forever_24" />
+
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
