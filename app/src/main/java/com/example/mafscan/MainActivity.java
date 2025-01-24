@@ -31,6 +31,13 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, ScanActivityFromTo.class);
             startActivity(intent);
         });
+
+        // set up Retrieve QR code info button navigation
+        LinearLayout retrieveButton = findViewById(R.id.retrieve_scan_info);
+        retrieveButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, RetrieveScanInfo.class);
+            startActivity(intent);
+        });
     }
 
 }

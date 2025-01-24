@@ -40,6 +40,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    implementation("androidx.core:core-splashscreen:1.0.0")
     implementation("net.sourceforge.jtds:jtds:1.3.1")
     implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     // To use constraintlayout in compose

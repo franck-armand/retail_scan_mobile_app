@@ -70,7 +70,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_scan"
+                    android:src="@drawable/baseline_qr_code_scanner_24"
                     android:contentDescription="@string/scan_icon_desc" />
 
                 <TextView
@@ -84,7 +84,7 @@
 
             <!-- Action Button 2 -->
             <LinearLayout
-                android:id="@+id/btn_action2"
+                android:id="@+id/retrieve_scan_info"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_rowWeight="1"
@@ -99,7 +99,7 @@
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@drawable/ic_baseline_menu_24_xml"
+                    android:src="@drawable/baseline_manage_search_24"
                     android:contentDescription="@string/action_2_icon_desc" />
 
                 <TextView

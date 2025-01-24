@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">MafScan</string>
-    <string name="action_2">Action 2</string>
+    <string name="action_2">QR Info</string>
     <string name="scan">Scan</string>
     <string name="action_3">Action 3</string>
     <string name="action_4">Action 4</string>
@@ -24,4 +24,6 @@
     <string name="place_holder_card_scan_type">Scan Type</string>
     <string name="place_holder_card_scan_date">Scan Date</string>
     <string name="place_holder_card_scan_qty">1</string>
+    <string name="scan_hint_message">Scan QR code to retrieve informations</string>
+    <string name="scanned_hint_message">"Scanned Code Information"</string>
 </resources>
