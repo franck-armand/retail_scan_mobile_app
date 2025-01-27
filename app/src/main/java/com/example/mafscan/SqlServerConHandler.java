@@ -1,5 +1,7 @@
 package com.example.mafscan;
 
+import android.util.Log;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -11,15 +13,16 @@ public class SqlServerConHandler {
                                             "trustServerCertificate=true;";
     private static final String USER = "sa";
     private static final String PASS = "sqlserveur2022maf";
+    private static final String TAG = SqlServerConHandler.class.getSimpleName();
 
     public static Connection establishSqlServCon() throws SQLException {
-        Connection connection = null;
+        Connection connection;
         try {
             connection = DriverManager.getConnection(DB_URL, USER, PASS);
-            System.out.println("Connected to sql server successfully.");
+            Log.d(TAG, "Connected to sql server successfully.");
             return connection;
         } catch (SQLException e) {
-            System.err.println("Failed to connect to SQL Server: " + e.getMessage());
+            Log.e(TAG,"Failed to connect to SQL Server: " + e.getMessage());
             throw e;
         }
     }
