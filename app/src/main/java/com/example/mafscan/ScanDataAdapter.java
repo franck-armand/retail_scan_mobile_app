@@ -40,7 +40,7 @@ public class ScanDataAdapter extends RecyclerView.Adapter<ScanViewHolder> {
         holder.textScannedData.setText(scanData.getScannedData());
         holder.textScanType.setText(scanData.getCodeType());
         holder.textScanDate.setText(scanData.getFormattedScanDate());
-        holder.textQuantity.setText(String.valueOf(scanData.getQuantity()));
+        holder.textQuantity.setText(String.valueOf(scanData.getScanCount()));
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

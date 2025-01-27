@@ -61,7 +61,7 @@ public class DialogUtils {
         scannedDataTextView.setText(scanData.getScannedData());
         scanTypeTextView.setText(scanData.getCodeType());
         scanDateTextView.setText(scanData.getFormattedScanDate());
-        quantityEditText.setText(String.valueOf(scanData.getQuantity())); // Default to existing quantity
+        quantityEditText.setText(String.valueOf(scanData.getScanCount())); // Default to existing quantity
 
         dialogBuilder.setView(dialogView);
         dialogBuilder.setCancelable(true);
@@ -80,7 +80,7 @@ public class DialogUtils {
             }
             try {
                 float quantity = Float.parseFloat(quantityString);
-                scanData.setQuantity(quantity);
+                scanData.setScanCount(quantity);
 
                 if (positiveAction != null) {
                     positiveAction.onValidate(scanData, quantity);

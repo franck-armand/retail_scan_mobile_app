@@ -3,18 +3,19 @@ package com.example.mafscan;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class ScanData {
     private final String scannedData;
     private final String codeType;
     private final Date scanDate;
-    private float quantity;
+    private float scanCount;
 
     public ScanData(String scannedData, String codeType, Date scanDate) {
         this.scannedData = scannedData;
         this.codeType = codeType;
         this.scanDate = scanDate;
-        this.quantity = 1; // Default quantity to 1
+        this.scanCount = 1; // Default quantity to 1
     }
 
     public String getScannedData() {
@@ -27,15 +28,16 @@ public class ScanData {
 
     public String getFormattedScanDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-                Locale.FRANCE);
+                Locale.getDefault());
+        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return dateFormat.format(scanDate);
     }
 
-    public float getQuantity() {
-        return quantity;
+    public float getScanCount() {
+        return scanCount;
     }
 
-    public void setQuantity(float quantity) {
-        this.quantity = quantity;
+    public void setScanCount(float scanCount) {
+        this.scanCount = scanCount;
     }
 }
