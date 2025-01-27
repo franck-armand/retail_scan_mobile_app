@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 public class ScanActivityFromTo extends AppCompatActivity {
     private Spinner fromSpinner, toSpinner;
     private TextView fromDescription, toDescription;
-    private HashMap<String, String> locationMap = new HashMap<>();
+    private final HashMap<String, String> locationMap = new HashMap<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final String TAG = getClass().getName();
