@@ -11,8 +11,8 @@ public class SqlServerConHandler {
                                             "databaseName=ProductionProgress;" +
                                             "encrypt=true;" +
                                             "trustServerCertificate=true;";
-    private static final String USER = "sa";
-    private static final String PASS = "sqlserveur2022maf";
+    private static final String USER = "ScanDataLogicLogin";
+    private static final String PASS = "scandatalogic";
     private static final String TAG = SqlServerConHandler.class.getSimpleName();
 
     public static Connection establishSqlServCon() throws SQLException {
