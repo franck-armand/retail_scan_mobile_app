@@ -1,6 +1,9 @@
 package com.example.mafscan;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -9,19 +12,33 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.net.ParseException;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.Objects;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class ScanActivityMain extends AppCompatActivity implements
         ScanDataAdapter.OnItemClickListener {
-    private final String TAG = getClass().getName();
+    private final String TAG = getClass().getSimpleName();
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final Handler handler = new Handler(Looper.getMainLooper());
     private LinkedList<ScanData> scanDataList;
     private ScanDataAdapter adapter;
     private boolean hasValidScan = false;
@@ -33,6 +50,8 @@ public class ScanActivityMain extends AppCompatActivity implements
     private TextView emptyHintMessage;
     private String fromLocation;
     private String toLocation;
+    private String fromLocationId;
+    private String toLocationId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,14 +59,19 @@ public class ScanActivityMain extends AppCompatActivity implements
         setContentView(R.layout.activity_scan_main);
 
         // Get the from and to locations from the intent
-        fromLocation = getIntent().getStringExtra("fromLocation");
-        toLocation = getIntent().getStringExtra("toLocation");
+        Intent intent = getIntent();
+        fromLocation = intent.getStringExtra("fromLocation");
+        fromLocationId = intent.getStringExtra("fromLocationId");
+        String fromLocationCode = intent.getStringExtra("fromLocationCode");
+        toLocation = intent.getStringExtra("toLocation");
+        toLocationId = intent.getStringExtra("toLocationId");
+        String toLocationCode = intent.getStringExtra("toLocationCode");
 
         // Set up toolbar
         Toolbar toolbar = findViewById(R.id.scanToolbarMain);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            String title = fromLocation + " → " + toLocation;
+            String title = fromLocationCode + " → " + toLocationCode;
             getSupportActionBar().setTitle(title);
         }
 
@@ -70,7 +94,10 @@ public class ScanActivityMain extends AppCompatActivity implements
         validateButton.setVisibility(View.GONE);
         clearScanButton = findViewById(R.id.clear_scan_floating_action_Btn);
         clearScanButton.setVisibility(View.GONE);
+
+        // Set the click listener on the buttons
         clearScanButton.setOnClickListener(v -> clearScanSession());
+        validateButton.setOnClickListener(v -> sendScanData());
 
         //Initialize scanner
 //        if (KeyenceUtils.initializeScanner(this)) {
@@ -138,6 +165,86 @@ public class ScanActivityMain extends AppCompatActivity implements
 //        }
 //        return super.onKeyUp(keyCode, event);
 //    }
+
+    private void sendScanData() {
+        List<Map<String, Object>> scanDataToSend = new ArrayList<>();
+        for (ScanData scanData : scanDataList) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("scannedData", scanData.getScannedData());
+            data.put("codeType", scanData.getCodeType());
+            data.put("scanCount", scanData.getScanCount());
+            data.put("scanDate", scanData.getFormattedScanDate());
+            data.put("deviceSerialNumber", DatalogicUtils.getDeviceInfo());
+            data.put("fromLocationId", fromLocationId);
+            data.put("toLocationId", toLocationId);
+            scanDataToSend.add(data);
+            Log.d(TAG, "Scan Data to Send: " + scanDataToSend);
+        }
+
+        // establish database connection and send data
+        executor.execute(() -> {
+            try(Connection connection = SqlServerConHandler.establishSqlServCon()){
+                if(connection == null){
+                    throw new SQLException("Connection to SQL Server failed");
+                }
+
+                String query = "INSERT INTO Scan_Reading (" +
+                        "Scan_Value," +
+                        " Scan_Type, " +
+                        "Scan_Qty, " +
+                        "Scan_DateUTC, " +
+                        " Scan_DeviceSerialNumber," +
+                        " Loc_Id_From, " +
+                        "Loc_Id_To ) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+                try(PreparedStatement statement = connection.prepareStatement(query)){
+                    for(Map<String, Object> data : scanDataToSend){
+                        statement.setString(1, (String) data.get("scannedData"));
+                        statement.setString(2, (String) data.get("codeType"));
+                        statement.setFloat(3, (Float) data.get("scanCount"));
+
+                        // Parsing date to dateTime
+                        try {
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                                    Locale.getDefault());
+                            Date scanDate = dateFormat.parse((String) data.get("scanDate"));
+                            statement.setTimestamp(4, new Timestamp(scanDate.getTime()));
+                        } catch (ParseException e) {
+                            Log.e(TAG, "Error parsing date: " + e.getMessage());
+                        } catch (java.text.ParseException e) {
+                            throw new RuntimeException(e);
+                        }
+
+                        statement.setString(5, (String) data.get("deviceSerialNumber"));
+                        statement.setString(6, (String) data.get("fromLocationId"));
+                        statement.setString(7, (String) data.get("toLocationId"));
+                        statement.executeUpdate();
+                        Log.d(TAG, "Scan Data sent to SQL Server " +scanDataToSend);
+                    }
+                    handler.post(() -> {
+                        scanDataList.clear();
+                        adapter.notifyDataSetChanged();
+                        hasValidScan = false;
+                        validateButton.setVisibility(View.GONE);
+                        clearScanButton.setVisibility(View.GONE);
+                        updateHintMessageVisibility();
+
+                        Toast.makeText(ScanActivityMain.this,
+                                "Data sent successfully!",
+                                Toast.LENGTH_SHORT).show();
+                    });
+                }
+            } catch (SQLException e) {
+                handler.post(() -> {
+                    Toast.makeText(ScanActivityMain.this,
+                            "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    // TODO: Handle retries or temporally failure
+                });
+                Log.e(TAG, "Error sending data: " + e.getMessage());
+            }
+        });
+    }
 
     private void updateHintMessageVisibility() {
         if (scanDataList.isEmpty()) {
