@@ -6,11 +6,13 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -53,6 +55,7 @@ public class ScanActivityMain extends AppCompatActivity implements
     private long lastScanTime = 0;
     private static final long DEBOUNCE_DELAY = 100;
     private boolean isSessionCleared = false;
+    private boolean isSendingData = false;
     private TextView emptyHintMessage;
     private String fromLocation;
     private String fromLocationCode;
@@ -107,6 +110,21 @@ public class ScanActivityMain extends AppCompatActivity implements
         validateButton.setVisibility(View.GONE);
         clearScanButton = findViewById(R.id.clear_scan_floating_action_Btn);
         clearScanButton.setVisibility(View.GONE);
+
+        // Disable back button when data is being sent
+        getOnBackPressedDispatcher().addCallback(this,
+                new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (isSendingData) {
+                    Toast.makeText(ScanActivityMain.this,
+                            "Please wait while data is being sent.", Toast.LENGTH_SHORT).show();
+                } else {
+                    setEnabled(false);
+                    finish();
+                }
+            }
+        });
 
         // Set the click listener on the buttons
         clearScanButton.setOnClickListener(v -> clearScanSession());
@@ -198,7 +216,6 @@ public class ScanActivityMain extends AppCompatActivity implements
         return scanDataToSend;
     }
     private void sendScanData() {
-        // DONE: Checking if this approach of saving to Room then delete on sent to server is robust and well written
         // Save all scan records to Room first
         saveScanDataToDatabase(scanDataList, 0); // Auto-save
 
@@ -215,6 +232,8 @@ public class ScanActivityMain extends AppCompatActivity implements
         runOnUiThread(() -> {progressOverlay.setVisibility(View.VISIBLE);
                             clearScanButton.setEnabled(false);
                             validateButton.setEnabled(false);
+                            isSendingData = true;
+                            disableUserInteraction();
         });
 
         int total = scanDataToSend.size();
@@ -281,9 +300,12 @@ public class ScanActivityMain extends AppCompatActivity implements
                             Thread.currentThread().interrupt(); // Restore interrupt status
                         }
                     }
+                    // On success, update the UI
                     int finalSuccessCount = successCount;
                     handler.post(() -> {
                         progressOverlay.setVisibility(View.GONE);
+                        enableUserInteraction();
+                        isSendingData = false;
                         validateButton.setEnabled(true);
                         clearScanButton.setEnabled(true);
                         clearRecyclerViewUpdateBtnVisibility();
@@ -297,6 +319,10 @@ public class ScanActivityMain extends AppCompatActivity implements
             } catch (SQLException e) {
                 handler.post(() -> {
                     progressOverlay.setVisibility(View.GONE);
+                    enableUserInteraction();
+                    isSendingData = false;
+                    validateButton.setEnabled(true);
+                    clearScanButton.setEnabled(true);
                     showSummary(0, scanDataToSend.size(), total);
                     // TODO: Replace Toast with a dialog later
                     Toast.makeText(ScanActivityMain.this,
@@ -435,4 +461,13 @@ public class ScanActivityMain extends AppCompatActivity implements
         hasValidScan = false;
         isSessionCleared = true;
     }
+    private void enableUserInteraction() {
+        getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+    private void disableUserInteraction() {
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+    }
+
+
 }
