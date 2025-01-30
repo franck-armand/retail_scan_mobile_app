@@ -76,4 +76,8 @@ public interface ScanRecordDao {
     // Delete all records marked as sent to the server
     @Query("DELETE FROM ScanRecord WHERE isSentToServer = 1")
     void deleteSentRecords();
+
+    // Delete a record by its scanned data and date
+    @Query("DELETE FROM ScanRecord WHERE scannedData = :scannedData AND scanDate = :scanDate")
+    void deleteByScannedDataAndDate(String scannedData, String scanDate);
 }
