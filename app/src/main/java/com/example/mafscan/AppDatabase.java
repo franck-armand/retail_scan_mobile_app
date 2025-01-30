@@ -10,7 +10,6 @@ import androidx.room.RoomDatabase;
 @Database(
         entities = {ScanRecord.class},
         version = 1,
-        exportSchema = true,
         autoMigrations = {
                 @AutoMigration(from = 1, to = 2)
         }
