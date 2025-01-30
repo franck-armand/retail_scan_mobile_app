@@ -7,11 +7,14 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.net.ParseException;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +40,9 @@ import java.util.concurrent.Executors;
 public class ScanActivityMain extends AppCompatActivity implements
         ScanDataAdapter.OnItemClickListener {
     private final String TAG = getClass().getSimpleName();
+    private ProgressBar progressBar;
+    private TextView progressText;
+    private ConstraintLayout progressOverlay;
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private LinkedList<ScanData> scanDataList;
@@ -76,6 +82,11 @@ public class ScanActivityMain extends AppCompatActivity implements
             String title = fromLocationCode + " → " + toLocationCode;
             getSupportActionBar().setTitle(title);
         }
+
+        // Initialize progress bar
+        progressBar = findViewById(R.id.progress_bar);
+        progressText = findViewById(R.id.progress_text);
+        progressOverlay = findViewById(R.id.progress_overlay);
 
         // Initialize scanned data list
         scanDataList = new LinkedList<>();
@@ -120,6 +131,7 @@ public class ScanActivityMain extends AppCompatActivity implements
                         Date now = new Date();
                         ScanData newScan = new ScanData(scannedData, codeType, now);
                         scanDataList.addFirst(newScan);
+                        // TODO: Warning, Compiler suggesting to find a specific notification message
                         adapter.notifyDataSetChanged();
                         Log.d(TAG,
                                 "Scanned Data: " + scannedData + "," +
@@ -186,7 +198,7 @@ public class ScanActivityMain extends AppCompatActivity implements
         return scanDataToSend;
     }
     private void sendScanData() {
-        // TODO: Checking if this approach of saving to Room then delete on sent to server is robust and well written
+        // DONE: Checking if this approach of saving to Room then delete on sent to server is robust and well written
         // Save all scan records to Room first
         saveScanDataToDatabase(scanDataList, 0); // Auto-save
 
@@ -198,7 +210,20 @@ public class ScanActivityMain extends AppCompatActivity implements
     }
 
     private void sendScanActivity(List<Map<String, Object>> scanDataToSend) {
-        // TODO: encapsulate the entire send activity into with a progress bar with nice visual
+        if (scanDataToSend.isEmpty()) return;
+
+        runOnUiThread(() -> {progressOverlay.setVisibility(View.VISIBLE);
+                            clearScanButton.setEnabled(false);
+                            validateButton.setEnabled(false);
+        });
+
+        int total = scanDataToSend.size();
+        progressBar.setMax(total);
+        progressBar.setProgress(0);
+        progressText.setText("Progress: 0/" + total);
+
+        List<Map<String, Object>> failedRecords = new ArrayList<>();
+
         executor.execute(() -> {
             try(Connection connection = SqlServerConHandler.establishSqlServCon()){
                 if(connection == null){
@@ -216,36 +241,63 @@ public class ScanActivityMain extends AppCompatActivity implements
                         "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
                 try(PreparedStatement statement = connection.prepareStatement(query)){
+                    int successCount = 0;
                     for (int i = 0; i < scanDataToSend.size(); i++){
                         Map<String, Object> data = scanDataToSend.get(i);
 
-                        statement.setString(1, (String) data.get("scannedData"));
-                        statement.setString(2, (String) data.get("codeType"));
-                        statement.setFloat(3, (Float) data.get("scanCount"));
+                        try {
+                            statement.setString(1, (String) data.get("scannedData"));
+                            statement.setString(2, (String) data.get("codeType"));
+                            statement.setFloat(3, (Float) data.get("scanCount"));
 
-                        // Parsing date to dateTime (sql server format)
-                        parseDateSqlServerFormat(data, statement);
+                            // Parsing date to dateTime (sql server format)
+                            parseDateSqlServerFormat(data, statement);
 
-                        statement.setString(5, (String) data.get("deviceSerialNumber"));
-                        statement.setString(6, (String) data.get("fromLocationId"));
-                        statement.setString(7, (String) data.get("toLocationId"));
-                        statement.executeUpdate();
-                        Log.d(TAG, "Scan Data sent to SQL Server " + scanDataToSend);
+                            statement.setString(5, (String) data.get("deviceSerialNumber"));
+                            statement.setString(6, (String) data.get("fromLocationId"));
+                            statement.setString(7, (String) data.get("toLocationId"));
+                            statement.executeUpdate();
+                            Log.d(TAG, "Scan Data sent to SQL Server " + scanDataToSend);
 
-                        // Delete record from room is sent to server
-                        DeleteScanRecordFromRoom((String) data.get("scannedData"),
-                                                (String) data.get("scanDate"));
+                            // Delete record from room is sent to server
+                            DeleteScanRecordFromRoom((String) data.get("scannedData"),
+                                                    (String) data.get("scanDate"));
+
+                            // Update the success count
+                            successCount++;
+
+                        } catch (SQLException e) {
+                            failedRecords.add(data);
+                        }
+                        // Update the progress bar
+                        int progress = i + 1;
+                        handler.post(() -> {
+                            progressBar.setProgress(progress);
+                            progressText.setText("Progress: " + progress + "/" + total);
+                        });
+                        try {
+                            Thread.sleep(500); // 500ms delay
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt(); // Restore interrupt status
+                        }
                     }
+                    int finalSuccessCount = successCount;
                     handler.post(() -> {
+                        progressOverlay.setVisibility(View.GONE);
+                        validateButton.setEnabled(true);
+                        clearScanButton.setEnabled(true);
                         clearRecyclerViewUpdateBtnVisibility();
                         // TODO: Replace Toast with a dialog later
                         Toast.makeText(ScanActivityMain.this,
                                 "Data sent successfully!",
                                 Toast.LENGTH_SHORT).show();
+                        showSummary(finalSuccessCount, failedRecords.size(), total);
                     });
                 }
             } catch (SQLException e) {
                 handler.post(() -> {
+                    progressOverlay.setVisibility(View.GONE);
+                    showSummary(0, scanDataToSend.size(), total);
                     // TODO: Replace Toast with a dialog later
                     Toast.makeText(ScanActivityMain.this,
                             "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -258,6 +310,14 @@ public class ScanActivityMain extends AppCompatActivity implements
         });
     }
 
+    private void showSummary(int successCount, int failCount, int total) {
+        new AlertDialog.Builder(this)
+                .setTitle("Upload Summary: " + total + " scans")
+                .setMessage("✅ Sent: " + successCount + "\n\n❌ Failed: " + failCount +
+                        "\n\nFailed records are saved internally and can be sent again")
+                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
+                .show();
+    }
     private void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)
             throws SQLException {
         try {
