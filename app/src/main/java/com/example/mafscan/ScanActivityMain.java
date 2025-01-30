@@ -49,9 +49,11 @@ public class ScanActivityMain extends AppCompatActivity implements
     private boolean isSessionCleared = false;
     private TextView emptyHintMessage;
     private String fromLocation;
+    private String fromLocationCode;
     private String toLocation;
     private String fromLocationId;
     private String toLocationId;
+    private String toLocationCode;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,10 +64,10 @@ public class ScanActivityMain extends AppCompatActivity implements
         Intent intent = getIntent();
         fromLocation = intent.getStringExtra("fromLocation");
         fromLocationId = intent.getStringExtra("fromLocationId");
-        String fromLocationCode = intent.getStringExtra("fromLocationCode");
+        fromLocationCode = intent.getStringExtra("fromLocationCode");
         toLocation = intent.getStringExtra("toLocation");
         toLocationId = intent.getStringExtra("toLocationId");
-        String toLocationCode = intent.getStringExtra("toLocationCode");
+        toLocationCode = intent.getStringExtra("toLocationCode");
 
         // Set up toolbar
         Toolbar toolbar = findViewById(R.id.scanToolbarMain);
@@ -166,7 +168,8 @@ public class ScanActivityMain extends AppCompatActivity implements
 //        return super.onKeyUp(keyCode, event);
 //    }
 
-    private void sendScanData() {
+    private List<Map<String, Object>> retrieveAndFormatScanData()
+    {
         List<Map<String, Object>> scanDataToSend = new ArrayList<>();
         for (ScanData scanData : scanDataList) {
             Map<String, Object> data = new HashMap<>();
@@ -180,8 +183,22 @@ public class ScanActivityMain extends AppCompatActivity implements
             scanDataToSend.add(data);
             Log.d(TAG, "Scan Data to Send: " + scanDataToSend);
         }
+        return scanDataToSend;
+    }
+    private void sendScanData() {
+        // TODO: Checking if this approach of saving to Room then delete on sent to server is robust and well written
+        // Save all scan records to Room first
+        saveScanDataToDatabase(scanDataList, 0); // Auto-save
+
+        // Retrieve and format scan data to be sent to Room and SQL server
+        List<Map<String, Object>> scanDataToSend = retrieveAndFormatScanData();
 
         // establish database connection and send data
+        sendScanActivity(scanDataToSend);
+    }
+
+    private void sendScanActivity(List<Map<String, Object>> scanDataToSend) {
+        // TODO: encapsulate the entire send activity into with a progress bar with nice visual
         executor.execute(() -> {
             try(Connection connection = SqlServerConHandler.establishSqlServCon()){
                 if(connection == null){
@@ -189,47 +206,39 @@ public class ScanActivityMain extends AppCompatActivity implements
                 }
 
                 String query = "INSERT INTO Scan_Reading (" +
-                        "Scan_Value," +
-                        " Scan_Type, " +
+                        "Scan_Value, " +
+                        "Scan_Type, " +
                         "Scan_Qty, " +
                         "Scan_DateUTC, " +
-                        " Scan_DeviceSerialNumber," +
-                        " Loc_Id_From, " +
+                        "Scan_DeviceSerialNumber, " +
+                        "Loc_Id_From, " +
                         "Loc_Id_To ) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
                 try(PreparedStatement statement = connection.prepareStatement(query)){
-                    for(Map<String, Object> data : scanDataToSend){
+                    for (int i = 0; i < scanDataToSend.size(); i++){
+                        Map<String, Object> data = scanDataToSend.get(i);
+
                         statement.setString(1, (String) data.get("scannedData"));
                         statement.setString(2, (String) data.get("codeType"));
                         statement.setFloat(3, (Float) data.get("scanCount"));
 
-                        // Parsing date to dateTime
-                        try {
-                            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-                                    Locale.getDefault());
-                            Date scanDate = dateFormat.parse((String) data.get("scanDate"));
-                            statement.setTimestamp(4, new Timestamp(scanDate.getTime()));
-                        } catch (ParseException e) {
-                            Log.e(TAG, "Error parsing date: " + e.getMessage());
-                        } catch (java.text.ParseException e) {
-                            throw new RuntimeException(e);
-                        }
+                        // Parsing date to dateTime (sql server format)
+                        parseDateSqlServerFormat(data, statement);
 
                         statement.setString(5, (String) data.get("deviceSerialNumber"));
                         statement.setString(6, (String) data.get("fromLocationId"));
                         statement.setString(7, (String) data.get("toLocationId"));
                         statement.executeUpdate();
-                        Log.d(TAG, "Scan Data sent to SQL Server " +scanDataToSend);
+                        Log.d(TAG, "Scan Data sent to SQL Server " + scanDataToSend);
+
+                        // Delete record from room is sent to server
+                        DeleteScanRecordFromRoom((String) data.get("scannedData"),
+                                                (String) data.get("scanDate"));
                     }
                     handler.post(() -> {
-                        scanDataList.clear();
-                        adapter.notifyDataSetChanged();
-                        hasValidScan = false;
-                        validateButton.setVisibility(View.GONE);
-                        clearScanButton.setVisibility(View.GONE);
-                        updateHintMessageVisibility();
-
+                        clearRecyclerViewUpdateBtnVisibility();
+                        // TODO: Replace Toast with a dialog later
                         Toast.makeText(ScanActivityMain.this,
                                 "Data sent successfully!",
                                 Toast.LENGTH_SHORT).show();
@@ -237,13 +246,81 @@ public class ScanActivityMain extends AppCompatActivity implements
                 }
             } catch (SQLException e) {
                 handler.post(() -> {
+                    // TODO: Replace Toast with a dialog later
                     Toast.makeText(ScanActivityMain.this,
                             "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    // TODO: Handle retries or temporally failure
+                    // TODO: Handle what to show in case of error and actions to be taken
+                    // Clear the session display a Dialog to inform the user of what has been sent
+                    // like a recap, and what has not been sent and therefore saved and can be sent again
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
             }
         });
+    }
+
+    private void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)
+            throws SQLException {
+        try {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                    Locale.getDefault());
+            Date scanDate = dateFormat.parse((String) data.get("scanDate"));
+            statement.setTimestamp(4, new Timestamp(scanDate.getTime()));
+        } catch (ParseException e) {
+            Log.e(TAG, "Error parsing date: " + e.getMessage());
+        } catch (java.text.ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void clearRecyclerViewUpdateBtnVisibility() {
+        scanDataList.clear();
+        // TODO: Warning, Compiler suggesting to find a specific notification message
+        adapter.notifyDataSetChanged();
+        hasValidScan = false;
+        validateButton.setVisibility(View.GONE);
+        clearScanButton.setVisibility(View.GONE);
+        updateHintMessageVisibility();
+    }
+
+    private void DeleteScanRecordFromRoom(String scannedData, String scanDate){
+        AppDatabase db = AppDatabase.getDatabase(this);
+        ScanRecordDao scanRecordDao = db.scanRecordDao();
+
+        // Find the corresponding ScanRecord in the Room database
+        new Thread(() -> {
+            scanRecordDao.deleteByScannedDataAndDate(scannedData, scanDate);
+            Log.d(TAG, "Scan record deleted from Room: " + scannedData);
+        }).start();
+    }
+
+    private void saveScanDataToDatabase(List<ScanData> scanDataList, int saveType) {
+        AppDatabase db = AppDatabase.getDatabase(this);
+        ScanRecordDao scanRecordDao = db.scanRecordDao();
+
+        List<ScanRecord> scanRecords = new ArrayList<>();
+        for (ScanData scanData : scanDataList) {
+            ScanRecord scanRecord = new ScanRecord();
+            scanRecord.scannedData = scanData.getScannedData();
+            scanRecord.codeType = scanData.getCodeType();
+            scanRecord.scanCount = scanData.getScanCount();
+            scanRecord.scanDate = scanData.getFormattedScanDate();
+            scanRecord.deviceSerialNumber = DatalogicUtils.getDeviceInfo();
+            scanRecord.fromLocationId = fromLocationId;
+            scanRecord.toLocationId = toLocationId;
+            scanRecord.fromLocationName = fromLocation;
+            scanRecord.toLocationName = toLocation;
+            scanRecord.fromLocationCode = fromLocationCode;
+            scanRecord.toLocationCode = toLocationCode;
+            scanRecord.saveType = saveType; // 0 for auto-save, 1 for manual save
+            scanRecord.isSentToServer = 0; // Initially not sent to server
+            scanRecord.sendAttemptCount = 0; // Initially no send attempts
+
+            scanRecords.add(scanRecord);
+        }
+        new Thread(() -> {
+            List<Long> result = scanRecordDao.insertScanRecords(scanRecords);
+            Log.d(TAG, "Scan records inserted with IDs: " + result);
+        }).start();
     }
 
     private void updateHintMessageVisibility() {
