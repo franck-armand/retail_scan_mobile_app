@@ -190,13 +190,6 @@ public class ScanActivityMain extends AppCompatActivity implements
 
     private void sendScanActivity(List<Map<String, Object>> scanDataToSend) {
         if (scanDataToSend.isEmpty()) return;
-
-        runOnUiThread(() -> {
-                            showProgressBar(true);
-                            isSendingData = true;
-                            disableUserInteraction();
-        });
-
         int total = scanDataToSend.size();
         progressBar.setMax(total);
         progressBar.setProgress(0);
@@ -209,6 +202,12 @@ public class ScanActivityMain extends AppCompatActivity implements
                 if(connection == null){
                     throw new SQLException("Connection to SQL Server failed");
                 }
+
+                runOnUiThread(() -> {
+                    showProgressBar(true);
+                    isSendingData = true;
+                    disableUserInteraction();
+                });
 
                 String query = "INSERT INTO Scan_Reading (" +
                         "Scan_Value, " +
@@ -275,10 +274,13 @@ public class ScanActivityMain extends AppCompatActivity implements
             } catch (SQLException e) {
                 handler.post(() -> {
                     OnProcessComplete();
-                    showSummary(0, scanDataToSend.size(), total);
-                    Toast.makeText(ScanActivityMain.this,
-                            "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    // TODO: Handle what to show in case of error and actions to be taken
+                    // To avoid showing both dialogs
+                    if (!scanDataList.isEmpty()){
+                        showSummary(0, scanDataToSend.size(), total);
+                    }
+                        Toast.makeText(ScanActivityMain.this,
+                                "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        // TODO: Handle what to show in case of error and actions to be taken
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
             }
@@ -301,9 +303,9 @@ public class ScanActivityMain extends AppCompatActivity implements
 
     private void showSummary(int successCount, int failCount, int total) {
         new AlertDialog.Builder(this)
-                .setTitle("Upload Summary: " + total + " scans")
+                .setTitle("Upload Summary: " + successCount + "/" + total +" scans")
                 .setMessage("✅ Sent: " + successCount + "\n\n❌ Failed: " + failCount +
-                        "\n\nFailed records are saved internally and can be sent again")
+                        "\n\nFailed records are saved internally and can be sent again.")
                 .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
                 .show();
     }
