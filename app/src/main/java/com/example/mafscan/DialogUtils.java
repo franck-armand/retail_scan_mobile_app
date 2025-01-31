@@ -12,13 +12,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 
 public class DialogUtils {
-    public static void showInvalideSelectionDialog(Context context,
-                                              String title,
-                                              String message,
-                                              String positiveButtonText,
-                                              DialogInterface.OnClickListener positiveAction,
-                                              String negativeButtonText,
-                                              DialogInterface.OnClickListener negativeAction) {
+    public static void showInvalidSelectionDialog(Context context,
+                                                  String title,
+                                                  String message,
+                                                  String positiveButtonText,
+                                                  DialogInterface.OnClickListener positiveAction,
+                                                  String negativeButtonText,
+                                                  DialogInterface.OnClickListener negativeAction) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomAlertDialogTheme);
         builder.setTitle(title)
                 .setMessage(message)

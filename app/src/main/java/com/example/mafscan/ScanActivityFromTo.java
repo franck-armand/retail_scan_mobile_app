@@ -68,7 +68,7 @@ public class ScanActivityFromTo extends AppCompatActivity {
 
             if (fromlocation.equals(tolocation))
             {
-                DialogUtils.showInvalideSelectionDialog(
+                DialogUtils.showInvalidSelectionDialog(
                         this,
                         "Invalid Selection",
                         "The 'From' and 'To' locations cannot be the same.",
