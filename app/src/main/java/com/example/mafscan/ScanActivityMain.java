@@ -302,13 +302,18 @@ public class ScanActivityMain extends AppCompatActivity implements
     }
 
     private void showSummary(int successCount, int failCount, int total) {
-        new AlertDialog.Builder(this)
-                .setTitle("Upload Summary: " + successCount + "/" + total +" scans")
-                .setMessage("✅ Sent: " + successCount + "\n\n❌ Failed: " + failCount +
-                        "\n\nFailed records are saved internally and can be sent again.")
-                .setPositiveButton("OK", (dialog, which) -> dialog.dismiss())
-                .show();
+        DialogUtils.showInvalidSelectionDialog(
+                this,
+                "Upload Summary: " + successCount + "/" + total +" scans",
+                "✅ Sent: " + successCount + "\n\n❌ Failed: " + failCount +
+                        "\n\nFailed records are saved internally and can be sent again.",
+                "OK",
+                (dialog, which) -> dialog.dismiss(),
+                null,
+                null
+        );
     }
+
     private void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)
             throws SQLException {
         try {
