@@ -149,8 +149,8 @@ public class ScanActivityMain extends AppCompatActivity implements
                         Date now = new Date();
                         ScanData newScan = new ScanData(scannedData, codeType, now);
                         scanDataList.addFirst(newScan);
-                        // TODO: Warning, Compiler suggesting to find a specific notification message
-                        adapter.notifyDataSetChanged();
+                        adapter.notifyItemInserted(0);
+                        recyclerView.scrollToPosition(0);
                         Log.d(TAG,
                                 "Scanned Data: " + scannedData + "," +
                                 " Code Type: " + codeType + "," +
@@ -229,9 +229,8 @@ public class ScanActivityMain extends AppCompatActivity implements
     private void sendScanActivity(List<Map<String, Object>> scanDataToSend) {
         if (scanDataToSend.isEmpty()) return;
 
-        runOnUiThread(() -> {progressOverlay.setVisibility(View.VISIBLE);
-                            clearScanButton.setEnabled(false);
-                            validateButton.setEnabled(false);
+        runOnUiThread(() -> {
+                            showProgressBar(true);
                             isSendingData = true;
                             disableUserInteraction();
         });
@@ -303,28 +302,18 @@ public class ScanActivityMain extends AppCompatActivity implements
                     // On success, update the UI
                     int finalSuccessCount = successCount;
                     handler.post(() -> {
-                        progressOverlay.setVisibility(View.GONE);
-                        enableUserInteraction();
-                        isSendingData = false;
-                        validateButton.setEnabled(true);
-                        clearScanButton.setEnabled(true);
-                        clearRecyclerViewUpdateBtnVisibility();
-                        // TODO: Replace Toast with a dialog later
+                        OnProcessComplete();
+                        clearScanSession();
+                        showSummary(finalSuccessCount, failedRecords.size(), total);
                         Toast.makeText(ScanActivityMain.this,
                                 "Data sent successfully!",
                                 Toast.LENGTH_SHORT).show();
-                        showSummary(finalSuccessCount, failedRecords.size(), total);
                     });
                 }
             } catch (SQLException e) {
                 handler.post(() -> {
-                    progressOverlay.setVisibility(View.GONE);
-                    enableUserInteraction();
-                    isSendingData = false;
-                    validateButton.setEnabled(true);
-                    clearScanButton.setEnabled(true);
+                    OnProcessComplete();
                     showSummary(0, scanDataToSend.size(), total);
-                    // TODO: Replace Toast with a dialog later
                     Toast.makeText(ScanActivityMain.this,
                             "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     // TODO: Handle what to show in case of error and actions to be taken
@@ -334,6 +323,20 @@ public class ScanActivityMain extends AppCompatActivity implements
                 Log.e(TAG, "Error sending data: " + e.getMessage());
             }
         });
+    }
+
+    private void OnProcessComplete() {
+        showProgressBar(false);
+        enableUserInteraction();
+        isSendingData = false;
+    }
+
+    private void showProgressBar(boolean show) {
+        progressOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        progressText.setVisibility(show ? View.VISIBLE : View.GONE);
+        clearScanButton.setEnabled(!show);
+        validateButton.setEnabled(!show);
     }
 
     private void showSummary(int successCount, int failCount, int total) {
@@ -358,16 +361,6 @@ public class ScanActivityMain extends AppCompatActivity implements
         }
     }
 
-    private void clearRecyclerViewUpdateBtnVisibility() {
-        scanDataList.clear();
-        // TODO: Warning, Compiler suggesting to find a specific notification message
-        adapter.notifyDataSetChanged();
-        hasValidScan = false;
-        validateButton.setVisibility(View.GONE);
-        clearScanButton.setVisibility(View.GONE);
-        updateHintMessageVisibility();
-    }
-
     private void DeleteScanRecordFromRoom(String scannedData, String scanDate){
         AppDatabase db = AppDatabase.getDatabase(this);
         ScanRecordDao scanRecordDao = db.scanRecordDao();
@@ -380,33 +373,33 @@ public class ScanActivityMain extends AppCompatActivity implements
     }
 
     private void saveScanDataToDatabase(List<ScanData> scanDataList, int saveType) {
-        AppDatabase db = AppDatabase.getDatabase(this);
-        ScanRecordDao scanRecordDao = db.scanRecordDao();
+        executor.execute(() -> {
+            AppDatabase db = AppDatabase.getDatabase(this);
+            ScanRecordDao scanRecordDao = db.scanRecordDao();
 
-        List<ScanRecord> scanRecords = new ArrayList<>();
-        for (ScanData scanData : scanDataList) {
-            ScanRecord scanRecord = new ScanRecord();
-            scanRecord.scannedData = scanData.getScannedData();
-            scanRecord.codeType = scanData.getCodeType();
-            scanRecord.scanCount = scanData.getScanCount();
-            scanRecord.scanDate = scanData.getFormattedScanDate();
-            scanRecord.deviceSerialNumber = DatalogicUtils.getDeviceInfo();
-            scanRecord.fromLocationId = fromLocationId;
-            scanRecord.toLocationId = toLocationId;
-            scanRecord.fromLocationName = fromLocation;
-            scanRecord.toLocationName = toLocation;
-            scanRecord.fromLocationCode = fromLocationCode;
-            scanRecord.toLocationCode = toLocationCode;
-            scanRecord.saveType = saveType; // 0 for auto-save, 1 for manual save
-            scanRecord.isSentToServer = 0; // Initially not sent to server
-            scanRecord.sendAttemptCount = 0; // Initially no send attempts
+            List<ScanRecord> scanRecords = new ArrayList<>();
+            for (ScanData scanData : scanDataList) {
+                ScanRecord scanRecord = new ScanRecord();
+                scanRecord.scannedData = scanData.getScannedData();
+                scanRecord.codeType = scanData.getCodeType();
+                scanRecord.scanCount = scanData.getScanCount();
+                scanRecord.scanDate = scanData.getFormattedScanDate();
+                scanRecord.deviceSerialNumber = DatalogicUtils.getDeviceInfo();
+                scanRecord.fromLocationId = fromLocationId;
+                scanRecord.toLocationId = toLocationId;
+                scanRecord.fromLocationName = fromLocation;
+                scanRecord.toLocationName = toLocation;
+                scanRecord.fromLocationCode = fromLocationCode;
+                scanRecord.toLocationCode = toLocationCode;
+                scanRecord.saveType = saveType; // 0 for auto-save, 1 for manual save
+                scanRecord.isSentToServer = 0; // Initially not sent to server
+                scanRecord.sendAttemptCount = 0; // Initially no send attempts
 
-            scanRecords.add(scanRecord);
-        }
-        new Thread(() -> {
-            List<Long> result = scanRecordDao.insertScanRecords(scanRecords);
-            Log.d(TAG, "Scan records inserted with IDs: " + result);
-        }).start();
+                scanRecords.add(scanRecord);
+            }
+                List<Long> result = scanRecordDao.insertScanRecords(scanRecords);
+                Log.d(TAG, "Scan records inserted with IDs: " + result);
+        });
     }
 
     private void updateHintMessageVisibility() {
@@ -420,6 +413,7 @@ public class ScanActivityMain extends AppCompatActivity implements
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        executor.shutdown();
         DatalogicUtils.stopScanning();
         DatalogicUtils.releaseScanner();
 //        KeyenceUtils.stopScanning();
@@ -445,13 +439,12 @@ public class ScanActivityMain extends AppCompatActivity implements
         super.onResume();
         if(isSessionCleared){
             scanDataList.clear();
-            adapter.notifyDataSetChanged();
+            //adapter.notifyDataSetChanged();
             hasValidScan = false;
             validateButton.setVisibility(View.GONE);
         }
     }
 
-    // Explicitly clear the scan session with floating action button
     private void clearScanSession() {
         scanDataList.clear();
         adapter.notifyDataSetChanged();
