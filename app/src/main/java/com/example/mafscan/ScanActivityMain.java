@@ -52,8 +52,6 @@ public class ScanActivityMain extends AppCompatActivity implements
     private boolean hasValidScan = false;
     private Button validateButton;
     private FloatingActionButton clearScanButton;
-    private long lastScanTime = 0;
-    private static final long DEBOUNCE_DELAY = 100;
     private boolean isSessionCleared = false;
     private boolean isSendingData = false;
     private TextView emptyHintMessage;
@@ -131,21 +129,11 @@ public class ScanActivityMain extends AppCompatActivity implements
         validateButton.setOnClickListener(v -> sendScanData());
 
         //Initialize scanner
-//        if (KeyenceUtils.initializeScanner(this)) {
-//            KeyenceUtils.setScanListener((scannedData, codeType) -> {
             if (DatalogicUtils.initializeScanner(this)) {
                 DatalogicUtils.setScanListener((scannedData, codeType) -> {
                 runOnUiThread(() -> {
 
                     if (scannedData != null && !scannedData.isEmpty()) {
-//                        long currentTime = System.currentTimeMillis();
-                        // Check debounce timing needed for KeyenceUtils
-//                        if (currentTime - lastScanTime < DEBOUNCE_DELAY) {
-//                            Log.d(TAG, "Scan ignored due to debounce: " + scannedData);
-//                            return; // Ignore scans that occur too quickly or duplicated
-//                        }
-                        // Update the timestamp of the last scan
-//                        lastScanTime = currentTime;
                         Date now = new Date();
                         ScanData newScan = new ScanData(scannedData, codeType, now);
                         scanDataList.addFirst(newScan);
@@ -174,30 +162,6 @@ public class ScanActivityMain extends AppCompatActivity implements
         }
     }
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        Log.d(TAG, "onKeyDown: KeyCode: " + keyCode +
-//                ", ScanCode: " + event.getScanCode());
-//        if (triggerScanCode == 0) {
-//            triggerScanCode = event.getScanCode();
-//        }
-//        if (event.getScanCode() == triggerScanCode) {
-//            isNewScanSession = true;
-//            return true;
-//        }
-//        return super.onKeyDown(keyCode, event);
-//    }
-//
-//    @Override
-//    public boolean onKeyUp(int keyCode, KeyEvent event) {
-//        Log.d(TAG, "onKeyUp: KeyCode: " + keyCode +
-//                ", ScanCode: " + event.getScanCode());
-//        if (event.getScanCode() == triggerScanCode) {
-//            return true;
-//        }
-//        return super.onKeyUp(keyCode, event);
-//    }
-
     private List<Map<String, Object>> retrieveAndFormatScanData()
     {
         List<Map<String, Object>> scanDataToSend = new ArrayList<>();
@@ -218,10 +182,8 @@ public class ScanActivityMain extends AppCompatActivity implements
     private void sendScanData() {
         // Save all scan records to Room first
         saveScanDataToDatabase(scanDataList, 0); // Auto-save
-
         // Retrieve and format scan data to be sent to Room and SQL server
         List<Map<String, Object>> scanDataToSend = retrieveAndFormatScanData();
-
         // establish database connection and send data
         sendScanActivity(scanDataToSend);
     }
@@ -317,8 +279,6 @@ public class ScanActivityMain extends AppCompatActivity implements
                     Toast.makeText(ScanActivityMain.this,
                             "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     // TODO: Handle what to show in case of error and actions to be taken
-                    // Clear the session display a Dialog to inform the user of what has been sent
-                    // like a recap, and what has not been sent and therefore saved and can be sent again
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
             }
@@ -416,12 +376,9 @@ public class ScanActivityMain extends AppCompatActivity implements
         executor.shutdown();
         DatalogicUtils.stopScanning();
         DatalogicUtils.releaseScanner();
-//        KeyenceUtils.stopScanning();
-//        KeyenceUtils.releaseScanner();
 
     }
 
-    // Implement the interface method, call the dialog from the item click in the recycler view
     @Override
     public void onItemClick(ScanData scanData) {
         DialogUtils.showItemDialog(this, scanData, new DialogUtils.OnItemClickListener() {
@@ -461,6 +418,5 @@ public class ScanActivityMain extends AppCompatActivity implements
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
-
 
 }
