@@ -1,5 +1,7 @@
 package com.example.mafscan;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -48,7 +50,6 @@ public class ScanActivityMain extends AppCompatActivity implements
     private final Handler handler = new Handler(Looper.getMainLooper());
     private LinkedList<ScanData> scanDataList;
     private ScanDataAdapter adapter;
-    private boolean hasValidScan = false;
     private Button validateButton;
     private FloatingActionButton clearScanButton;
     private boolean isSessionCleared = false;
@@ -128,6 +129,10 @@ public class ScanActivityMain extends AppCompatActivity implements
         clearScanButton.setOnClickListener(v -> clearScanSession());
         validateButton.setOnClickListener(v -> sendScanData());
 
+        // Attach the SwipeToDeleteCallback to the RecyclerView
+        ItemTouchHelper itemTouchHelper = onItemSwapLeftRight();
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
         //Initialize scanner
         if (DatalogicUtils.initializeScanner(this)) {
             DatalogicUtils.setScanListener((scannedData, codeType) ->
@@ -140,6 +145,26 @@ public class ScanActivityMain extends AppCompatActivity implements
                     })
             );
         }
+    }
+
+    @NonNull
+    private ItemTouchHelper onItemSwapLeftRight() {
+        utils.SwipeToDeleteCallback swipeToDeleteCallback = new utils.SwipeToDeleteCallback(this,
+                position -> {
+                    // Swipe left to delete
+                    adapter.removeItem(position);
+                    updateHintMessageVisibility();
+                    onSwipeDeleteEmpty(scanDataList.isEmpty());
+                },
+                position -> {
+                    // Swipe right to update
+                    ScanData scanData = scanDataList.get(position);
+                    DialogUtils.showItemDialog(this, scanData, (scanData1, quantity) -> {
+                        scanData1.setScanCount(quantity);
+                        adapter.updateItem(position, scanData1);
+                    });
+                });
+        return new ItemTouchHelper(swipeToDeleteCallback);
     }
 
     private void handleScannedData(String scannedData, String codeType) {
@@ -168,15 +193,8 @@ public class ScanActivityMain extends AppCompatActivity implements
         // Scroll to the current record
         recyclerView.scrollToPosition(position);
 
-        // Update the hint message
-        updateHintMessageVisibility();
-
-        // Update the validate and clear buttons visibility
-        if (!hasValidScan) {
-            hasValidScan = true;
-            validateButton.setVisibility(View.VISIBLE);
-            clearScanButton.setVisibility(View.VISIBLE);
-        }
+        // Update the hint message and button visibility
+        onSwipeDeleteEmpty(scanDataList.isEmpty());
         Log.d(TAG,
                 "Scanned Data: " + scannedData + "," +
                         " Code Type: " + codeType + "," +
@@ -423,8 +441,6 @@ public class ScanActivityMain extends AppCompatActivity implements
         super.onResume();
         if(isSessionCleared){
             scanDataList.clear();
-            //adapter.notifyDataSetChanged();
-            hasValidScan = false;
             validateButton.setVisibility(View.GONE);
         }
     }
@@ -435,8 +451,12 @@ public class ScanActivityMain extends AppCompatActivity implements
         validateButton.setVisibility(View.GONE);
         clearScanButton.setVisibility(View.GONE);
         emptyHintMessage.setVisibility(View.VISIBLE);
-        hasValidScan = false;
         isSessionCleared = true;
+    }
+    private void onSwipeDeleteEmpty(boolean isEmpty) {
+     validateButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+     clearScanButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+     emptyHintMessage.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
     }
     private void enableUserInteraction() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
