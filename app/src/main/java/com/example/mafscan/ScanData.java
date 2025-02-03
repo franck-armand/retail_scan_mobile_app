@@ -8,7 +8,7 @@ import java.util.TimeZone;
 public class ScanData {
     private final String scannedData;
     private final String codeType;
-    private final Date scanDate;
+    private Date scanDate;
     private float scanCount;
 
     public ScanData(String scannedData, String codeType, Date scanDate) {
@@ -39,5 +39,8 @@ public class ScanData {
 
     public void setScanCount(float scanCount) {
         this.scanCount = scanCount;
+    }
+    public void setScanDate(Date scanDate) {
+        this.scanDate = scanDate;
     }
 }

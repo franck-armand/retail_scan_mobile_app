@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -61,6 +60,7 @@ public class ScanActivityMain extends AppCompatActivity implements
     private String fromLocationId;
     private String toLocationId;
     private String toLocationCode;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,7 +91,7 @@ public class ScanActivityMain extends AppCompatActivity implements
 
         // Initialize scanned data list
         scanDataList = new LinkedList<>();
-        RecyclerView recyclerView = findViewById(R.id.recycler_view_scans);
+        recyclerView = findViewById(R.id.recycler_view_scans);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         adapter = new ScanDataAdapter(scanDataList, this);
         recyclerView.setAdapter(adapter);
@@ -134,32 +134,56 @@ public class ScanActivityMain extends AppCompatActivity implements
                 runOnUiThread(() -> {
 
                     if (scannedData != null && !scannedData.isEmpty()) {
-                        Date now = new Date();
-                        ScanData newScan = new ScanData(scannedData, codeType, now);
-                        scanDataList.addFirst(newScan);
-                        adapter.notifyItemInserted(0);
-                        recyclerView.scrollToPosition(0);
-                        Log.d(TAG,
-                                "Scanned Data: " + scannedData + "," +
-                                " Code Type: " + codeType + "," +
-                                " Date: " + now + "," +
-                                " Device Serial Number: " + DatalogicUtils.getDeviceInfo());
-
-                        // Update the hint message
-                        updateHintMessageVisibility();
-
-                        // Update the validate and clear buttons visibility
-                        if (!hasValidScan) {
-                            hasValidScan = true;
-                            validateButton.setVisibility(View.VISIBLE);
-                            clearScanButton.setVisibility(View.VISIBLE);
-                        }
+                        handleScannedData(scannedData, codeType);
                     } else {
                         Toast.makeText(this, "Empty Scan", Toast.LENGTH_SHORT).show();
                     }
                 });
             });
         }
+    }
+
+    private void handleScannedData(String scannedData, String codeType) {
+        Date now = new Date();
+        boolean found = false;
+        int position = -1;
+        for (int i = 0; i < scanDataList.size(); i++) {
+            ScanData existingScan = scanDataList.get(i);
+            if (existingScan.getScannedData().equals(scannedData)) {
+                // Update existing scan
+                existingScan.setScanCount(existingScan.getScanCount() + 1.0f);
+                existingScan.setScanDate(now);
+                adapter.notifyItemChanged(i);
+                position = i;
+                found = true;
+                break;
+            }
+        }
+        if (!found) {
+            // Add new scan
+            ScanData newScan = new ScanData(scannedData, codeType, now);
+            scanDataList.addFirst(newScan);
+            adapter.notifyItemInserted(0);
+            position = 0;
+        }
+        // Scroll to the current record
+        if (position != -1) {
+            recyclerView.scrollToPosition(position);
+        }
+
+        // Update the hint message
+        updateHintMessageVisibility();
+        // Update the validate and clear buttons visibility
+        if (!hasValidScan) {
+            hasValidScan = true;
+            validateButton.setVisibility(View.VISIBLE);
+            clearScanButton.setVisibility(View.VISIBLE);
+        }
+        Log.d(TAG,
+                "Scanned Data: " + scannedData + "," +
+                        " Code Type: " + codeType + "," +
+                        " Date: " + now + "," +
+                        " Device Serial Number: " + DatalogicUtils.getDeviceInfo());
     }
 
     private List<Map<String, Object>> retrieveAndFormatScanData()
@@ -317,7 +341,8 @@ public class ScanActivityMain extends AppCompatActivity implements
     private void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)
             throws SQLException {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+            String datePattern = "yyyy-MM-dd HH:mm:ss";
+            SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern,
                     Locale.getDefault());
             Date scanDate = dateFormat.parse((String) data.get("scanDate"));
             statement.setTimestamp(4, new Timestamp(scanDate.getTime()));
