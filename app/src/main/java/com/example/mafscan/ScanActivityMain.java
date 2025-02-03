@@ -129,17 +129,16 @@ public class ScanActivityMain extends AppCompatActivity implements
         validateButton.setOnClickListener(v -> sendScanData());
 
         //Initialize scanner
-            if (DatalogicUtils.initializeScanner(this)) {
-                DatalogicUtils.setScanListener((scannedData, codeType) -> {
-                runOnUiThread(() -> {
-
-                    if (scannedData != null && !scannedData.isEmpty()) {
-                        handleScannedData(scannedData, codeType);
-                    } else {
-                        Toast.makeText(this, "Empty Scan", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            });
+        if (DatalogicUtils.initializeScanner(this)) {
+            DatalogicUtils.setScanListener((scannedData, codeType) ->
+                    runOnUiThread(() -> {
+                        if (scannedData != null && !scannedData.isEmpty()) {
+                            handleScannedData(scannedData, codeType);
+                        } else {
+                            Toast.makeText(this, "Empty Scan", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+            );
         }
     }
 
@@ -167,12 +166,11 @@ public class ScanActivityMain extends AppCompatActivity implements
             position = 0;
         }
         // Scroll to the current record
-        if (position != -1) {
-            recyclerView.scrollToPosition(position);
-        }
+        recyclerView.scrollToPosition(position);
 
         // Update the hint message
         updateHintMessageVisibility();
+
         // Update the validate and clear buttons visibility
         if (!hasValidScan) {
             hasValidScan = true;
@@ -413,12 +411,9 @@ public class ScanActivityMain extends AppCompatActivity implements
 
     @Override
     public void onItemClick(ScanData scanData) {
-        DialogUtils.showItemDialog(this, scanData, new DialogUtils.OnItemClickListener() {
-            @Override
-            public void onValidate(ScanData scanData, float quantity) {
-                int position = scanDataList.indexOf(scanData);
-                adapter.updateItem(position, scanData);
-            }
+        DialogUtils.showItemDialog(this, scanData, (scanData1, quantity) -> {
+            int position = scanDataList.indexOf(scanData1);
+            adapter.updateItem(position, scanData1);
         });
     }
 

@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.splashscreen.SplashScreen;
 import android.os.Vibrator;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -46,5 +45,4 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
     }
-
 }
