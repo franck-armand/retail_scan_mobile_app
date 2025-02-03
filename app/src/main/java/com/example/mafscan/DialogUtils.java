@@ -64,7 +64,7 @@ public class DialogUtils {
         quantityEditText.setText(String.valueOf(scanData.getScanCount())); // Default to existing quantity
 
         dialogBuilder.setView(dialogView);
-        dialogBuilder.setCancelable(true);
+        dialogBuilder.setCancelable(false);
 
         android.app.AlertDialog dialog = dialogBuilder.create();
 
