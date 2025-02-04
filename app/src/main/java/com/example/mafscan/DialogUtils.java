@@ -75,11 +75,15 @@ public class DialogUtils {
 
             if (quantityString.isEmpty() || !quantityString.matches("\\d+((\\.\\d{1,3})?)"))
             {
-                quantityEditText.setError("Invalid quantity");
+                quantityEditText.setError("Invalid quantity. Allow: 1; 1.123; ...");
                 return;
             }
             try {
                 float quantity = Float.parseFloat(quantityString);
+                if(quantity <= 0.0f){
+                    quantityEditText.setError("Quantity must be greater than 0");
+                    return;
+                }
                 scanData.setScanCount(quantity);
 
                 if (positiveAction != null) {
