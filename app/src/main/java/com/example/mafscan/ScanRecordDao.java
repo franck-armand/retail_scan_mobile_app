@@ -43,6 +43,8 @@ public interface ScanRecordDao {
     @Query("SELECT * FROM ScanRecord LIMIT :limit OFFSET :offset")
     List<ScanRecord> getScanRecordsPaginated(int limit, int offset);
 
+    @Query("SELECT * FROM ScanRecord WHERE scannedData = :scannedData AND sessionId = :sessionId")
+    ScanRecord getScanRecordByScannedData(String scannedData, String sessionId);
     //////////////Update queries////////////////
 
     // Update a specific scan record
