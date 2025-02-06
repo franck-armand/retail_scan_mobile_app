@@ -30,12 +30,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
+import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -62,6 +65,9 @@ public class ScanActivityMain extends AppCompatActivity implements
     private String toLocationId;
     private String toLocationCode;
     private RecyclerView recyclerView;
+    private ScanRecordDao scanRecordDao;
+    private ScanSessionDao scanSessionDao;
+    private String sessionId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +139,11 @@ public class ScanActivityMain extends AppCompatActivity implements
         ItemTouchHelper itemTouchHelper = onItemSwapLeftRight();
         itemTouchHelper.attachToRecyclerView(recyclerView);
 
+        // Initialize database
+        AppDatabase db = AppDatabase.getDatabase(this);
+        scanRecordDao = db.scanRecordDao();
+        scanSessionDao = db.scanSessionDao();
+
         //Initialize scanner
         if (DatalogicUtils.initializeScanner(this)) {
             DatalogicUtils.setScanListener((scannedData, codeType) ->
@@ -145,6 +156,31 @@ public class ScanActivityMain extends AppCompatActivity implements
                     })
             );
         }
+    }
+
+    private void createNewScanSession() {
+        executor.execute(() -> {
+            String newSessionId = UUID.randomUUID().toString();
+            ScanSession existingSession = scanSessionDao.getScanSessionById(newSessionId);
+
+            while (existingSession != null) {
+                newSessionId = UUID.randomUUID().toString(); // Regenerate if duplicate
+                existingSession = scanSessionDao.getScanSessionById(newSessionId);
+            }
+            sessionId = newSessionId;
+
+            ScanSession scanSession = new ScanSession();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+                    Locale.getDefault());
+            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+            String formattedDate = dateFormat.format(new Date());
+
+            scanSession.sessionId = sessionId;
+            scanSession.sessionCreationDate = formattedDate;
+            long result = scanSessionDao.insertScanSession(scanSession);
+
+            Log.d(TAG, "Scan session created with ID: " + sessionId + " result: " + result);
+        });
     }
 
     @NonNull
@@ -166,7 +202,6 @@ public class ScanActivityMain extends AppCompatActivity implements
                 });
         return new ItemTouchHelper(swipeToDeleteCallback);
     }
-
     private void handleScannedData(String scannedData, String codeType) {
         Date now = new Date();
         boolean found = false;
@@ -201,9 +236,7 @@ public class ScanActivityMain extends AppCompatActivity implements
                         " Date: " + now + "," +
                         " Device Serial Number: " + DatalogicUtils.getDeviceInfo());
     }
-
-    private List<Map<String, Object>> retrieveAndFormatScanData()
-    {
+    private List<Map<String, Object>> retrieveAndFormatScanData() {
         List<Map<String, Object>> scanDataToSend = new ArrayList<>();
         for (ScanData scanData : scanDataList) {
             Map<String, Object> data = new HashMap<>();
@@ -220,9 +253,11 @@ public class ScanActivityMain extends AppCompatActivity implements
         return scanDataToSend;
     }
     private void sendScanData() {
+        // Create a new session in the database
+        createNewScanSession();
         // Save all scan records to Room first
         saveScanDataToDatabase(scanDataList, 0); // Auto-save
-        // Retrieve and format scan data to be sent to Room and SQL server
+        // Retrieve and format scan data to be sent to SQL server
         List<Map<String, Object>> scanDataToSend = retrieveAndFormatScanData();
         // establish database connection and send data
         sendScanActivity(scanDataToSend);
@@ -236,10 +271,11 @@ public class ScanActivityMain extends AppCompatActivity implements
         progressText.setText("Progress: 0/" + total);
 
         List<Map<String, Object>> failedRecords = new ArrayList<>();
+        List<ScanRecord> recordsToDelete = new ArrayList<>();
 
         executor.execute(() -> {
-            try(Connection connection = SqlServerConHandler.establishSqlServCon()){
-                if(connection == null){
+            try (Connection connection = SqlServerConHandler.establishSqlServCon()) {
+                if (connection == null) {
                     throw new SQLException("Connection to SQL Server failed");
                 }
 
@@ -249,78 +285,139 @@ public class ScanActivityMain extends AppCompatActivity implements
                     disableUserInteraction();
                 });
 
-                String query = "INSERT INTO Scan_Reading (" +
+                // Start transaction for the session
+                connection.setAutoCommit(false);
+                // Step 1: Insert into Scan_Session
+                String sessionQuery = "INSERT INTO Scan_Session (" +
+                        "Session_Id, " +
+                        "Loc_Id_From, " +
+                        "Loc_Id_To, " +
+                        "Session_CreationDate) " +
+                        "VALUES (?, ?, ?, ?)";
+
+                try (PreparedStatement sessionStatement = connection.prepareStatement(sessionQuery)) {
+                    sessionStatement.setString(1, sessionId);
+                    sessionStatement.setString(2, fromLocationId);
+                    sessionStatement.setString(3, toLocationId);
+
+//                    java.util.Calendar calendar = java.util.Calendar.getInstance();
+//                    java.util.TimeZone utcTimeZone = java.util.TimeZone.getTimeZone("UTC");
+//                    calendar.setTimeZone(utcTimeZone);
+//                    Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
+//                    sessionStatement.setTimestamp(4, timestamp);
+
+                    sessionStatement.setTimestamp(4, new Timestamp(new Date().getTime()));
+                    sessionStatement.executeUpdate();
+                    connection.commit();
+                } catch (SQLException e) {
+                    connection.rollback();
+                    throw e; // Re-throw the exception to be handled later
+                } finally {
+                    connection.setAutoCommit(true);
+                }
+
+                // Step 2: Insert into Scan_Reading (individual transactions)
+                String readingQuery = "INSERT INTO Scan_Reading (" +
                         "Scan_Value, " +
                         "Scan_Type, " +
                         "Scan_Qty, " +
                         "Scan_DateUTC, " +
                         "Scan_DeviceSerialNumber, " +
                         "Loc_Id_From, " +
-                        "Loc_Id_To ) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                        "Loc_Id_To, " +
+                        "Session_Id) " +
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-                try(PreparedStatement statement = connection.prepareStatement(query)){
-                    int successCount = 0;
-                    for (int i = 0; i < scanDataToSend.size(); i++){
-                        Map<String, Object> data = scanDataToSend.get(i);
+                int successCount = 0;
+                for (int i = 0; i < scanDataToSend.size(); i++) {
+                    Map<String, Object> data = scanDataToSend.get(i);
 
-                        try {
-                            statement.setString(1, (String) data.get("scannedData"));
-                            statement.setString(2, (String) data.get("codeType"));
-                            statement.setFloat(3, (Float) data.get("scanCount"));
+                    // Start a new transaction for each scan
+                    connection.setAutoCommit(false);
+                    try (PreparedStatement readingStatement = connection.prepareStatement(readingQuery)) {
+                        readingStatement.setString(1, (String) data.get("scannedData"));
+                        readingStatement.setString(2, (String) data.get("codeType"));
+                        readingStatement.setFloat(3, (Float) data.get("scanCount"));
+                        // Parsing date to dateTime (sql server format)
+                        parseDateSqlServerFormat(data, readingStatement);
+                        readingStatement.setString(5, (String) data.get("deviceSerialNumber"));
+                        readingStatement.setString(6, (String) data.get("fromLocationId"));
+                        readingStatement.setString(7, (String) data.get("toLocationId"));
+                        readingStatement.setString(8, (String) data.get("sessionId"));
+                        readingStatement.executeUpdate();
+                        Log.d(TAG, "Scan Data sent to SQL Server " + data);
 
-                            // Parsing date to dateTime (sql server format)
-                            parseDateSqlServerFormat(data, statement);
+                        // Commit the transaction for this scan
+                        connection.commit();
 
-                            statement.setString(5, (String) data.get("deviceSerialNumber"));
-                            statement.setString(6, (String) data.get("fromLocationId"));
-                            statement.setString(7, (String) data.get("toLocationId"));
-                            statement.executeUpdate();
-                            Log.d(TAG, "Scan Data sent to SQL Server " + scanDataToSend);
-
-                            // Delete record from room is sent to server
-                            DeleteScanRecordFromRoom((String) data.get("scannedData"),
-                                                    (String) data.get("scanDate"));
-
-                            // Update the success count
-                            successCount++;
-
-                        } catch (SQLException e) {
-                            failedRecords.add(data);
+                        // Add the record to the list for deletion later
+                        ScanRecord scanRecord = scanRecordDao.getScanRecordByScannedData(
+                                (String) data.get("scannedData"), sessionId);
+                        if (scanRecord != null) {
+                            recordsToDelete.add(scanRecord);
                         }
-                        // Update the progress bar
-                        int progress = i + 1;
-                        handler.post(() -> {
-                            progressBar.setProgress(progress);
-                            progressText.setText("Progress: " + progress + "/" + total);
-                        });
-                        try {
-                            Thread.sleep(500); // 500ms delay
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt(); // Restore interrupt status
-                        }
+
+                        // Update the success count
+                        successCount++;
+
+                    } catch (SQLException e) {
+                        // Rollback the transaction for this scan
+                        connection.rollback();
+                        failedRecords.add(data);
+                    } finally {
+                        // Reset auto-commit for the next scan
+                        connection.setAutoCommit(true);
                     }
-                    // On success, update the UI
-                    int finalSuccessCount = successCount;
+                    // Update the progress bar
+                    int progress = i + 1;
                     handler.post(() -> {
-                        OnProcessComplete();
-                        clearScanSession();
-                        showSummary(finalSuccessCount, failedRecords.size(), total);
-                        Toast.makeText(ScanActivityMain.this,
-                                "Data sent successfully!",
-                                Toast.LENGTH_SHORT).show();
+                        progressBar.setProgress(progress);
+                        progressText.setText("Progress: " + progress + "/" + total);
                     });
+                    try {
+                        Thread.sleep(500); // 500ms delay
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt(); // Restore interrupt status
+                    }
                 }
+                // Step 3: Update Scan_Session
+                try {
+                    connection.setAutoCommit(false);
+                    String updateSessionQuery = "UPDATE Scan_Session SET Session_IsActive = 1 WHERE Session_Id = ?";
+                    try (PreparedStatement updateSessionStatement = connection.prepareStatement(updateSessionQuery)) {
+                        updateSessionStatement.setString(1, sessionId);
+                        updateSessionStatement.executeUpdate();
+                        connection.commit();
+                    }
+                } catch (SQLException e) {
+                    connection.rollback();
+                } finally {
+                    connection.setAutoCommit(true);
+                }
+                // Delete records from Room after successful SQL Server operations
+                for (ScanRecord record : recordsToDelete) {
+                    scanRecordDao.deleteScanRecord(record);
+                }
+                // On success, update the UI
+                int finalSuccessCount = successCount;
+                handler.post(() -> {
+                    OnProcessComplete();
+                    clearScanSession();
+                    showSummary(finalSuccessCount, failedRecords.size(), total);
+                    Toast.makeText(ScanActivityMain.this,
+                            "Data sent successfully!",
+                            Toast.LENGTH_SHORT).show();
+                });
             } catch (SQLException e) {
                 handler.post(() -> {
                     OnProcessComplete();
                     // To avoid showing both dialogs
-                    if (!scanDataList.isEmpty()){
+                    if (!scanDataList.isEmpty()) {
                         showSummary(0, scanDataToSend.size(), total);
                     }
-                        Toast.makeText(ScanActivityMain.this,
-                                "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                        // TODO: Handle what to show in case of error and actions to be taken
+                    Toast.makeText(ScanActivityMain.this,
+                            "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    // TODO: Handle what to show in case of error and actions to be taken
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
             }
@@ -360,7 +457,8 @@ public class ScanActivityMain extends AppCompatActivity implements
             String datePattern = "yyyy-MM-dd HH:mm:ss";
             SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern,
                     Locale.getDefault());
-            Date scanDate = dateFormat.parse((String) data.get("scanDate"));
+            Date scanDate = dateFormat.parse((String) Objects.requireNonNull(data.get("scanDate")));
+            assert scanDate != null;
             statement.setTimestamp(4, new Timestamp(scanDate.getTime()));
         } catch (ParseException e) {
             Log.e(TAG, "Error parsing date: " + e.getMessage());
@@ -369,22 +467,8 @@ public class ScanActivityMain extends AppCompatActivity implements
         }
     }
 
-    private void DeleteScanRecordFromRoom(String scannedData, String scanDate){
-        AppDatabase db = AppDatabase.getDatabase(this);
-        ScanRecordDao scanRecordDao = db.scanRecordDao();
-
-        // Find the corresponding ScanRecord in the Room database
-        new Thread(() -> {
-            scanRecordDao.deleteByScannedDataAndDate(scannedData, scanDate);
-            Log.d(TAG, "Scan record deleted from Room: " + scannedData);
-        }).start();
-    }
-
     private void saveScanDataToDatabase(List<ScanData> scanDataList, int saveType) {
         executor.execute(() -> {
-            AppDatabase db = AppDatabase.getDatabase(this);
-            ScanRecordDao scanRecordDao = db.scanRecordDao();
-
             List<ScanRecord> scanRecords = new ArrayList<>();
             for (ScanData scanData : scanDataList) {
                 ScanRecord scanRecord = new ScanRecord();
@@ -402,11 +486,15 @@ public class ScanActivityMain extends AppCompatActivity implements
                 scanRecord.saveType = saveType; // 0 for auto-save, 1 for manual save
                 scanRecord.isSentToServer = 0; // Initially not sent to server
                 scanRecord.sendAttemptCount = 0; // Initially no send attempts
-
+                scanRecord.sessionId = sessionId;
                 scanRecords.add(scanRecord);
             }
+            try {
                 List<Long> result = scanRecordDao.insertScanRecords(scanRecords);
                 Log.d(TAG, "Scan records inserted with IDs: " + result);
+            } catch (Exception e) {
+                Log.e(TAG, "Error inserting scan records: " + e.getMessage());
+            }
         });
     }
 
