@@ -2,6 +2,7 @@ package com.example.mafscan;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -63,6 +64,11 @@ public class DialogUtils {
         scanDateTextView.setText(scanData.getFormattedScanDate());
         quantityEditText.setText(String.valueOf(scanData.getScanCount())); // Default to existing quantity
 
+        InputFilter[] filters = new InputFilter[1];
+        filters[0] = new InputFilter.LengthFilter(10);
+        // limit field to 10 characters
+        quantityEditText.setFilters(filters);
+
         dialogBuilder.setView(dialogView);
         dialogBuilder.setCancelable(false);
 
@@ -73,9 +79,10 @@ public class DialogUtils {
 
             quantityString = quantityString.replace(",", ".");
 
-            if (quantityString.isEmpty() || !quantityString.matches("\\d+((\\.\\d{1,3})?)"))
+            if (quantityString.isEmpty() || !quantityString.matches("\\d{1,7}(\\.\\d{1,3})?"))
             {
-                quantityEditText.setError("Invalid quantity. Allow: 1; 1.123; ...");
+                quantityEditText.setError("Invalid quantity. Max (7) and (3) digits " +
+                        "Before and After the decimal point respectively.");
                 return;
             }
             try {
