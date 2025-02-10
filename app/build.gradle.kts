@@ -49,7 +49,6 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0-alpha04")
 
     // external lib and dependencies
-    implementation(files("libs/BT_A700.jar"))
     implementation("net.sourceforge.jtds:jtds:1.3.1")
     implementation("com.github.datalogic:datalogic-android-sdk:1.42")
 
