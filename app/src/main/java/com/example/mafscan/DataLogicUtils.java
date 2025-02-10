@@ -9,10 +9,10 @@ import com.datalogic.decode.ReadListener;
 import com.datalogic.device.DeviceException;
 import com.datalogic.device.info.SYSTEM;
 
-public class DatalogicUtils {
+public class DataLogicUtils {
     private static BarcodeManager mBarcodeManager;
     private static ScanListener mScanListener;
-    private static final String TAG = "DatalogicUtils";
+    private static final String TAG = "DataLogicUtils";
 
     /**
      * Interface to allow external handling of scanned data.

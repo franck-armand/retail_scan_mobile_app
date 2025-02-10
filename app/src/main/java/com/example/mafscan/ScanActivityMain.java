@@ -146,8 +146,8 @@ public class ScanActivityMain extends AppCompatActivity implements
         scanSessionDao = db.scanSessionDao();
 
         //Initialize scanner
-        if (DatalogicUtils.initializeScanner(this)) {
-            DatalogicUtils.setScanListener((scannedData, codeType) ->
+        if (DataLogicUtils.initializeScanner(this)) {
+            DataLogicUtils.setScanListener((scannedData, codeType) ->
                     runOnUiThread(() -> {
                         if (scannedData != null && !scannedData.isEmpty()) {
                             handleScannedData(scannedData, codeType);
@@ -243,7 +243,7 @@ public class ScanActivityMain extends AppCompatActivity implements
                 "Scanned Data: " + scannedData + "," +
                         " Code Type: " + codeType + "," +
                         " Date: " + now + "," +
-                        " Device Serial Number: " + DatalogicUtils.getDeviceInfo());
+                        " Device Serial Number: " + DataLogicUtils.getDeviceInfo());
     }
     private List<Map<String, Object>> retrieveAndFormatScanData() {
         List<Map<String, Object>> scanDataToSend = new ArrayList<>();
@@ -253,7 +253,7 @@ public class ScanActivityMain extends AppCompatActivity implements
             data.put("codeType", scanData.getCodeType());
             data.put("scanCount", scanData.getScanCount());
             data.put("scanDate", scanData.getFormattedScanDate());
-            data.put("deviceSerialNumber", DatalogicUtils.getDeviceInfo());
+            data.put("deviceSerialNumber", DataLogicUtils.getDeviceInfo());
             data.put("fromLocationId", fromLocationId);
             data.put("toLocationId", toLocationId);
             data.put("sessionId", sessionId);
@@ -490,7 +490,7 @@ public class ScanActivityMain extends AppCompatActivity implements
                 scanRecord.codeType = scanData.getCodeType();
                 scanRecord.scanCount = scanData.getScanCount();
                 scanRecord.scanDate = scanData.getFormattedScanDate();
-                scanRecord.deviceSerialNumber = DatalogicUtils.getDeviceInfo();
+                scanRecord.deviceSerialNumber = DataLogicUtils.getDeviceInfo();
                 scanRecord.fromLocationId = fromLocationId;
                 scanRecord.toLocationId = toLocationId;
                 scanRecord.fromLocationName = fromLocation;
@@ -524,8 +524,8 @@ public class ScanActivityMain extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         executor.shutdown();
-        DatalogicUtils.stopScanning();
-        DatalogicUtils.releaseScanner();
+        DataLogicUtils.stopScanning();
+        DataLogicUtils.releaseScanner();
 
     }
 

@@ -43,8 +43,8 @@ public class RetrieveScanInfo extends AppCompatActivity {
         scanCount = findViewById(R.id.qr_item_count);
 
         // Initialize scanner
-        if (DatalogicUtils.initializeScanner(this)) {
-            DatalogicUtils.setScanListener((scannedData, codeType) -> {
+        if (DataLogicUtils.initializeScanner(this)) {
+            DataLogicUtils.setScanListener((scannedData, codeType) -> {
                 runOnUiThread(() -> {
                     if (scannedData != null && !scannedData.isEmpty()) {
                         Log.d(TAG, "Scanned Data: " + scannedData + ", Code Type: " + codeType);
@@ -67,12 +67,12 @@ public class RetrieveScanInfo extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        DatalogicUtils.stopScanning();
+        DataLogicUtils.stopScanning();
     }
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        DatalogicUtils.releaseScanner();
+        DataLogicUtils.releaseScanner();
     }
     private void resetCounter() {
         count = 0;
