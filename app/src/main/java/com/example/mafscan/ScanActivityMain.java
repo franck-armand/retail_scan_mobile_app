@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -158,29 +159,37 @@ public class ScanActivityMain extends AppCompatActivity implements
         }
     }
 
-    private void createNewScanSession() {
+    private CompletableFuture<String> createNewScanSession() {
+        CompletableFuture<String> future = new CompletableFuture<>();
         executor.execute(() -> {
-            String newSessionId = UUID.randomUUID().toString();
-            ScanSession existingSession = scanSessionDao.getScanSessionById(newSessionId);
+            try {
+                String newSessionId = UUID.randomUUID().toString();
+                ScanSession existingSession = scanSessionDao.getScanSessionById(newSessionId);
 
-            while (existingSession != null) {
-                newSessionId = UUID.randomUUID().toString(); // Regenerate if duplicate
-                existingSession = scanSessionDao.getScanSessionById(newSessionId);
+                while (existingSession != null) {
+                    newSessionId = UUID.randomUUID().toString(); // Regenerate if duplicate
+                    existingSession = scanSessionDao.getScanSessionById(newSessionId);
+                }
+                sessionId = newSessionId;
+
+                ScanSession scanSession = new ScanSession();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS",
+                        Locale.getDefault());
+                dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                String formattedDate = dateFormat.format(new Date());
+
+                scanSession.sessionId = sessionId;
+                scanSession.sessionCreationDate = formattedDate;
+                long result = scanSessionDao.insertScanSession(scanSession);
+
+                Log.d(TAG, "Scan session created with ID: " + sessionId + " result: " + result);
+                future.complete(sessionId); // Complete the future with the sessionId
+            } catch (Exception e) {
+                Log.e(TAG, "Error creating scan session: " + e.getMessage());
+                future.completeExceptionally(e); // Complete the future exceptionally
             }
-            sessionId = newSessionId;
-
-            ScanSession scanSession = new ScanSession();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-                    Locale.getDefault());
-            dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-            String formattedDate = dateFormat.format(new Date());
-
-            scanSession.sessionId = sessionId;
-            scanSession.sessionCreationDate = formattedDate;
-            long result = scanSessionDao.insertScanSession(scanSession);
-
-            Log.d(TAG, "Scan session created with ID: " + sessionId + " result: " + result);
         });
+        return future;
     }
 
     @NonNull
@@ -247,6 +256,7 @@ public class ScanActivityMain extends AppCompatActivity implements
             data.put("deviceSerialNumber", DatalogicUtils.getDeviceInfo());
             data.put("fromLocationId", fromLocationId);
             data.put("toLocationId", toLocationId);
+            data.put("sessionId", sessionId);
             scanDataToSend.add(data);
             Log.d(TAG, "Scan Data to Send: " + scanDataToSend);
         }
@@ -254,13 +264,17 @@ public class ScanActivityMain extends AppCompatActivity implements
     }
     private void sendScanData() {
         // Create a new session in the database
-        createNewScanSession();
-        // Save all scan records to Room first
-        saveScanDataToDatabase(scanDataList, 0); // Auto-save
-        // Retrieve and format scan data to be sent to SQL server
-        List<Map<String, Object>> scanDataToSend = retrieveAndFormatScanData();
-        // establish database connection and send data
-        sendScanActivity(scanDataToSend);
+        createNewScanSession().thenAccept(sessionId -> {
+            // Save all scan records to Room first
+            saveScanDataToDatabase(scanDataList, 0); // Auto-save
+            // Retrieve and format scan data to be sent to SQL server
+            List<Map<String, Object>> scanDataToSend = retrieveAndFormatScanData();
+            // Establish database connection and send data
+            sendScanActivity(scanDataToSend);
+        }).exceptionally(e -> {
+            Log.e(TAG, "Error creating scan session: " + e.getMessage());
+            return null;
+        });
     }
 
     private void sendScanActivity(List<Map<String, Object>> scanDataToSend) {
@@ -454,7 +468,7 @@ public class ScanActivityMain extends AppCompatActivity implements
     private void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)
             throws SQLException {
         try {
-            String datePattern = "yyyy-MM-dd HH:mm:ss";
+            String datePattern = "yyyy-MM-dd HH:mm:ss:SSS";
             SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern,
                     Locale.getDefault());
             Date scanDate = dateFormat.parse((String) Objects.requireNonNull(data.get("scanDate")));
@@ -548,8 +562,13 @@ public class ScanActivityMain extends AppCompatActivity implements
     }
     private void enableUserInteraction() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        validateButton.setEnabled(true);
+        clearScanButton.setEnabled(true);
     }
     private void disableUserInteraction() {
+        // disable validate button
+        validateButton.setEnabled(false);
+        clearScanButton.setEnabled(false);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
