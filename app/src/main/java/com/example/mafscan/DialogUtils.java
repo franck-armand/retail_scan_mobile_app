@@ -2,7 +2,9 @@ package com.example.mafscan;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.text.Editable;
 import android.text.InputFilter;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -68,6 +70,29 @@ public class DialogUtils {
         filters[0] = new InputFilter.LengthFilter(10);
         // limit field to 10 characters
         quantityEditText.setFilters(filters);
+
+        // Clear text on focus and input
+        quantityEditText.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                quantityEditText.setText("");
+            }
+        });
+        quantityEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                // Not needed
+            }
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Not needed ( To set minimum length )
+            }
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (s.length() > 0) {
+                    quantityEditText.setSelection(s.length());
+                }
+            }
+        });
 
         dialogBuilder.setView(dialogView);
         dialogBuilder.setCancelable(false);
