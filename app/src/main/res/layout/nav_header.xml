@@ -10,9 +10,10 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <ImageView
-        android:layout_width="63dp"
-        android:layout_height="60dp"
-        android:src="@drawable/login" />
+        android:layout_width="61dp"
+        android:layout_height="67dp"
+        android:contentDescription=""
+        android:src="@drawable/baseline_account_circle_24" />
 
     <TextView
         android:id="@+id/userTitle"
