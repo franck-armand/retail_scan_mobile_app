@@ -100,9 +100,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new fragment_about()).commit();
         } else if (item.getItemId() == R.id.nav_login) {
-            Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new fragment_login()).commit();
+//            Toast.makeText(this, "Logout!", Toast.LENGTH_SHORT).show();
+//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+//                    new fragment_login()).commit();
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
