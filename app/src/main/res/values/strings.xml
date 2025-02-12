@@ -27,4 +27,12 @@
     <string name="scan_hint_message">Scan QR code to retrieve informations</string>
     <string name="scanned_hint_message">"Scanned Code Information"</string>
     <string name="sending_scans_to_server_dialog_msg">Sending scans to server...</string>
+    <string name="progress">progress</string>
+    <string name="slash">/</string>
+    <string name="progress_init">Progress: 0/ </string>
+    <string name="app">Navigation Drawer</string>
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment"> </string>
 </resources>

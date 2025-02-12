@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/baseline_home_24"
+            android:title="Home"/>
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_baseline_settings_24"
+            android:title="Settings"/>
+<!--        <item-->
+<!--            android:id="@+id/nav_share"-->
+<!--            android:icon="@drawable/nav_share"-->
+<!--            android:title="Share"/>-->
+        <item
+            android:id="@+id/nav_about"
+            android:icon="@drawable/ic_scan"
+            android:title="About MafScan"/>
+    </group>
+    <item
+        android:title="">
+        <menu>
+            <item
+                android:id="@+id/nav_login"
+                android:icon="@drawable/baseline_login_24"
+                android:title="LogIn"/>
+        </menu>
+    </item>
+
+</menu>
