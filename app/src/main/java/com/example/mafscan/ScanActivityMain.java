@@ -145,6 +145,9 @@ public class ScanActivityMain extends AppCompatActivity implements
         scanRecordDao = db.scanRecordDao();
         scanSessionDao = db.scanSessionDao();
 
+        // Enable scanner trigger
+        DataLogicUtils.setTriggersEnabled(true);
+
         //Initialize scanner
         if (DataLogicUtils.initializeScanner(this)) {
             DataLogicUtils.setScanListener((scannedData, codeType) ->
@@ -545,6 +548,7 @@ public class ScanActivityMain extends AppCompatActivity implements
             scanDataList.clear();
             validateButton.setVisibility(View.GONE);
         }
+        DataLogicUtils.setTriggersEnabled(true);
     }
 
     private void clearScanSession() {

@@ -42,6 +42,7 @@ public class RetrieveScanInfo extends AppCompatActivity {
         FloatingActionButton clearButton = findViewById(R.id.clear_scan_floating_action_Btn);
         scanCount = findViewById(R.id.qr_item_count);
 
+        DataLogicUtils.setTriggersEnabled(true);
         // Initialize scanner
         if (DataLogicUtils.initializeScanner(this)) {
             DataLogicUtils.setScanListener((scannedData, codeType) -> {
@@ -73,6 +74,12 @@ public class RetrieveScanInfo extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         DataLogicUtils.releaseScanner();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // TODO: Keep the scan result if any presents in the table
+        DataLogicUtils.setTriggersEnabled(true);
     }
     private void resetCounter() {
         count = 0;

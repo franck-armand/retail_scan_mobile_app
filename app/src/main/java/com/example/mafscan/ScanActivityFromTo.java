@@ -52,6 +52,9 @@ public class ScanActivityFromTo extends AppCompatActivity {
             getSupportActionBar().setTitle(title);
         }
 
+        // disable scanner trigger
+        DataLogicUtils.setTriggersEnabled(false);
+
         // Initialize views
         fromSpinner = findViewById(R.id.fromSpinner);
         toSpinner = findViewById(R.id.toSpinner);
@@ -180,6 +183,11 @@ public class ScanActivityFromTo extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         executor.shutdown();
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        DataLogicUtils.setTriggersEnabled(false);
     }
 }
 

@@ -6,8 +6,12 @@ import android.util.Log;
 import com.datalogic.decode.BarcodeManager;
 import com.datalogic.decode.DecodeResult;
 import com.datalogic.decode.ReadListener;
+import com.datalogic.decode.configuration.ScannerProperties;
 import com.datalogic.device.DeviceException;
+import com.datalogic.device.configuration.ConfigException;
 import com.datalogic.device.info.SYSTEM;
+import com.datalogic.device.input.KeyboardManager;
+import com.datalogic.device.input.Trigger;
 
 public class DataLogicUtils {
     private static BarcodeManager mBarcodeManager;
@@ -127,5 +131,49 @@ public class DataLogicUtils {
             return "Unknown Device";
         }
     }
+
+    /**
+     * Enables or disables all triggers.
+     *
+     * @param enable True to enable triggers, false to disable.
+     */
+    public static void setTriggersEnabled(boolean enable) {
+        KeyboardManager keyManager = new KeyboardManager();
+        try {
+            for (Trigger trigger : keyManager.getAvailableTriggers()) {
+                boolean result = trigger.setEnabled(enable);
+                if (result) {
+                    Log.d(TAG, "Trigger " + (enable ? "enabled" : "disabled") +
+                            " successfully");
+                } else {
+                    Log.e(TAG, "Failed to " + (enable ? "enable" : "disable") + " trigger");
+                }
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error " + (enable ? "enabling" : "disabling") + " triggers", e);
+        }
+    }
+
+    /**
+     * Enables or disables the keyboard wedge.
+     *
+     * @param enable True to enable the keyboard wedge, false to disable.
+     */
+//    public static void setKeyboardWedgeEnabled(boolean enable) {
+//        try {
+//            ScannerProperties configuration = ScannerProperties.edit(mBarcodeManager);
+//            configuration.keyboardWedge.enable.set(enable);
+//            int errorCode = configuration.store(mBarcodeManager, true);
+//            if (errorCode == ConfigException.SUCCESS) {
+//                Log.d(TAG, "Keyboard wedge " + (enable ? "enabled" : "disabled") +
+//                        " successfully");
+//            } else {
+//                Log.e(TAG, "Failed to " + (enable ? "enable" : "disable") +
+//                        " keyboard wedge, error code: " + errorCode);
+//            }
+//        } catch (Exception e) {
+//            Log.e(TAG, "Error " + (enable ? "enabling" : "disabling") + " keyboard wedge", e);
+//        }
+//    }
 
 }

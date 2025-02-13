@@ -29,6 +29,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // SplashScreen
         SplashScreen.installSplashScreen(this);
 
+        // Disable triggers initially
+        DataLogicUtils.setTriggersEnabled(false);
+
         // initialize Vibrator
         Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         final VibrationEffect clickVibration = VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK);
@@ -87,12 +90,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        DataLogicUtils.setTriggersEnabled(false);
+
+    }
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.nav_home) {
             Toast.makeText(this, "Not implemented yet!", Toast.LENGTH_SHORT).show();
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new fragment_home()).commit();
         } else if (item.getItemId() == R.id.nav_settings) {
+            Toast.makeText(this, "Not implemented yet!", Toast.LENGTH_SHORT).show();
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new fragment_settings()).commit();
         } else if (item.getItemId() == R.id.nav_about) {
