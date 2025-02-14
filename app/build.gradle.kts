@@ -1,18 +1,38 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     id("androidx.room")
+    alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.google.firebase.crashlytics)
 }
 
 android {
+    // keystore.properties file, in the rootProject folder.
+    val keystorePropertiesFile = rootProject.file("keystore.properties")
+    // Initialize a new Properties() object called keystoreProperties.
+    val keystoreProperties = Properties()
+    // Load keystore.properties file into the keystoreProperties object.
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+
+    signingConfigs {
+        create("release") {
+            storeFile = file(keystoreProperties["storeFile"] as String)
+            storePassword = keystoreProperties["storePassword"] as String
+            keyAlias = keystoreProperties["keyAlias"] as String
+            keyPassword = keystoreProperties["keyPassword"] as String
+        }
+    }
     namespace = "com.example.mafscan"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.mafscan"
+        applicationId = "com.maf.mafscan"
         minSdk = 30
         targetSdk = 33
         versionCode = 1
-        versionName = "1.0"
+        versionName = "14_02_25_V1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -35,6 +55,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.firebase.crashlytics)
     // To use room
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
