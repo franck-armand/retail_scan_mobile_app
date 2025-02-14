@@ -172,7 +172,6 @@ public class RetrieveScanInfo extends AppCompatActivity {
 
         tableRow.addView(keyTextView);
         tableRow.addView(valueTextView);
-        //tableRow.clearFocus();
         return tableRow;
     }
     private View createDivider() {
