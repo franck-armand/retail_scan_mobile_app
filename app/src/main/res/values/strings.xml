@@ -35,4 +35,14 @@
     <string name="close_nav">Close Navigation Drawer</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment"> </string>
+    <string name="login">Authentication</string>
+    <string name="ldap_auth">Windows Auth.</string>
+    <string name="scan_auth">Scan Auth.</string>
+    <string name="hint_username_ldap_auth">Enter your Username</string>
+    <string name="hint_password_ldap_password">Enter your Password</string>
+    <string name="forgot_password">Need help?</string>
+    <string name="authentication">Authentication</string>
+    <string name="scan_result_placeholder">Scan result will be displayed here</string>
+    <string name="clear_scan">Clear Scan</string>
+    <string name="ldap_hint_msg">"Enter your Username/Password (Windows Credentials) "</string>
 </resources>
