@@ -11,12 +11,16 @@ import com.datalogic.device.DeviceException;
 import com.datalogic.device.configuration.ConfigException;
 import com.datalogic.device.info.SYSTEM;
 import com.datalogic.device.input.KeyboardManager;
+import com.datalogic.device.input.MotionTrigger;
 import com.datalogic.device.input.Trigger;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class DataLogicUtils {
     private static BarcodeManager mBarcodeManager;
     private static ScanListener mScanListener;
-    private static final String TAG = "DataLogicUtils";
+    private static final String TAG = DataLogicUtils.class.getName();
 
     /**
      * Interface to allow external handling of scanned data.
@@ -133,26 +137,43 @@ public class DataLogicUtils {
     }
 
     /**
-     * Enables or disables all triggers.
+     * Enables or disables specific triggers based on a list of allowed triggers.
      *
-     * @param enable True to enable triggers, false to disable.
+     * @param enable True to enable triggers in the allowed list, false to disable all.
      */
     public static void setTriggersEnabled(boolean enable) {
         KeyboardManager keyManager = new KeyboardManager();
+        // List of allowed triggers
+        List<String> allowedTriggers = Arrays.asList("Right Trigger", "Pistol Trigger", "Left Trigger");
         try {
             for (Trigger trigger : keyManager.getAvailableTriggers()) {
-                boolean result = trigger.setEnabled(enable);
-                if (result) {
-                    Log.d(TAG, "Trigger " + (enable ? "enabled" : "disabled") +
-                            " successfully");
-                } else {
-                    Log.e(TAG, "Failed to " + (enable ? "enable" : "disable") + " trigger");
+                // Get the trigger name
+                String triggerName = trigger.getName();
+                // Log the trigger name
+                Log.d(TAG, "Available Trigger Name: " + triggerName);
+                // Check if the trigger is a MotionTrigger
+                if (trigger instanceof MotionTrigger) {
+                    // Cast to MotionTrigger and disable it
+                    MotionTrigger motionTrigger = (MotionTrigger) trigger;
+                    motionTrigger.setEnabled(false);
+                    Log.d(TAG, "Motion Trigger disabled successfully");
+                }
+                // Check if the trigger is in the allowed list
+                if (allowedTriggers.contains(triggerName)) {
+                    boolean result = trigger.setEnabled(enable);
+                    if (result) {
+                        Log.d(TAG, triggerName + " " + (enable ? "enabled" : "disabled") +
+                                " successfully");
+                    } else {
+                        Log.e(TAG, "Failed to " + (enable ? "enable" : "disable") + " " + triggerName);
+                    }
                 }
             }
         } catch (Exception e) {
             Log.e(TAG, "Error " + (enable ? "enabling" : "disabling") + " triggers", e);
         }
     }
+
 
     /**
      * Enables or disables the keyboard wedge.

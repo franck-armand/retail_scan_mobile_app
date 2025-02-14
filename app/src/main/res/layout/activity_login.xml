@@ -95,7 +95,7 @@
                     app:endIconMode="clear_text" >
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/usernameEditText"
+                        android:id="@+id/ldapUsernameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="text"
@@ -112,7 +112,7 @@
                     app:endIconMode="password_toggle">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/passwordEditText"
+                        android:id="@+id/ldapPasswordEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="textPassword"
@@ -167,7 +167,7 @@
                     app:startIconDrawable="@drawable/ic_scan">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/scanUsernameResult"
+                        android:id="@+id/scanUsernameEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:inputType="none"
@@ -181,7 +181,8 @@
                     android:layout_marginTop="32dp"
                     android:textColor="@android:color/black"
                     android:textStyle="bold"
-                    android:text="@string/authentication" />
+                    android:text="@string/authentication"
+                    android:enabled="false"/>
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
