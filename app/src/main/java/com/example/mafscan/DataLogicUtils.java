@@ -6,8 +6,10 @@ import android.util.Log;
 import com.datalogic.decode.BarcodeManager;
 import com.datalogic.decode.DecodeResult;
 import com.datalogic.decode.ReadListener;
+import com.datalogic.decode.configuration.CharacterSetMode;
 import com.datalogic.decode.configuration.ScannerProperties;
 import com.datalogic.device.DeviceException;
+import com.datalogic.device.ErrorManager;
 import com.datalogic.device.configuration.ConfigException;
 import com.datalogic.device.info.SYSTEM;
 import com.datalogic.device.input.KeyboardManager;
@@ -27,6 +29,34 @@ public class DataLogicUtils {
      */
     public interface ScanListener {
         void onScan(String scannedData, String codeType);
+    }
+
+    static {
+        try {
+            BarcodeManager manager = new BarcodeManager();
+            ScannerProperties configuration = ScannerProperties.edit(manager);
+
+            configuration.format.labelSuffix.set("");
+            configuration.format.labelPrefix.set("");
+
+            configuration.goodread.goodReadEnable.set(true);
+            configuration.goodread.goodReadLedEnable.set(true);
+            configuration.goodread.greenSpotEnable.set(true);
+            configuration.goodread.goodReadVibrateEnable.set(true);
+
+            configuration.code128.characterSetMode.set(CharacterSetMode.UTF_8);
+            configuration.qrCode.characterSetMode.set(CharacterSetMode.UTF_8);
+            configuration.microQr.characterSetMode.set(CharacterSetMode.UTF_8);
+
+            Integer e = ErrorManager.enableExceptions(false);
+            int errorCode = configuration.store(manager, true);
+
+            if (errorCode != ConfigException.SUCCESS) {
+                Log.e(TAG, "Error during store", ErrorManager.getLastError());
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error during static initialization", e);
+        }
     }
 
     /**
@@ -175,11 +205,11 @@ public class DataLogicUtils {
     }
 
 
-    /**
-     * Enables or disables the keyboard wedge.
-     *
-     * @param enable True to enable the keyboard wedge, false to disable.
-     */
+//    /**
+//     * Enables or disables the keyboard wedge.
+//     *
+//     * @param enable True to enable the keyboard wedge, false to disable.
+//     */
 //    public static void setKeyboardWedgeEnabled(boolean enable) {
 //        try {
 //            ScannerProperties configuration = ScannerProperties.edit(mBarcodeManager);
