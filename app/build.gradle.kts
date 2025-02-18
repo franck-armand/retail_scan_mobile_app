@@ -55,7 +55,15 @@ android {
 }
 
 dependencies {
-    implementation(libs.firebase.crashlytics)
+    //implementation(libs.firebase.crashlytics)
+    // Import the BoM for the Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+
+    // Add the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation("com.google.firebase:firebase-crashlytics")
+    implementation("com.google.firebase:firebase-analytics")
+
     // To use room
     val room_version = "2.6.1"
     implementation("androidx.room:room-runtime:$room_version")
