@@ -1,7 +1,5 @@
 package com.example.mafscan;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -24,7 +22,6 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -47,7 +44,6 @@ public class ScanActivityFromTo extends AppCompatActivity implements
     private Spinner fromSpinner, toSpinner;
     private TextView fromDescription, toDescription;
     private TabLayout tabLayout;
-    private TextInputLayout fromQrCodeTextInputLayout, toQrCodeTextInputLayout;
     private LinearLayout spinnerLayout, qrCodeLayout;
     private Button validateButton;
     private ImageButton fromDeleteButton, toDeleteButton;
@@ -90,8 +86,6 @@ public class ScanActivityFromTo extends AppCompatActivity implements
         fromDeleteButton = findViewById(R.id.fromDeleteButton);
         toDeleteButton = findViewById(R.id.toDeleteButton);
         validateButton = findViewById(R.id.validateButton);
-//        fromQrCodeTextInputLayout = findViewById(R.id.fromQrCodeTextInputLayout);
-//        toQrCodeTextInputLayout = findViewById(R.id.toQrCodeTextInputLayout);
         tabLayout = findViewById(R.id.tabLayoutFromTo);
         tabLayout.addOnTabSelectedListener(this);
 
@@ -109,7 +103,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             updateDeleteButtonVisibility();
             updateScanButtonState();
         });
-        findViewById(R.id.validateButton).setOnClickListener(v -> {
+        validateButton.setOnClickListener(v -> {
             String fromLocation;
             String toLocation;
             if (spinnerLayout.getVisibility() == View.VISIBLE) {
@@ -118,12 +112,6 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             } else {
                 fromLocation = Objects.requireNonNull(fromQrCodeEditText.getText()).toString().trim();
                 toLocation = Objects.requireNonNull(toQrCodeEditText.getText()).toString().trim();
-                // TODO:Set the values with the right data later after parsing the QR Code data
-                fromLocationId = "FROMQRCODE";
-                fromLocationCode = "FROMQRCODE";
-                toLocationId = "TOQRCODE";
-                toLocationCode = "TOQRCODE";
-                Log.d(TAG, "From QR Code: " + fromLocation + ", To QR Code: " + toLocation);
             }
 
             if (fromLocation.equals(toLocation)) {
@@ -138,17 +126,30 @@ public class ScanActivityFromTo extends AppCompatActivity implements
                 );
             }
             else {
-                Log.d(TAG, "Start Scanning: From Location: " + fromLocation + "," +
-                        " To Location: " + toLocation);
-                // Navigate to scanning activity
-                Intent intent = new Intent(ScanActivityFromTo.this, ScanActivityMain.class);
-                intent.putExtra("fromLocation", fromLocation);
-                intent.putExtra("toLocation", toLocation);
-                intent.putExtra("fromLocationId", fromLocationId);
-                intent.putExtra("fromLocationCode", fromLocationCode);
-                intent.putExtra("toLocationId", toLocationId);
-                intent.putExtra("toLocationCode", toLocationCode);
-                startActivity(intent);
+                // Check if the fromLocationId and toLocationId are the same
+                if (Objects.equals(fromLocationId, toLocationId)) {
+                    DialogUtils.showInvalidSelectionDialog(
+                            this,
+                            "Invalid Selection",
+                            "The 'From' and 'To' locations cannot be the same.",
+                            "Retry",
+                            (dialog, which) -> dialog.dismiss(),
+                            null,
+                            null
+                    );
+                } else {
+                    Log.d(TAG, "Start Scanning: From Location: " + fromLocation + "," +
+                            " To Location: " + toLocation);
+                    // Navigate to scanning activity
+                    Intent intent = new Intent(ScanActivityFromTo.this, ScanActivityMain.class);
+                    intent.putExtra("fromLocation", fromLocation);
+                    intent.putExtra("toLocation", toLocation);
+                    intent.putExtra("fromLocationId", fromLocationId);
+                    intent.putExtra("fromLocationCode", fromLocationCode);
+                    intent.putExtra("toLocationId", toLocationId);
+                    intent.putExtra("toLocationCode", toLocationCode);
+                    startActivity(intent);
+                }
             }
         });
 
@@ -352,11 +353,42 @@ public class ScanActivityFromTo extends AppCompatActivity implements
     }
 
     private void parseScannedData(String scannedData) {
-        // TODO : Place holder to format the scan result accordingly later
-        // Split the data into key-value pairs
+        // Format: (00)LOC|(10)0F6B321C-8E4E-41BD-B9B3-06A0B5DC9352|(11)PNT-M1|(12)MALTE
+        if(!scannedData.startsWith("(00)LOC")){
+            Toast.makeText(this, "Invalid QR Code: Not a location code", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // Parse the scanned data
+        Map<String, String> parsedData = new HashMap<>();
         String[] pairs = scannedData.trim().split("\\|");
-        fromQrCodeEditText.setText(scannedData.trim());
-        toQrCodeEditText.setText(scannedData.trim());
+        for (String pair : pairs) {
+            if (pair.startsWith("(") && pair.contains(")")) {
+                int keyEndIndex = pair.indexOf(')');
+                String key = pair.substring(1, keyEndIndex);
+                String value = pair.substring(keyEndIndex + 1);
+                parsedData.put(key, value);
+            }
+        }
+        // Extract location details
+        String locationId = Objects.requireNonNull(parsedData.get("10")).trim();
+        String locationCode = Objects.requireNonNull(parsedData.get("11")).trim();
+        String locationName = Objects.requireNonNull(parsedData.get("12")).trim();
+
+        // Which field to update
+        if (Objects.requireNonNull(fromQrCodeEditText.getText()).toString().trim().isEmpty()) {
+            fromQrCodeEditText.setText(locationName);
+            fromLocationId = locationId;
+            fromLocationCode = locationCode;
+        } else if (Objects.requireNonNull(toQrCodeEditText.getText()).toString().trim().isEmpty()) {
+            toQrCodeEditText.setText(locationName);
+            toLocationId = locationId;
+            toLocationCode = locationCode;
+        } else {
+            Toast.makeText(this, "Both 'From' and 'To' fields are full",
+                    Toast.LENGTH_LONG).show();
+        }
+        updateDeleteButtonVisibility();
+        updateScanButtonState();
     }
 
     @Override
