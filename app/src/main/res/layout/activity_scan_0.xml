@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_gray">
+    android:background="@color/light_gray"
+    tools:context=".ScanActivityFromTo">
 
     <!-- App Bar -->
     <androidx.appcompat.widget.Toolbar
@@ -29,18 +31,19 @@
         android:paddingHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar_scan0"
         app:layout_constraintVertical_bias="0.0">
 
         <!-- TabLayout -->
         <com.google.android.material.tabs.TabLayout
-            android:id="@+id/tabLayout"
+            android:id="@+id/tabLayoutFromTo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -59,9 +62,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/tabLayoutFromTo">
 
             <!-- From Dropdown -->
             <TextView
@@ -145,11 +148,13 @@
             android:id="@+id/qrCodeLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusableInTouchMode="true"
             android:orientation="vertical"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/tabLayout"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/tabLayoutFromTo">
 
             <!-- From QR Code -->
             <TextView
@@ -162,21 +167,39 @@
                 android:textSize="15sp"
                 android:textStyle="bold|italic" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/fromQrCodeTextInputLayout"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:hint="@string/scan_0_from_hint"
-                app:startIconDrawable="@drawable/ic_scan">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/fromQrCodeEditText"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/fromQrCodeTextInputLayout"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:textStyle="bold"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    android:hint="@string/scan_0_from_hint"
+                    app:startIconDrawable="@drawable/ic_scan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/fromQrCodeEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/fromDeleteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/clear_from_field"
+                    android:padding="5dp"
+                    android:src="@drawable/round_delete_forever_24"/>
+            </LinearLayout>
 
             <!-- To QR Code -->
             <TextView
@@ -189,34 +212,53 @@
                 android:textSize="15sp"
                 android:textStyle="bold|italic" />
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/toQrCodeTextInputLayout"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:hint="@string/scan_0_to_hint"
-                app:startIconDrawable="@drawable/ic_scan">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/toQrCodeEditText"
-                    android:layout_width="match_parent"
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/toQrCodeTextInputLayout"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:textStyle="bold" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_weight="1"
+                    android:hint="@string/scan_0_to_hint"
+                    app:startIconDrawable="@drawable/ic_scan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/toQrCodeEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/toDeleteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/clear_to_field"
+                    android:padding="5dp"
+                    android:src="@drawable/round_delete_forever_24" />
+            </LinearLayout>
         </LinearLayout>
+
         <Button
             android:id="@+id/validateButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="32dp"
+            android:enabled="false"
             android:maxWidth="310dp"
             android:minHeight="60dp"
             android:text="@string/scan_0_validate"
             android:textColor="@android:color/black"
             android:textStyle="bold"
-            android:enabled="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
