@@ -115,28 +115,12 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             }
 
             if (fromLocation.equals(toLocation)) {
-                DialogUtils.showInvalidSelectionDialog(
-                        this,
-                        "Invalid Selection",
-                        "The 'From' and 'To' locations cannot be the same.",
-                        "Retry",
-                        (dialog, which) -> dialog.dismiss(),
-                        null,
-                        null
-                );
+                callInvalidSelectionDialog();
             }
             else {
                 // Check if the fromLocationId and toLocationId are the same
                 if (Objects.equals(fromLocationId, toLocationId)) {
-                    DialogUtils.showInvalidSelectionDialog(
-                            this,
-                            "Invalid Selection",
-                            "The 'From' and 'To' locations cannot be the same.",
-                            "Retry",
-                            (dialog, which) -> dialog.dismiss(),
-                            null,
-                            null
-                    );
+                    callInvalidSelectionDialog();
                 } else {
                     Log.d(TAG, "Start Scanning: From Location: " + fromLocation + "," +
                             " To Location: " + toLocation);
@@ -156,6 +140,18 @@ public class ScanActivityFromTo extends AppCompatActivity implements
         // Set initial validate button state
         updateDeleteButtonVisibility();
         updateScanButtonState();
+    }
+
+    private void callInvalidSelectionDialog() {
+        DialogUtils.showInvalidSelectionDialog(
+                this,
+                "Invalid Selection",
+                "The 'From' and 'To' locations cannot be the same.",
+                "Retry",
+                (dialog, which) -> dialog.dismiss(),
+                null,
+                null
+        );
     }
 
     @Override
@@ -185,8 +181,8 @@ public class ScanActivityFromTo extends AppCompatActivity implements
     }
 
     private void clearSetAndDisableField() {
-        fromQrCodeEditText.setText("");
-        toQrCodeEditText.setText("");
+//        fromQrCodeEditText.setText("");
+//        toQrCodeEditText.setText("");
         updateDeleteButtonVisibility();
     }
 
@@ -355,7 +351,8 @@ public class ScanActivityFromTo extends AppCompatActivity implements
     private void parseScannedData(String scannedData) {
         // Format: (00)LOC|(10)0F6B321C-8E4E-41BD-B9B3-06A0B5DC9352|(11)PNT-M1|(12)MALTE
         if(!scannedData.startsWith("(00)LOC")){
-            Toast.makeText(this, "Invalid QR Code: Not a location code", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Invalid QR Code: Not a location code",
+                    Toast.LENGTH_SHORT).show();
             return;
         }
         // Parse the scanned data
