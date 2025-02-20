@@ -1,5 +1,7 @@
 package com.example.mafscan;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -21,6 +24,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -42,8 +46,11 @@ public class ScanActivityFromTo extends AppCompatActivity implements
     private String toLocationCode;
     private Spinner fromSpinner, toSpinner;
     private TextView fromDescription, toDescription;
+    private TabLayout tabLayout;
+    private TextInputLayout fromQrCodeTextInputLayout, toQrCodeTextInputLayout;
     private LinearLayout spinnerLayout, qrCodeLayout;
     private Button validateButton;
+    private ImageButton fromDeleteButton, toDeleteButton;
     private TextInputEditText fromQrCodeEditText, toQrCodeEditText;
     private final HashMap<String, Map<String, String>> locationMap = new HashMap<>();
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
@@ -80,12 +87,28 @@ public class ScanActivityFromTo extends AppCompatActivity implements
         toQrCodeEditText = findViewById(R.id.toQrCodeEditText);
         fromQrCodeEditText.addTextChangedListener(OfflineTextWatcher);
         toQrCodeEditText.addTextChangedListener(OfflineTextWatcher);
+        fromDeleteButton = findViewById(R.id.fromDeleteButton);
+        toDeleteButton = findViewById(R.id.toDeleteButton);
         validateButton = findViewById(R.id.validateButton);
+//        fromQrCodeTextInputLayout = findViewById(R.id.fromQrCodeTextInputLayout);
+//        toQrCodeTextInputLayout = findViewById(R.id.toQrCodeTextInputLayout);
+        tabLayout = findViewById(R.id.tabLayoutFromTo);
+        tabLayout.addOnTabSelectedListener(this);
 
         // Loading data to spinners
         loadLocations();
 
         // Handle button click
+        fromDeleteButton.setOnClickListener(v -> {
+            fromQrCodeEditText.setText("");
+            updateDeleteButtonVisibility();
+            updateScanButtonState();
+        });
+        toDeleteButton.setOnClickListener(v -> {
+            toQrCodeEditText.setText("");
+            updateDeleteButtonVisibility();
+            updateScanButtonState();
+        });
         findViewById(R.id.validateButton).setOnClickListener(v -> {
             String fromLocation;
             String toLocation;
@@ -95,6 +118,12 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             } else {
                 fromLocation = Objects.requireNonNull(fromQrCodeEditText.getText()).toString().trim();
                 toLocation = Objects.requireNonNull(toQrCodeEditText.getText()).toString().trim();
+                // TODO:Set the values with the right data later after parsing the QR Code data
+                fromLocationId = "FROMQRCODE";
+                fromLocationCode = "FROMQRCODE";
+                toLocationId = "TOQRCODE";
+                toLocationCode = "TOQRCODE";
+                Log.d(TAG, "From QR Code: " + fromLocation + ", To QR Code: " + toLocation);
             }
 
             if (fromLocation.equals(toLocation)) {
@@ -107,7 +136,8 @@ public class ScanActivityFromTo extends AppCompatActivity implements
                         null,
                         null
                 );
-            } else {
+            }
+            else {
                 Log.d(TAG, "Start Scanning: From Location: " + fromLocation + "," +
                         " To Location: " + toLocation);
                 // Navigate to scanning activity
@@ -121,11 +151,9 @@ public class ScanActivityFromTo extends AppCompatActivity implements
                 startActivity(intent);
             }
         });
-        // Set up TabLayout
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
-        tabLayout.addOnTabSelectedListener(this);
 
         // Set initial validate button state
+        updateDeleteButtonVisibility();
         updateScanButtonState();
     }
 
@@ -146,6 +174,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             updateScanButtonState();
         }
     }
+
     @Override
     public void onTabUnselected(TabLayout.Tab tab) {
     }
@@ -157,8 +186,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
     private void clearSetAndDisableField() {
         fromQrCodeEditText.setText("");
         toQrCodeEditText.setText("");
-        fromQrCodeEditText.setEnabled(false);
-        toQrCodeEditText.setEnabled(false);
+        updateDeleteButtonVisibility();
     }
 
     private void updateScanButtonState() {
@@ -297,8 +325,24 @@ public class ScanActivityFromTo extends AppCompatActivity implements
         @Override
         public void afterTextChanged(Editable s) {
             updateScanButtonState();
+            updateDeleteButtonVisibility();
         }
     };
+
+    private void updateDeleteButtonVisibility() {
+        // Check if the fromQrCodeEditText has text
+        if (Objects.requireNonNull(fromQrCodeEditText.getText()).length() > 0) {
+            fromDeleteButton.setVisibility(View.VISIBLE);
+        } else {
+            fromDeleteButton.setVisibility(View.GONE);
+        }
+        // Check if the toQrCodeEditText has text
+        if (Objects.requireNonNull(toQrCodeEditText.getText()).length() > 0) {
+            toDeleteButton.setVisibility(View.VISIBLE);
+        } else {
+            toDeleteButton.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public void onScan(String scannedData, String codeType) {
@@ -323,7 +367,14 @@ public class ScanActivityFromTo extends AppCompatActivity implements
 
     @Override
     protected void onResume() {
+        // TODO: On resume Scanner not working, must be fixed later
         super.onResume();
-        DataLogicUtils.setTriggersEnabled(qrCodeLayout.getVisibility() == View.VISIBLE);
+        if (tabLayout.getSelectedTabPosition() == 1) { // Offline Mode
+            Log.d(TAG, "Enable Trigger: ");
+            DataLogicUtils.setTriggersEnabled(true);
+        } else {
+            Log.d(TAG, "Disable Trigger: ");
+            DataLogicUtils.setTriggersEnabled(false);
+        }
     }
 }
