@@ -136,6 +136,10 @@ public class ScanActivityFromTo extends AppCompatActivity implements
                 }
             }
         });
+        // Select the second tab (Offline Mode) by default
+        Objects.requireNonNull(tabLayout.getTabAt(1)).select();
+        // Set the initial state of the tab
+        onTabSelected(Objects.requireNonNull(tabLayout.getTabAt(1)));
 
         // Set initial validate button state
         updateDeleteButtonVisibility();
