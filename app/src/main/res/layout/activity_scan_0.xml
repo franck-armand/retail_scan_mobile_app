@@ -197,7 +197,7 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/clear_from_field"
-                    android:padding="5dp"
+                    android:padding="1dp"
                     android:src="@drawable/round_delete_forever_24"/>
             </LinearLayout>
 
@@ -242,7 +242,7 @@
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="@string/clear_to_field"
-                    android:padding="5dp"
+                    android:padding="1dp"
                     android:src="@drawable/round_delete_forever_24" />
             </LinearLayout>
         </LinearLayout>
