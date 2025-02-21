@@ -46,7 +46,7 @@ public class LoginActivity extends AppCompatActivity implements
         ldapUsernameEditText.addTextChangedListener(LoginTextWatcher);
         ldapPasswordEditText.addTextChangedListener(LoginTextWatcher);
 
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        TabLayout tabLayout = findViewById(R.id.tabLayoutFromTo);
         tabLayout.addOnTabSelectedListener(this);
 
         ldapLayout = findViewById(R.id.ldapLayout);
