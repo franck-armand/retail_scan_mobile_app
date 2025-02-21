@@ -96,12 +96,12 @@ public class ScanActivityFromTo extends AppCompatActivity implements
         fromDeleteButton.setOnClickListener(v -> {
             fromQrCodeEditText.setText("");
             updateDeleteButtonVisibility();
-            updateScanButtonState();
+            updateValidateButtonState();
         });
         toDeleteButton.setOnClickListener(v -> {
             toQrCodeEditText.setText("");
             updateDeleteButtonVisibility();
-            updateScanButtonState();
+            updateValidateButtonState();
         });
         validateButton.setOnClickListener(v -> {
             String fromLocation;
@@ -136,6 +136,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
                 }
             }
         });
+
         // Select the second tab (Offline Mode) by default
         Objects.requireNonNull(tabLayout.getTabAt(1)).select();
         // Set the initial state of the tab
@@ -143,7 +144,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
 
         // Set initial validate button state
         updateDeleteButtonVisibility();
-        updateScanButtonState();
+        updateValidateButtonState();
     }
 
     private void callInvalidSelectionDialog() {
@@ -163,7 +164,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
         if (tab.getPosition() == 0) { // Online Mode
             spinnerLayout.setVisibility(View.VISIBLE);
             qrCodeLayout.setVisibility(View.GONE);
-            updateScanButtonState();
+            updateValidateButtonState();
             // Disable triggers for Online Mode
             DataLogicUtils.setTriggersEnabled(false);
         } else if (tab.getPosition() == 1) { // Offline Mode
@@ -172,7 +173,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             // Enable triggers for Offline Mode
             DataLogicUtils.setTriggersEnabled(true);
             clearSetAndDisableField();
-            updateScanButtonState();
+            updateValidateButtonState();
         }
     }
 
@@ -190,7 +191,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
         updateDeleteButtonVisibility();
     }
 
-    private void updateScanButtonState() {
+    private void updateValidateButtonState() {
         String currentFromLocation = "";
         String currentToLocation = "";
         if (spinnerLayout.getVisibility() == View.VISIBLE) {
@@ -200,7 +201,8 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             }
             validateButton.setEnabled(!currentFromLocation.isEmpty() && !currentToLocation.isEmpty());
 
-        } else if (qrCodeLayout.getVisibility() == View.VISIBLE) {
+        }
+        else if (qrCodeLayout.getVisibility() == View.VISIBLE) {
             if (fromQrCodeEditText.getText() != null && toQrCodeEditText.getText() != null) {
                 currentFromLocation = Objects.requireNonNull(fromQrCodeEditText.getText()).toString().trim();
                 currentToLocation = Objects.requireNonNull(toQrCodeEditText.getText()).toString().trim();
@@ -276,13 +278,13 @@ public class ScanActivityFromTo extends AppCompatActivity implements
                     fromLocationId = null;
                     fromLocationCode = null;
                 }
-                updateScanButtonState();
+                updateValidateButtonState();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 fromDescription.setText("");
-                updateScanButtonState();
+                updateValidateButtonState();
             }
         });
 
@@ -303,13 +305,13 @@ public class ScanActivityFromTo extends AppCompatActivity implements
                     toLocationId = null;
                     toLocationCode = null;
                 }
-                updateScanButtonState();
+                updateValidateButtonState();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
                 toDescription.setText("");
-                updateScanButtonState();
+                updateValidateButtonState();
             }
         });
     }
@@ -325,7 +327,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
         }
         @Override
         public void afterTextChanged(Editable s) {
-            updateScanButtonState();
+            updateValidateButtonState();
             updateDeleteButtonVisibility();
         }
     };
@@ -380,16 +382,18 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             fromQrCodeEditText.setText(locationName);
             fromLocationId = locationId;
             fromLocationCode = locationCode;
-        } else if (Objects.requireNonNull(toQrCodeEditText.getText()).toString().trim().isEmpty()) {
+        }
+        else if (Objects.requireNonNull(toQrCodeEditText.getText()).toString().trim().isEmpty()) {
             toQrCodeEditText.setText(locationName);
             toLocationId = locationId;
             toLocationCode = locationCode;
-        } else {
+        }
+        else {
             Toast.makeText(this, "Both 'From' and 'To' fields are full",
                     Toast.LENGTH_LONG).show();
         }
         updateDeleteButtonVisibility();
-        updateScanButtonState();
+        updateValidateButtonState();
     }
 
     @Override
@@ -400,14 +404,24 @@ public class ScanActivityFromTo extends AppCompatActivity implements
 
     @Override
     protected void onResume() {
-        // TODO: On resume Scanner not working, must be fixed later
         super.onResume();
         if (tabLayout.getSelectedTabPosition() == 1) { // Offline Mode
-            Log.d(TAG, "Enable Trigger: ");
+            // Re-initialize the scanner
+            Log.d(TAG, "Init Scanner: ");
+            DataLogicUtils.initializeScanner(this);
+            // Re-initialize the DataLogicUtils
+            Log.d(TAG, "Set Listener: ");
+            DataLogicUtils.setScanListener(this);
+            Log.d(TAG, "Offline mode Scan resumed: ");
             DataLogicUtils.setTriggersEnabled(true);
         } else {
-            Log.d(TAG, "Disable Trigger: ");
+            Log.d(TAG, "Online mode Scan resumed: ");
             DataLogicUtils.setTriggersEnabled(false);
         }
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DataLogicUtils.setTriggersEnabled(false);
     }
 }
