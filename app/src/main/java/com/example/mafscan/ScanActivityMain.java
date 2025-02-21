@@ -528,8 +528,14 @@ public class ScanActivityMain extends AppCompatActivity implements
         super.onDestroy();
         executor.shutdown();
         DataLogicUtils.stopScanning();
-        DataLogicUtils.releaseScanner();
+        //DataLogicUtils.releaseScanner();
 
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        DataLogicUtils.setTriggersEnabled(false);
     }
 
     @Override
