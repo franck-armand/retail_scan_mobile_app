@@ -69,6 +69,7 @@ public class RetrieveScanInfo extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         DataLogicUtils.stopScanning();
+        DataLogicUtils.setTriggersEnabled(false);
     }
     @Override
     protected void onDestroy() {
@@ -157,7 +158,7 @@ public class RetrieveScanInfo extends AppCompatActivity {
         keyTextView.setLayoutParams(new TableRow.LayoutParams(
                 0,
                 TableRow.LayoutParams.WRAP_CONTENT,
-                1f
+                0.2f
         ));
 
         TextView valueTextView = new TextView(this);
@@ -167,7 +168,7 @@ public class RetrieveScanInfo extends AppCompatActivity {
         valueTextView.setLayoutParams(new TableRow.LayoutParams(
                 0,
                 TableRow.LayoutParams.WRAP_CONTENT,
-                1f
+                0.8f
         ));
 
         tableRow.addView(keyTextView);
