@@ -10,13 +10,16 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class RetrieveScanInfo extends AppCompatActivity {
@@ -24,6 +27,8 @@ public class RetrieveScanInfo extends AppCompatActivity {
     private TableLayout tableLayout;
     private TextView scanCount;
     private int count = 0;
+    private final List<String> scanDataList = new ArrayList<>();
+    private static final String SCAN_DATA_KEY = "scan_data";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +47,26 @@ public class RetrieveScanInfo extends AppCompatActivity {
         FloatingActionButton clearButton = findViewById(R.id.clear_scan_floating_action_Btn);
         scanCount = findViewById(R.id.qr_item_count);
 
+        // Restore the saved data on resume or pause if present
+        if (savedInstanceState != null) {
+            Log.d(TAG, "savedInstanceState is NOT null");
+            ArrayList<String> savedData = savedInstanceState.getStringArrayList(SCAN_DATA_KEY);
+            if (savedData != null) {
+//                 Reconstruct the scanDataList from the saved data
+                scanDataList.clear();
+                scanDataList.addAll(savedData);
+//                 Re-add the data to the table
+                for (String data : scanDataList) {
+                    String[] pairs = data.trim().split("\\|");
+                    addScanData(pairs);
+                }
+            }
+        }
+        else {
+            Log.d(TAG, "savedInstanceState is null");
+        }
+
+        // Enable triggers
         DataLogicUtils.setTriggersEnabled(true);
         // Initialize scanner
         if (DataLogicUtils.initializeScanner(this)) {
@@ -64,7 +89,11 @@ public class RetrieveScanInfo extends AppCompatActivity {
             resetCounter();
         });
     }
-
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "onStart() called");
+    }
     @Override
     protected void onPause() {
         super.onPause();
@@ -79,7 +108,6 @@ public class RetrieveScanInfo extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // TODO: Keep the scan result if any presents in the table
         DataLogicUtils.setTriggersEnabled(true);
     }
     private void resetCounter() {
@@ -95,6 +123,8 @@ public class RetrieveScanInfo extends AppCompatActivity {
         String[] pairs = data.trim().split("\\|");
         // Adding the split data to the table
         addScanData(pairs);
+        // Add the data to the list to save state
+        scanDataList.add(data);
     }
     private void addScanData(String[] pairs){
         // Add a timestamp row first
@@ -186,7 +216,7 @@ public class RetrieveScanInfo extends AppCompatActivity {
     }
     private void clearTable() {
         tableLayout.removeAllViews();
-        //showHintMessage(true);
+        scanDataList.clear();
     }
     private String getCurrentUTCTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
@@ -194,4 +224,14 @@ public class RetrieveScanInfo extends AppCompatActivity {
         //dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         return dateFormat.format(new Date());
     }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Save the scan data
+        outState.putStringArrayList(SCAN_DATA_KEY, new ArrayList<>(scanDataList));
+//        outState.putStringArrayList(SCAN_DATA_KEY, new ArrayList<>());
+
+    }
+
 }
