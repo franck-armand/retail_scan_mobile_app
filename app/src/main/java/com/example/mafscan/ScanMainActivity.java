@@ -285,7 +285,7 @@ public class ScanMainActivity extends AppCompatActivity implements
         int total = scanDataToSend.size();
         progressBar.setMax(total);
         progressBar.setProgress(0);
-        progressText.setText("Progress: 0/" + total);
+        progressText.setText(R.string.progress_init + total);
 
         List<Map<String, Object>> failedRecords = new ArrayList<>();
         List<ScanRecord> recordsToDelete = new ArrayList<>();
@@ -354,7 +354,13 @@ public class ScanMainActivity extends AppCompatActivity implements
                     try (PreparedStatement readingStatement = connection.prepareStatement(readingQuery)) {
                         readingStatement.setString(1, (String) data.get("scannedData"));
                         readingStatement.setString(2, (String) data.get("codeType"));
-                        readingStatement.setFloat(3, (Float) data.get("scanCount"));
+                        Float scanCount = (Float) data.get("scanCount");
+                        if (scanCount == null) {
+                            scanCount = 1.0f; // Default value
+                            Log.w(TAG, "scanCount is null or not a Float");
+                        }
+                        readingStatement.setFloat(3, scanCount);
+//                        readingStatement.setFloat(3, (Float) data.get("scanCount"));
                         // Parsing date to dateTime (sql server format)
                         parseDateSqlServerFormat(data, readingStatement);
                         readingStatement.setString(5, (String) data.get("deviceSerialNumber"));
@@ -387,9 +393,11 @@ public class ScanMainActivity extends AppCompatActivity implements
                     }
                     // Update the progress bar
                     int progress = i + 1;
+                    String progressLabel = getString(R.string.progress);
+                    String formattedProgress = progressLabel + " " + progress + "/" + total;
                     handler.post(() -> {
                         progressBar.setProgress(progress);
-                        progressText.setText("Progress: " + progress + "/" + total);
+                        progressText.setText(formattedProgress);
                     });
                     try {
                         Thread.sleep(500); // 500ms delay
