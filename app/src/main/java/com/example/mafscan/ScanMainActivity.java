@@ -44,7 +44,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ScanActivityMain extends AppCompatActivity implements
+public class ScanMainActivity extends AppCompatActivity implements
         ScanDataAdapter.OnItemClickListener {
     private final String TAG = getClass().getSimpleName();
     private ProgressBar progressBar;
@@ -123,7 +123,7 @@ public class ScanActivityMain extends AppCompatActivity implements
             @Override
             public void handleOnBackPressed() {
                 if (isSendingData) {
-                    Toast.makeText(ScanActivityMain.this,
+                    Toast.makeText(ScanMainActivity.this,
                             "Please wait while data is being sent.", Toast.LENGTH_SHORT).show();
                 } else {
                     setEnabled(false);
@@ -421,7 +421,7 @@ public class ScanActivityMain extends AppCompatActivity implements
                     OnProcessComplete();
                     clearScanSession();
                     showSummary(finalSuccessCount, failedRecords.size(), total);
-                    Toast.makeText(ScanActivityMain.this,
+                    Toast.makeText(ScanMainActivity.this,
                             "Data sent successfully!",
                             Toast.LENGTH_SHORT).show();
                 });
@@ -432,7 +432,7 @@ public class ScanActivityMain extends AppCompatActivity implements
                     if (!scanDataList.isEmpty()) {
                         showSummary(0, scanDataToSend.size(), total);
                     }
-                    Toast.makeText(ScanActivityMain.this,
+                    Toast.makeText(ScanMainActivity.this,
                             "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     // TODO: Handle what to show in case of error and actions to be taken
                 });

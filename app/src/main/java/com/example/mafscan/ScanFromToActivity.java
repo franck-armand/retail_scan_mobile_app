@@ -35,7 +35,7 @@ import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class ScanActivityFromTo extends AppCompatActivity implements
+public class ScanFromToActivity extends AppCompatActivity implements
         TabLayout.OnTabSelectedListener, DataLogicUtils.ScanListener {
     private String fromLocationId;
     private String fromLocationCode;
@@ -56,7 +56,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_scan_0);
+        setContentView(R.layout.activity_scan_from_to);
 
         // Initialize the scanner
         DataLogicUtils.initializeScanner(this);
@@ -125,7 +125,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
                     Log.d(TAG, "Start Scanning: From Location: " + fromLocation + "," +
                             " To Location: " + toLocation);
                     // Navigate to scanning activity
-                    Intent intent = new Intent(ScanActivityFromTo.this, ScanActivityMain.class);
+                    Intent intent = new Intent(ScanFromToActivity.this, ScanMainActivity.class);
                     intent.putExtra("fromLocation", fromLocation);
                     intent.putExtra("toLocation", toLocation);
                     intent.putExtra("fromLocationId", fromLocationId);
@@ -244,7 +244,7 @@ public class ScanActivityFromTo extends AppCompatActivity implements
             } catch (SQLException e) {
                 // Post error message to the main thread
                 handler.post(() -> {
-                    Toast.makeText(ScanActivityFromTo.this,
+                    Toast.makeText(ScanFromToActivity.this,
                             "Error loading locations: " + e.getMessage(),
                             Toast.LENGTH_LONG).show();
                 });

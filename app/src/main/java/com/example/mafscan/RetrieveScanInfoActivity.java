@@ -22,7 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class RetrieveScanInfo extends AppCompatActivity {
+public class RetrieveScanInfoActivity extends AppCompatActivity {
     private final String TAG = getClass().getName();
     private TableLayout tableLayout;
     private TextView scanCount;
