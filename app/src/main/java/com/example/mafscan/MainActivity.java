@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LinearLayout scanButton = findViewById(R.id.btn_scan);
         scanButton.setOnClickListener(v -> {
             vibrator.vibrate(clickVibration);
-            Intent intent = new Intent(MainActivity.this, ScanActivityFromTo.class);
+            Intent intent = new Intent(MainActivity.this, ScanFromToActivity.class);
             startActivity(intent);
         });
 
@@ -77,7 +77,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LinearLayout retrieveButton = findViewById(R.id.retrieve_scan_info);
         retrieveButton.setOnClickListener(v -> {
             vibrator.vibrate(clickVibration);
-            Intent intent = new Intent(MainActivity.this, RetrieveScanInfo.class);
+            Intent intent = new Intent(MainActivity.this, RetrieveScanInfoActivity.class);
             startActivity(intent);
         });
         // Set up the back press callback
@@ -112,19 +112,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new fragment_settings()).commit();
         } else if (item.getItemId() == R.id.nav_about) {
-            //Toast.makeText(this, "Not implemented yet!", Toast.LENGTH_SHORT).show();
-//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-//                    new fragment_about()).commit();
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
         } else if (item.getItemId() == R.id.nav_login) {
-//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-//                    new fragment_login()).commit();
             Intent intent = new Intent(this, LoginActivity.class);
             startActivity(intent);
         }
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
 }
