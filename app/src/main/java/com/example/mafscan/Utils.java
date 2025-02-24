@@ -1,10 +1,13 @@
 package com.example.mafscan;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -12,8 +15,9 @@ import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class utils{
+public class Utils {
 
+    private static final String TAG = Utils.class.getSimpleName();
     public static class SwipeToDeleteCallback extends
             ItemTouchHelper.SimpleCallback {
 
@@ -96,6 +100,17 @@ public class utils{
                 backgroundDelete.setBounds(0, 0, 0, 0);
                 backgroundUpdate.setBounds(0, 0, 0, 0);
             }
+        }
+    }
+
+    public static String getAppVersion(Context context) {
+        try {
+
+            PackageInfo packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            return packageInfo.versionName;
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d(TAG, "Error getting app version", e);
+            return "Unknown";
         }
     }
 }

@@ -197,7 +197,7 @@ public class ScanActivityMain extends AppCompatActivity implements
 
     @NonNull
     private ItemTouchHelper onItemSwapLeftRight() {
-        utils.SwipeToDeleteCallback swipeToDeleteCallback = new utils.SwipeToDeleteCallback(this,
+        Utils.SwipeToDeleteCallback swipeToDeleteCallback = new Utils.SwipeToDeleteCallback(this,
                 position -> {
                     // Swipe left to delete
                     adapter.removeItem(position);
