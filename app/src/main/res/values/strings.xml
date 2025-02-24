@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">MafScan</string>
+    <string name="app_description">A QR code scanning app that allows you to scan various types of QR codes and retrieve the information.</string>
     <string name="action_2">QR Info</string>
     <string name="scan">Scan</string>
     <string name="action_3">Action 3</string>
@@ -12,6 +13,8 @@
     <string name="scan_0_validate">Validate</string>
     <string name="scan_0_from_label">--- Select From location ---</string>
     <string name="scan_0_to_label">---- Select To location ----</string>
+    <string name="offline_0_from_label">--- Scan From location ---</string>
+    <string name="offline_0_to_label">---- Scan To location ----</string>
     <string name="scan_activity_label">Scanning</string>
     <string name="scan_qty_dialog_first">Scanned Data</string>
     <string name="scan_qty_dialog_second">Scanned Type</string>
@@ -45,4 +48,25 @@
     <string name="scan_result_placeholder">Scan result will be displayed here</string>
     <string name="clear_scan">Clear Scan</string>
     <string name="ldap_hint_msg">"Enter your Username/Password (Windows Credentials) "</string>
+    <string name="online_tab_label">Online Mode</string>
+    <string name="offline_tab_label">Offline Mode</string>
+    <string name="scan_0_from_hint">Scan Provenance </string>
+    <string name="scan_0_to_hint">Scan Destination </string>
+    <string name="clear_from_field">Clear from Scan loation</string>
+    <string name="clear_to_field">Clear To scan</string>
+    <string name="about">About</string>
+    <string name="key_features">Key Feature</string>
+    <string name="scan_qr_codes"> - Scan, send and retrieve QR codes information.</string>
+    <string name="view_scan_history"> - Implements an online and offline mode.</string>
+    <string name="release_notes">Release Notes</string>
+    <string name="release_info_21.02.25.V1.1">- Implemented offline "From/To" by scanning the locations.
+    \n - Improved UI in retrieve scan information. \n - Added scan configuration (Enable/disable Triggers etc.).
+    \n - Saving states in Retrieve scan Information. </string>
+    <string name="help_and_support">Help and Support</string>
+    <string name="contact_us">Contact us at informatique@maf-france.com</string>
+    <string name="legal">Legal</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="terms_of_service">Terms of Service</string>
+    <string name="copyright">Ⓒ F.KOUASSI/MAF RODA AGROBOTIC</string>
+    <string name="app_icon">"scan icon description "</string>
 </resources>
