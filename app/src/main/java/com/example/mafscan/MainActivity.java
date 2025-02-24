@@ -1,14 +1,8 @@
 package com.example.mafscan;
 
-
-import static android.webkit.ConsoleMessage.MessageLevel.LOG;
-
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.VibrationEffect;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
@@ -26,7 +20,6 @@ import android.widget.Toast;
 import com.google.android.material.navigation.NavigationView;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener { // Implement the interface
     private DrawerLayout drawerLayout;
-    private static final String TAG = MainActivity.class.getSimpleName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_home3);
 
         // Get app version
-        String appVersion = getAppVersion();
+        String appVersion = Utils.getAppVersion(this);
 
         // Set up the custom Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -102,16 +95,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
     }
 
-    private String getAppVersion() {
-        try {
-            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-            return packageInfo.versionName;
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d(TAG, "Error getting app version", e);
-            return "Unknown";
-        }
-    }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -129,9 +112,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
                     new fragment_settings()).commit();
         } else if (item.getItemId() == R.id.nav_about) {
-            Toast.makeText(this, "Not implemented yet!", Toast.LENGTH_SHORT).show();
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
-                    new fragment_about()).commit();
+            //Toast.makeText(this, "Not implemented yet!", Toast.LENGTH_SHORT).show();
+//            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
+//                    new fragment_about()).commit();
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
         } else if (item.getItemId() == R.id.nav_login) {
 //            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,
 //                    new fragment_login()).commit();
