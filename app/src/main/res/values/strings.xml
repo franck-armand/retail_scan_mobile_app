@@ -3,7 +3,7 @@
     <string name="app_description">A QR code scanning app that allows you to scan various types of QR codes and retrieve the information.</string>
     <string name="action_2">QR Info</string>
     <string name="scan">Scan</string>
-    <string name="action_3">Action 3</string>
+    <string name="action_3">Failed/Saved Scans</string>
     <string name="action_4">Action 4</string>
     <string name="maf_logo">maf_logo</string>
     <string name="scan_icon_desc">scan_img_view_desc</string>
@@ -69,4 +69,10 @@
     <string name="terms_of_service">Terms of Service</string>
     <string name="copyright">Ⓒ F.KOUASSI/MAF RODA AGROBOTIC</string>
     <string name="app_icon">"scan icon description "</string>
+    <string name="failed_saved_scans">"Failed/Saved Scans "</string>
+    <string name="no_failed_saved_scans">No failed or saved scans found</string>
+    <string name="resend">Resend</string>
+    <string name="delete">Delete</string>
+    <string name="expand_collapse_button">expand collapse button</string>
+    <string name="scan_count">%d scans</string>
 </resources>
