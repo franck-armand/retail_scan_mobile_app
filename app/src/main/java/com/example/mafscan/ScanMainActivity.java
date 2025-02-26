@@ -443,6 +443,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                     Toast.makeText(ScanMainActivity.this,
                             "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     // TODO: Handle what to show in case of error and actions to be taken
+                    clearScanSession();
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
             }
