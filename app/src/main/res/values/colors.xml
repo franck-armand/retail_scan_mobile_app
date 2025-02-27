@@ -12,5 +12,7 @@
     <color name="tertiary_color">#3F51B5</color> <!-- Blue -->
     <color name="gray">#9f9f9f</color>
     <color name="light_gray">#F5F5F5</color>
+    <color name="red">#FF0000</color>
+    <color name="blue">#0000FF</color>
 
 </resources>
