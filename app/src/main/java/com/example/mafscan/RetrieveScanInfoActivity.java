@@ -37,7 +37,7 @@ public class RetrieveScanInfoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_retieve_scan_info);
 
         // Set up toolbar
-        Toolbar toolbar = findViewById(R.id.scanSearchToolbar);
+        Toolbar toolbar = findViewById(R.id.retrieveScanInfoToolbar);
         setSupportActionBar(toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
