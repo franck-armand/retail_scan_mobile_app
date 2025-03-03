@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 public class RetrieveScanInfoActivity extends AppCompatActivity {
     private final String TAG = getClass().getName();
@@ -38,9 +39,7 @@ public class RetrieveScanInfoActivity extends AppCompatActivity {
         // Set up toolbar
         Toolbar toolbar = findViewById(R.id.scanSearchToolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("QR Code Information");
-        }
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Initialize views
         tableLayout = findViewById(R.id.qr_table_layout);

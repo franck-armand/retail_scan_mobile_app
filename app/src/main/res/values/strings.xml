@@ -28,6 +28,7 @@
     <string name="place_holder_card_scan_date">Scan Date</string>
     <string name="place_holder_card_scan_qty">1</string>
     <string name="scan_hint_message">Scan QR code to retrieve informations</string>
+    <string name="retrieve_scan_info_activity_title">Retrieve Scan Information</string>
     <string name="scanned_hint_message">"Scanned Code Information"</string>
     <string name="sending_scans_to_server_dialog_msg">Sending scans to server...</string>
     <string name="progress">progress</string>
