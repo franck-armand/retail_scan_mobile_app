@@ -18,7 +18,7 @@ import android.os.Vibrator;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener { // Implement the interface
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private DrawerLayout drawerLayout;
 
     @Override
@@ -48,12 +48,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             getSupportActionBar().setTitle(title);
         }
 
-
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar,
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this,
+                drawerLayout, toolbar,
                 R.string.open_nav,
                 R.string.close_nav);
         drawerLayout.addDrawerListener(toggle);
@@ -80,6 +80,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Intent intent = new Intent(MainActivity.this, RetrieveScanInfoActivity.class);
             startActivity(intent);
         });
+
+        // Set up the failed or saved scans button navigation
+        LinearLayout failedOrSavedScansButton = findViewById(R.id.failed_or_saved_scans);
+        failedOrSavedScansButton.setOnClickListener(v -> {
+            vibrator.vibrate(clickVibration);
+            Intent intent = new Intent(MainActivity.this, FailedOrSavedScanActivity.class);
+            startActivity(intent);
+        });
+
+
         // Set up the back press callback
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
