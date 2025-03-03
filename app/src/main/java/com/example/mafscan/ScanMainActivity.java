@@ -274,6 +274,9 @@ public class ScanMainActivity extends AppCompatActivity implements
             List<Map<String, Object>> scanDataToSend = retrieveAndFormatScanData();
             // Establish database connection and send data
             sendScanActivity(scanDataToSend);
+            // Clear database (clear empty sessions)
+            deleteScanSessionsWithoutRecords();
+
         }).exceptionally(e -> {
             Log.e(TAG, "Error creating scan session: " + e.getMessage());
             return null;
@@ -360,7 +363,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                             Log.w(TAG, "scanCount is null or not a Float");
                         }
                         readingStatement.setFloat(3, scanCount);
-//                        readingStatement.setFloat(3, (Float) data.get("scanCount"));
+                         // readingStatement.setFloat(3, (Float) data.get("scanCount"));
                         // Parsing date to dateTime (sql server format)
                         parseDateSqlServerFormat(data, readingStatement);
                         readingStatement.setString(5, (String) data.get("deviceSerialNumber"));
@@ -446,6 +449,16 @@ public class ScanMainActivity extends AppCompatActivity implements
                     clearScanSession();
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
+            }
+        });
+    }
+
+    private void deleteScanSessionsWithoutRecords() {
+        executor.execute(() -> {
+            List<ScanSession> sessionsToDelete = scanSessionDao.getScanSessionsWithoutRecords();
+            for (ScanSession session : sessionsToDelete) {
+                Log.d(TAG, "Deleting session with ID: " + session.sessionId);
+                scanSessionDao.deleteSessionWithScanBySessionId(session.sessionId);
             }
         });
     }
