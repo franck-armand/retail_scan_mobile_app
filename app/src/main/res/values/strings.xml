@@ -15,7 +15,7 @@
     <string name="scan_0_to_label">---- Select To location ----</string>
     <string name="offline_0_from_label">--- Scan From location ---</string>
     <string name="offline_0_to_label">---- Scan To location ----</string>
-    <string name="scan_activity_label">Scanning</string>
+    <string name="scan_activity_label">Provenance → Destination</string>
     <string name="scan_qty_dialog_first">Scanned Data</string>
     <string name="scan_qty_dialog_second">Scanned Type</string>
     <string name="scan_qty_dialog_third">Scanned Date</string>

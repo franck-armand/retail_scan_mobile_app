@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
@@ -67,10 +68,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
         // Set up the Toolbar
         Toolbar toolbar = findViewById(R.id.toolbar_scan0);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            String title = "Provenance" + " → " + "Destination";
-            getSupportActionBar().setTitle(title);
-        }
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Initialize views
         fromSpinner = findViewById(R.id.fromSpinner);
