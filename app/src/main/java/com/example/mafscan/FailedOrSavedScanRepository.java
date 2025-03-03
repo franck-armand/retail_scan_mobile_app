@@ -36,9 +36,9 @@ public class FailedOrSavedScanRepository {
         });
     }
 
-    public void deleteScanSessionAndRecords(ScanSession scanSession) {
+    public void deleteScanSessionWithRecords(ScanSession scanSession) {
         AppDatabase.databaseWriteExecutor.execute(() -> {
-            failedOrSavedScanDao.deleteSessionWithScans(scanSession.sessionId);
+            scanSessionDao.deleteSessionWithScanBySessionId(scanSession.sessionId);
         });
     }
 
