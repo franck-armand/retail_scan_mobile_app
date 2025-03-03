@@ -38,22 +38,52 @@
         </activity>
 
         <activity
-            android:name=".ScanActivityFromTo"
+            android:name=".ScanFromToActivity"
             android:exported="false"
-            android:theme="@style/Theme.MafScan"/>
+            android:theme="@style/Theme.MafScan"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
-        <activity android:name=".ScanActivityMain"
+        <activity android:name=".ScanMainActivity"
             android:exported="false"
-            android:theme="@style/Theme.MafScan"/>
+            android:theme="@style/Theme.MafScan"
+            android:parentActivityName=".ScanFromToActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ScanFromToActivity" />
+        </activity>
 
-        <activity android:name=".RetrieveScanInfo"
+        <activity android:name=".RetrieveScanInfoActivity"
             android:exported="false"
-            android:theme="@style/Theme.MafScan"/>
+            android:theme="@style/Theme.MafScan"
+            android:parentActivityName=".ScanMainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ScanMainActivity" />
+        </activity>
+
+        <activity
+            android:name=".FailedOrSavedScanActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MafScan"
+            android:parentActivityName=".MainActivity">
+        <meta-data
+            android:name="android.support.PARENT_ACTIVITY"
+            android:value=".MainActivity" />
+        </activity>
 
         <activity
             android:name=".LoginActivity"
             android:exported="false"
-            android:theme="@style/Theme.MafScan"/>
+            android:theme="@style/Theme.MafScan"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
 
         <activity
             android:name=".AboutActivity"
