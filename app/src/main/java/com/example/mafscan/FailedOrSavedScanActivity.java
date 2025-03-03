@@ -10,6 +10,8 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.Objects;
+
 public class FailedOrSavedScanActivity extends AppCompatActivity {
 
     private RecyclerView failedScansRecyclerView;
@@ -25,7 +27,7 @@ public class FailedOrSavedScanActivity extends AppCompatActivity {
         // Set up the toolbar
         Toolbar toolbar = findViewById(R.id.failedScansToolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Get references to views
         failedScansRecyclerView = findViewById(R.id.failedScansRecyclerView);
