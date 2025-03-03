@@ -90,6 +90,7 @@ public class ScanMainActivity extends AppCompatActivity implements
         if (getSupportActionBar() != null) {
             String title = fromLocationCode + " → " + toLocationCode;
             getSupportActionBar().setTitle(title);
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
 
         // Initialize progress bar

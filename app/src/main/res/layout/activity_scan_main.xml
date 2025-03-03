@@ -6,21 +6,20 @@
     android:id="@+id/mainConstraintLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_gray">
+    android:background="@color/light_gray"
+    tools:context=".ScanMainActivity">
 
     <!-- App Bar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/scanToolbarMain"
         android:layout_width="0dp"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/black"
+        android:background="@color/primary_color"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:logo="@drawable/outline_barcode_reader_24"
         app:title="@string/scan_activity_label"
         app:titleTextColor="@color/white"
-        app:contentInsetStart="0dp"
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
 
     <!-- Content Container -->
