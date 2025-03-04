@@ -76,4 +76,10 @@
     <string name="delete">Delete</string>
     <string name="expand_collapse_button">expand collapse button</string>
     <string name="scan_count">%d scans</string>
+    <string name="send_session_desc">"Send Scan Session "</string>
+    <string name="send_session">Send</string>
+    <string name="save_session_desc">Save session</string>
+    <string name="save_session">Save</string>
+    <string name="clear_session_desc">"Clear Scans descrition "</string>
+    <string name="clear_session">Clear</string>
 </resources>
