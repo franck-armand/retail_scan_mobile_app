@@ -42,6 +42,15 @@ public class FailedOrSavedScanRepository {
         });
     }
 
+    public void deleteScanSessionWithRecordsCallBack(ScanSession scanSession, Runnable callback) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            scanSessionDao.deleteSessionWithScanBySessionId(scanSession.sessionId);
+            if (callback != null) {
+                callback.run();
+            }
+        });
+    }
+
     // Methods for ScanRecord
     public LiveData<List<ScanRecord>> getScanRecordsBySessionId(String sessionId) {
         return failedOrSavedScanDao.getScansForSession(sessionId);

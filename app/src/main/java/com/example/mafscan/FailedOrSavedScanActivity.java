@@ -48,7 +48,7 @@ public class FailedOrSavedScanActivity extends AppCompatActivity {
         });
     }
 
-    private void updateEmptyState() {
+    public void updateEmptyState() {
         if (scanSessionAdapter.getCurrentList().isEmpty()) {
             emptyFailedScansTextView.setVisibility(View.VISIBLE);
             failedScansRecyclerView.setVisibility(View.GONE);

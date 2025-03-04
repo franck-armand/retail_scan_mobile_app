@@ -26,10 +26,10 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
     Button resendButton;
     Button deleteButton;
     View statusIndicatorView;
+    ScanSession currentScanSession;
     private final ScanRecordAdapter scanRecordAdapter;
     private final String TAG = getClass().getSimpleName();
     private boolean isExpanded = false;
-    private ScanSession currentScanSession;
     private final FailedOrSavedScanRepository repository;
     private final Context context;
     private final ScanSessionAdapter adapter;
@@ -103,19 +103,23 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
 
     private void showDeleteConfirmationDialog() {
         DialogUtils.showInvalidSelectionDialog(
-                context,
-                "Delete Scan Session",
-                "Are you sure you want to delete this scan session and all its records?",
-                "Yes",
-                (dialog, which) -> deleteScanSession(),
-                "No",
-                (dialog, which) -> dialog.dismiss()
+            context,
+            "Delete Scan Session",
+            "Are you sure you want to delete this session and all its records?",
+            "Yes",
+            (dialog, which) -> deleteScanSession(),
+            "No",
+            (dialog, which) -> dialog.dismiss()
         );
     }
 
     private void deleteScanSession() {
-        int position = adapter.getPosition(currentScanSession);
-        repository.deleteScanSessionAndRecords(currentScanSession);
-        adapter.removeAt(position);
+        repository.deleteScanSessionWithRecordsCallBack(currentScanSession, () -> {
+                ((FailedOrSavedScanActivity) itemView.getContext()).runOnUiThread(() -> {
+                adapter.remove(currentScanSession);
+                ((FailedOrSavedScanActivity) itemView.getContext()).updateEmptyState();
+            });
+        });
     }
+
 }
