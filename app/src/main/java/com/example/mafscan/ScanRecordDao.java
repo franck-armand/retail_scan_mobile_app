@@ -24,6 +24,10 @@ public interface ScanRecordDao {
 
     //////////////Retrieve queries////////////////
 
+    // Retrieve scan count by session ID
+    @Query("SELECT COUNT(*) FROM ScanRecord WHERE sessionId = :sessionId")
+    int getScanRecordCountForSession(String sessionId);
+
     // Retrieve all scan records
     @Query("SELECT * FROM ScanRecord")
     List<ScanRecord> getAllScanRecords();
