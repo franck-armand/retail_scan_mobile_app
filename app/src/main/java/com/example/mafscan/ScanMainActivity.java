@@ -9,7 +9,7 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,8 +21,6 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.net.ParseException;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 
 import java.sql.Connection;
@@ -54,8 +52,7 @@ public class ScanMainActivity extends AppCompatActivity implements
     private final Handler handler = new Handler(Looper.getMainLooper());
     private LinkedList<ScanData> scanDataList;
     private ScanDataAdapter adapter;
-    private Button validateButton;
-    private FloatingActionButton clearScanButton;
+    private LinearLayout sendSessionButton, saveSessionButton, clearSessionButton;
     private boolean isSessionCleared = false;
     private boolean isSendingData = false;
     private TextView emptyHintMessage;
@@ -113,29 +110,18 @@ public class ScanMainActivity extends AppCompatActivity implements
         adapter.setOnItemClickListener(this);
 
         // Initialize the validate and clear buttons and set theirs visibilities
-        validateButton = findViewById(R.id.validateScanButton);
-        validateButton.setVisibility(View.GONE);
-        clearScanButton = findViewById(R.id.clear_scan_floating_action_Btn);
-        clearScanButton.setVisibility(View.GONE);
+        sendSessionButton = findViewById(R.id.sendSessionButton);
+        saveSessionButton = findViewById(R.id.saveSessionButton);
+        clearSessionButton = findViewById(R.id.clearSessionButton);
 
-        // Disable back button when data is being sent
-        getOnBackPressedDispatcher().addCallback(this,
-                new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                if (isSendingData) {
-                    Toast.makeText(ScanMainActivity.this,
-                            "Please wait while data is being sent.", Toast.LENGTH_SHORT).show();
-                } else {
-                    setEnabled(false);
-                    finish();
-                }
-            }
-        });
+        sendSessionButton.setVisibility(View.GONE);
+        clearSessionButton.setVisibility(View.GONE);
+        saveSessionButton.setVisibility(View.GONE);
 
         // Set the click listener on the buttons
-        clearScanButton.setOnClickListener(v -> clearScanSession());
-        validateButton.setOnClickListener(v -> sendScanData());
+        clearSessionButton.setOnClickListener(v -> clearScanSession());
+        sendSessionButton.setOnClickListener(v -> sendScanData());
+        saveSessionButton.setOnClickListener(v -> saveScanSession());
 
         // Attach the SwipeToDeleteCallback to the RecyclerView
         ItemTouchHelper itemTouchHelper = onItemSwapLeftRight();
@@ -161,6 +147,20 @@ public class ScanMainActivity extends AppCompatActivity implements
                     })
             );
         }
+        // Disable back button when data is being sent
+        getOnBackPressedDispatcher().addCallback(this,
+                new OnBackPressedCallback(true) {
+                    @Override
+                    public void handleOnBackPressed() {
+                        if (isSendingData) {
+                            Toast.makeText(ScanMainActivity.this,
+                                    "Please wait while data is being sent.", Toast.LENGTH_SHORT).show();
+                        } else {
+                            setEnabled(false);
+                            finish();
+                        }
+                    }
+                });
     }
 
     private CompletableFuture<String> createNewScanSession() {
@@ -267,19 +267,44 @@ public class ScanMainActivity extends AppCompatActivity implements
         return scanDataToSend;
     }
     private void sendScanData() {
-        // Create a new session in the database
-        createNewScanSession().thenAccept(sessionId -> {
-            // Save all scan records to Room first
-            saveScanDataToDatabase(scanDataList, 0); // Auto-save
-            // Retrieve and format scan data to be sent to SQL server
-            List<Map<String, Object>> scanDataToSend = retrieveAndFormatScanData();
-            // Establish database connection and send data
-            sendScanActivity(scanDataToSend);
-            // Clear database (clear empty sessions)
-            deleteScanSessionsWithoutRecords();
+        createNewScanSession().thenCompose(sessionId ->
+            saveScanDataToDatabase(scanDataList, 0, sessionId)).thenAccept(
+            isSaveSuccessful -> {
+                // Retrieve and format scan data to be sent to SQL server
+                List<Map<String, Object>> scanDataToSend = retrieveAndFormatScanData();
+                // Establish database connection and send data
+                sendScanActivity(scanDataToSend);
+                // Clear database (clear empty sessions)
+                deleteScanSessionsWithoutRecords();
+            }).exceptionally(e -> {
+                Log.e(TAG, "sendScanData, error creating scan session: " + e.getMessage());
+                runOnUiThread(() -> showSavedSessionSummary(scanDataList.size(),
+                        "Send Session Failed",
+                        "❌ Failed to send scans session, Contact Administrator"));
+                return null;
+            });
+    }
+    private void saveScanSession() {
+        createNewScanSession().thenCompose(sessionId ->
+                saveScanDataToDatabase(scanDataList, 1, sessionId)).thenAccept(
+                        isSaveSuccessful -> {
+            if (isSaveSuccessful){
+                runOnUiThread(() -> showSavedSessionSummary(scanDataList.size(),
+                        "Save Session Successful",
+                        "✅ Saved scans session"));
 
+            } else {
+                runOnUiThread(() -> showSavedSessionSummary(scanDataList.size(),
+                        "Save Session Failed",
+                        "❌ Failed to save scans session"));
+            }
+            clearScanSession();
         }).exceptionally(e -> {
-            Log.e(TAG, "Error creating scan session: " + e.getMessage());
+            Log.e(TAG, "saveSession, error creating scan session: " + e.getMessage());
+            runOnUiThread(() ->showSavedSessionSummary(scanDataList.size(),
+                    "Save Session Failed",
+                    "❌ Failed to save scans session, Contact Administrator"));
+            clearScanSession();
             return null;
         });
     }
@@ -474,8 +499,9 @@ public class ScanMainActivity extends AppCompatActivity implements
         progressOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
         progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
         progressText.setVisibility(show ? View.VISIBLE : View.GONE);
-        clearScanButton.setEnabled(!show);
-        validateButton.setEnabled(!show);
+        clearSessionButton.setEnabled(!show);
+        sendSessionButton.setEnabled(!show);
+        saveSessionButton.setEnabled(!show);
     }
 
     private void showSummary(int successCount, int failCount, int total) {
@@ -488,6 +514,23 @@ public class ScanMainActivity extends AppCompatActivity implements
                 (dialog, which) -> dialog.dismiss(),
                 null,
                 null
+        );
+    }
+
+    private void showSavedSessionSummary(int totalScans, String title, String message){
+        DialogUtils.showInvalidSelectionDialog(
+                this,
+                title + ": " + totalScans +" scans",
+                message + " .",
+                "Continue Scanning",
+                (dialog, which) -> dialog.dismiss(),
+                "View Saved Scans",
+                (dialog, which) -> {
+                    Intent intent = new Intent(ScanMainActivity.this,
+                            FailedOrSavedScanActivity.class);
+                    startActivity(intent);
+                    dialog.dismiss();
+                }
         );
     }
 
@@ -507,35 +550,40 @@ public class ScanMainActivity extends AppCompatActivity implements
         }
     }
 
-    private void saveScanDataToDatabase(List<ScanData> scanDataList, int saveType) {
+    private CompletableFuture<Boolean> saveScanDataToDatabase(List<ScanData> scanDataList,
+                                                              int saveType, String sessionId) {
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
         executor.execute(() -> {
-            List<ScanRecord> scanRecords = new ArrayList<>();
-            for (ScanData scanData : scanDataList) {
-                ScanRecord scanRecord = new ScanRecord();
-                scanRecord.scannedData = scanData.getScannedData();
-                scanRecord.codeType = scanData.getCodeType();
-                scanRecord.scanCount = scanData.getScanCount();
-                scanRecord.scanDate = scanData.getFormattedScanDate();
-                scanRecord.deviceSerialNumber = DataLogicUtils.getDeviceInfo();
-                scanRecord.fromLocationId = fromLocationId;
-                scanRecord.toLocationId = toLocationId;
-                scanRecord.fromLocationName = fromLocation;
-                scanRecord.toLocationName = toLocation;
-                scanRecord.fromLocationCode = fromLocationCode;
-                scanRecord.toLocationCode = toLocationCode;
-                scanRecord.saveType = saveType; // 0 for auto-save, 1 for manual save
-                scanRecord.isSentToServer = 0; // Initially not sent to server
-                scanRecord.sendAttemptCount = 0; // Initially no send attempts
-                scanRecord.sessionId = sessionId;
-                scanRecords.add(scanRecord);
-            }
             try {
+                List<ScanRecord> scanRecords = new ArrayList<>();
+                for (ScanData scanData : scanDataList) {
+                    ScanRecord scanRecord = new ScanRecord();
+                    scanRecord.scannedData = scanData.getScannedData();
+                    scanRecord.codeType = scanData.getCodeType();
+                    scanRecord.scanCount = scanData.getScanCount();
+                    scanRecord.scanDate = scanData.getFormattedScanDate();
+                    scanRecord.deviceSerialNumber = DataLogicUtils.getDeviceInfo();
+                    scanRecord.fromLocationId = fromLocationId;
+                    scanRecord.toLocationId = toLocationId;
+                    scanRecord.fromLocationName = fromLocation;
+                    scanRecord.toLocationName = toLocation;
+                    scanRecord.fromLocationCode = fromLocationCode;
+                    scanRecord.toLocationCode = toLocationCode;
+                    scanRecord.saveType = saveType; // 0 for auto-save, 1 for manual save
+                    scanRecord.isSentToServer = 0; // Initially not sent to server
+                    scanRecord.sendAttemptCount = 0; // Initially no send attempts
+                    scanRecord.sessionId = sessionId; // Use the passed sessionId
+                    scanRecords.add(scanRecord);
+                }
                 List<Long> result = scanRecordDao.insertScanRecords(scanRecords);
                 Log.d(TAG, "Scan records inserted with IDs: " + result);
+                future.complete(true); // Complete the future with true
             } catch (Exception e) {
                 Log.e(TAG, "Error inserting scan records: " + e.getMessage());
+                future.complete(false); // Complete the future with false
             }
         });
+        return future;
     }
 
     private void updateHintMessageVisibility() {
@@ -575,33 +623,40 @@ public class ScanMainActivity extends AppCompatActivity implements
         super.onResume();
         if(isSessionCleared){
             scanDataList.clear();
-            validateButton.setVisibility(View.GONE);
+            sendSessionButton.setVisibility(View.GONE);
+            saveSessionButton.setVisibility(View.GONE);
         }
         DataLogicUtils.setTriggersEnabled(true);
     }
 
     private void clearScanSession() {
-        scanDataList.clear();
-        adapter.notifyDataSetChanged();
-        validateButton.setVisibility(View.GONE);
-        clearScanButton.setVisibility(View.GONE);
-        emptyHintMessage.setVisibility(View.VISIBLE);
-        isSessionCleared = true;
+        runOnUiThread(() -> {
+            scanDataList.clear();
+            adapter.notifyDataSetChanged();
+            sendSessionButton.setVisibility(View.GONE);
+            clearSessionButton.setVisibility(View.GONE);
+            saveSessionButton.setVisibility(View.GONE);
+            emptyHintMessage.setVisibility(View.VISIBLE);
+            isSessionCleared = true;
+        });
     }
     private void onSwipeDeleteEmpty(boolean isEmpty) {
-     validateButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-     clearScanButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+     sendSessionButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+     saveSessionButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+     clearSessionButton.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
      emptyHintMessage.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
     }
     private void enableUserInteraction() {
         getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
-        validateButton.setEnabled(true);
-        clearScanButton.setEnabled(true);
+        sendSessionButton.setEnabled(true);
+        saveSessionButton.setEnabled(true);
+        clearSessionButton.setEnabled(true);
     }
     private void disableUserInteraction() {
         // disable validate button
-        validateButton.setEnabled(false);
-        clearScanButton.setEnabled(false);
+        sendSessionButton.setEnabled(false);
+        saveSessionButton.setEnabled(false);
+        clearSessionButton.setEnabled(false);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
     }
