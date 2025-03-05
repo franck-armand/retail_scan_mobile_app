@@ -19,7 +19,8 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
-    TextView sessionIdTextView;
+    //TextView sessionIdTextView;
+    TextView sessionFromToTextView;
     TextView sessionDateTextView;
     TextView scanCountTextView;
     ImageView expandCollapseImageView;
@@ -35,12 +36,15 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
     private final Context context;
     private final ScanSessionAdapter adapter;
 
-    public ScanSessionViewHolder(@NonNull View itemView, Context context, FailedOrSavedScanRepository repository, ScanSessionAdapter adapter) {
+    public ScanSessionViewHolder(@NonNull View itemView, Context context,
+                                 FailedOrSavedScanRepository repository,
+                                 ScanSessionAdapter adapter) {
         super(itemView);
         this.context = context;
         this.repository = repository;
         this.adapter = adapter;
-        sessionIdTextView = itemView.findViewById(R.id.sessionIdTextView);
+        //sessionIdTextView = itemView.findViewById(R.id.sessionIdTextView);
+        sessionFromToTextView = itemView.findViewById(R.id.sessionFromToTextView);
         sessionDateTextView = itemView.findViewById(R.id.sessionDateTextView);
         scanCountTextView = itemView.findViewById(R.id.scanCountTextView);
         expandCollapseImageView = itemView.findViewById(R.id.expandCollapseImageView);
@@ -57,7 +61,14 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(ScanSession scanSession, List<ScanRecord> scanRecords) {
         currentScanSession = scanSession;
-        sessionIdTextView.setText(scanSession.sessionId);
+        //sessionIdTextView.setText(scanSession.sessionId);
+        if (!scanRecords.isEmpty()){
+            ScanRecord firstScanRecord = scanRecords.get(0);
+            sessionFromToTextView.setText(
+                context.getString(R.string.session_from_to_code,
+                        firstScanRecord.fromLocationCode,
+                        firstScanRecord.toLocationCode));
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
                 Locale.getDefault());
         try {
