@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
     TextView sessionIdTextView;
@@ -61,8 +62,9 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                 Locale.getDefault());
         try {
             Date date = dateFormat.parse(scanSession.sessionCreationDate);
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm a",
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
                     Locale.getDefault());
+            assert date != null;
             sessionDateTextView.setText(outputFormat.format(date));
         } catch (Exception e) {
             Log.e(TAG, "Error parsing date: " + e.getMessage());
