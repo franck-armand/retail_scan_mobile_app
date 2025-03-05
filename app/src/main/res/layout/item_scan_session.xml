@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardCornerRadius="4dp"
+    app:cardCornerRadius="10dp"
     app:cardElevation="2dp">
 
     <LinearLayout
@@ -30,7 +30,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="8dp">
+                android:padding="8dp"
+                android:background="@color/light_gray">
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -38,12 +39,19 @@
                     android:layout_weight="1"
                     android:orientation="vertical">
 
+<!--                    <TextView-->
+<!--                        android:id="@+id/sessionIdTextView"-->
+<!--                        android:layout_width="wrap_content"-->
+<!--                        android:layout_height="wrap_content"-->
+<!--                        android:textStyle="bold"-->
+<!--                        tools:text="Session #123" />-->
+
                     <TextView
-                        android:id="@+id/sessionIdTextView"
+                        android:id="@+id/sessionFromToTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        tools:text="Session #123" />
+                        tools:text="GJM-ATT-A1 -> GJM-ATT-A2" />
 
                     <TextView
                         android:id="@+id/sessionDateTextView"
@@ -90,6 +98,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="8dp"
                     android:text="@string/resend"
+                    android:textColor="@color/primary_color"
+                    android:textStyle="bold"
                     style="?android:attr/buttonBarButtonStyle"/>
 
                 <Button
@@ -97,6 +107,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/delete"
+                    android:textColor="@color/red"
+                    android:textStyle="bold"
                     style="?android:attr/buttonBarButtonStyle"/>
             </LinearLayout>
         </LinearLayout>
