@@ -9,11 +9,24 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
+import androidx.core.net.ParseException;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.sql.PreparedStatement;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 public class Utils {
 
@@ -102,7 +115,6 @@ public class Utils {
             }
         }
     }
-
     public static String getAppVersion(Context context) {
         try {
 
@@ -113,5 +125,56 @@ public class Utils {
             return "Unknown";
         }
     }
+
+    public static List<Map<String, Object>> formatScanData(List<?> dataList) {
+        List<Map<String, Object>> formattedData = new ArrayList<>();
+        for (Object item : dataList) {
+            Map<String, Object> data = new HashMap<>();
+            if (item instanceof ScanData) {
+                ScanData scanData = (ScanData) item;
+                data.put("scannedData", scanData.getScannedData());
+                data.put("codeType", scanData.getCodeType());
+                data.put("scanCount", scanData.getScanCount());
+                data.put("scanDate", scanData.getFormattedScanDate());
+                data.put("deviceSerialNumber", DataLogicUtils.getDeviceInfo());
+//                data.put("fromLocationId", fromLocationId);
+//                data.put("toLocationId", toLocationId);
+//                data.put("sessionId", sessionId);
+            } else if (item instanceof ScanRecord) {
+                ScanRecord scanRecord = (ScanRecord) item;
+                data.put("sessionId", scanRecord.sessionId);
+                data.put("scannedData", scanRecord.scannedData);
+                data.put("scanCount", scanRecord.scanCount);
+                data.put("fromLocationId", scanRecord.fromLocationId);
+                data.put("toLocationId", scanRecord.toLocationId);
+                data.put("scanDate", scanRecord.scanDate);
+                data.put("codeType", scanRecord.codeType);
+                data.put("deviceSerialNumber", DataLogicUtils.getDeviceInfo());
+            }
+            formattedData.add(data);
+        }
+        return formattedData;
+    }
+
+    public static void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)
+            throws java.sql.SQLException {
+        try {
+            String datePattern = "yyyy-MM-dd HH:mm:ss:SSS";
+            SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern,
+                    Locale.getDefault());
+            Date scanDate = dateFormat.parse((String) Objects.requireNonNull(data.get("scanDate")));
+            assert scanDate != null;
+            statement.setTimestamp(4, new Timestamp(scanDate.getTime()));
+        } catch (ParseException e) {
+            Log.e(TAG, "Error parsing date: " + e.getMessage());
+        } catch (java.text.ParseException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void showToast(Context context, String message, int duration) {
+        Toast.makeText(context, message, duration).show();
+    }
+
 }
 
