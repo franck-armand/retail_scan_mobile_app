@@ -53,7 +53,7 @@
     <string name="offline_tab_label">Offline Mode</string>
     <string name="scan_0_from_hint">Scan Provenance </string>
     <string name="scan_0_to_hint">Scan Destination </string>
-    <string name="clear_from_field">Clear from Scan loation</string>
+    <string name="clear_from_field">Clear from Scan location</string>
     <string name="clear_to_field">Clear To scan</string>
     <string name="about">About</string>
     <string name="key_features">Key Feature</string>
@@ -75,11 +75,13 @@
     <string name="resend">Resend</string>
     <string name="delete">Delete</string>
     <string name="expand_collapse_button">expand collapse button</string>
-    <string name="scan_count">%d scans</string>
+    <string name="scan_count">%d scan(s)</string>
+    <string name="session_from_to_code">%s -> %s</string>
     <string name="send_session_desc">"Send Scan Session "</string>
     <string name="send_session">Send</string>
     <string name="save_session_desc">Save session</string>
     <string name="save_session">Save</string>
-    <string name="clear_session_desc">"Clear Scans descrition "</string>
+    <string name="clear_session_desc">"Clear Scans description "</string>
     <string name="clear_session">Clear</string>
+    <string name="qr_code_scanner_content_description">QR code scanner</string>
 </resources>
