@@ -391,7 +391,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                         readingStatement.setFloat(3, scanCount);
                          // readingStatement.setFloat(3, (Float) data.get("scanCount"));
                         // Parsing date to dateTime (sql server format)
-                        parseDateSqlServerFormat(data, readingStatement);
+                        Utils.parseDateSqlServerFormat(data, readingStatement);
                         readingStatement.setString(5, (String) data.get("deviceSerialNumber"));
                         readingStatement.setString(6, (String) data.get("fromLocationId"));
                         readingStatement.setString(7, (String) data.get("toLocationId"));
@@ -469,7 +469,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                     if (!scanDataList.isEmpty()) {
                         showSummary(0, scanDataToSend.size(), total);
                     }
-                    Toast.makeText(ScanMainActivity.this,
+                    Toast.makeText(this,
                             "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     // TODO: Handle what to show in case of error and actions to be taken
                     clearScanSession();
@@ -521,7 +521,7 @@ public class ScanMainActivity extends AppCompatActivity implements
         DialogUtils.showInvalidSelectionDialog(
                 this,
                 title + ": " + totalScans +" scans",
-                message + " .",
+                message + ".",
                 "Continue Scanning",
                 (dialog, which) -> dialog.dismiss(),
                 "View Saved Scans",
@@ -532,22 +532,6 @@ public class ScanMainActivity extends AppCompatActivity implements
                     dialog.dismiss();
                 }
         );
-    }
-
-    private void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)
-            throws SQLException {
-        try {
-            String datePattern = "yyyy-MM-dd HH:mm:ss:SSS";
-            SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern,
-                    Locale.getDefault());
-            Date scanDate = dateFormat.parse((String) Objects.requireNonNull(data.get("scanDate")));
-            assert scanDate != null;
-            statement.setTimestamp(4, new Timestamp(scanDate.getTime()));
-        } catch (ParseException e) {
-            Log.e(TAG, "Error parsing date: " + e.getMessage());
-        } catch (java.text.ParseException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     private CompletableFuture<Boolean> saveScanDataToDatabase(List<ScanData> scanDataList,
