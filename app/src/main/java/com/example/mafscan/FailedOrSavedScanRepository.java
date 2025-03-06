@@ -56,8 +56,26 @@ public class FailedOrSavedScanRepository {
         return failedOrSavedScanDao.getScansForSession(sessionId);
     }
 
-    public List<ScanRecord> getAllScanRecords() {
-        return scanRecordDao.getAllScanRecords();
+    public interface ScanRecordsCallback {
+        void onScanRecordsLoaded(List<ScanRecord> scanRecords);
+    }
+
+    public void getAllScanRecordsBySessionId(String sessionId, ScanRecordsCallback callback) {
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            List<ScanRecord> scanRecords = scanRecordDao.getAllScanRecordsBySessionId(sessionId);
+            if (callback != null) {
+                callback.onScanRecordsLoaded(scanRecords);
+            }
+        });
+    }
+    public List<ScanSession> getScanSessionsWithoutRecords() {
+        return scanSessionDao.getScanSessionsWithoutRecords();
+    }
+
+    public void deleteSessionWithScanBySessionId(String sessionId){
+        AppDatabase.databaseWriteExecutor.execute(() -> {
+            scanSessionDao.deleteSessionWithScanBySessionId(sessionId);
+        });
     }
 
     public List<ScanRecord> getUnsentScanRecords() {

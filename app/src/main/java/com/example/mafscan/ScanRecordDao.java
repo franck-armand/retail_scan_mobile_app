@@ -29,8 +29,8 @@ public interface ScanRecordDao {
     int getScanRecordCountForSession(String sessionId);
 
     // Retrieve all scan records
-    @Query("SELECT * FROM ScanRecord")
-    List<ScanRecord> getAllScanRecords();
+    @Query("SELECT * FROM ScanRecord ScanRecord WHERE sessionId = :sessionId")
+    List<ScanRecord> getAllScanRecordsBySessionId(String sessionId);
 
     // Retrieve unsent scan records
     @Query("SELECT * FROM ScanRecord WHERE isSentToServer = 0")
