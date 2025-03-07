@@ -316,8 +316,14 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                 int finalSuccessCount = successCount;
                 handler.post(() -> {
                     OnProcessComplete();
-                    showSummary(finalSuccessCount, failedRecords.size(), total);
-                    showToast(context, "Data sent successfully!",0);
+                    if (finalSuccessCount == total) {
+                        String message = String.format(
+                                context.getString(R.string.scan_resubmitted_success_msg),
+                                finalSuccessCount);
+                        showToast(context, message, 1);
+                    } else {
+                        showSummary(finalSuccessCount, failedRecords.size(), total);
+                    }
                 });
             } catch (SQLException | java.sql.SQLException e) {
                 handler.post(() -> {
