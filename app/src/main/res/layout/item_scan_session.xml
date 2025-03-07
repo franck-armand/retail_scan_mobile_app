@@ -24,7 +24,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
-
             <!-- Session Header -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -75,7 +74,6 @@
                     android:contentDescription="@string/expand_collapse_button"
                     android:src="@drawable/ic_expand_more" />
             </LinearLayout>
-
             <!-- Session Details (RecyclerView for Scans) -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/scansRecyclerView"
@@ -83,7 +81,6 @@
                 android:layout_height="wrap_content"
                 android:visibility="gone"
                 tools:listitem="@layout/item_scan_record" />
-
             <!-- Session Actions -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -113,4 +110,65 @@
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>
+
+    <!--Progress bar -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/resubmit_progress_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="gone">
+
+        <!-- Centered Card-like container for the progress bar -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/resubmit_progress_card"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="24dp"
+                android:gravity="center_horizontal">
+
+                <TextView
+                    android:id="@+id/resubmit_progress_text_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="@string/sending_scans_to_server_dialog_msg"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <ProgressBar
+                    android:id="@+id/resubmit_progress_bar"
+                    style="?android:attr/progressBarStyleHorizontal"
+                    android:layout_width="250dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:max="100"
+                    android:progress="0"
+                    android:indeterminate="false" />
+
+                <TextView
+                    android:id="@+id/resubmit_progress_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.cardview.widget.CardView>
