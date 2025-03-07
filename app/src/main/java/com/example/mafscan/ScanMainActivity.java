@@ -1,5 +1,7 @@
 package com.example.mafscan;
 
+import static com.example.mafscan.Utils.showToast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import android.content.Intent;
@@ -457,10 +459,8 @@ public class ScanMainActivity extends AppCompatActivity implements
                 handler.post(() -> {
                     OnProcessComplete();
                     clearScanSession();
-                    showSummary(finalSuccessCount, failedRecords.size(), total);
-                    Toast.makeText(ScanMainActivity.this,
-                            "Data sent successfully!",
-                            Toast.LENGTH_SHORT).show();
+                    //showSummary(finalSuccessCount, failedRecords.size(), total);
+                    showToast(this, "Data sent successfully!", 1);
                 });
             } catch (SQLException e) {
                 handler.post(() -> {
@@ -469,9 +469,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                     if (!scanDataList.isEmpty()) {
                         showSummary(0, scanDataToSend.size(), total);
                     }
-                    Toast.makeText(this,
-                            "Error sending data: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                    // TODO: Handle what to show in case of error and actions to be taken
+                    showToast(this, "Error sending data: " + e.getMessage(), 1);
                     clearScanSession();
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
@@ -510,10 +508,15 @@ public class ScanMainActivity extends AppCompatActivity implements
                 "Upload Summary: " + successCount + "/" + total +" scans",
                 "✅ Sent: " + successCount + "\n\n❌ Failed: " + failCount +
                         "\n\nFailed records are saved internally and can be sent again.",
-                "OK",
+                "Continue Scanning",
                 (dialog, which) -> dialog.dismiss(),
-                null,
-                null
+                "View Saved Scans",
+                (dialog, which) -> {
+                    Intent intent = new Intent(ScanMainActivity.this,
+                            FailedOrSavedScanActivity.class);
+                    startActivity(intent);
+                    dialog.dismiss();
+                }
         );
     }
 
