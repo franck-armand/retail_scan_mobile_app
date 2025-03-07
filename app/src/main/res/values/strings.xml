@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">MafScan</string>
-    <string name="app_description">A QR code scanning app that allows you to scan various types of QR codes and retrieve the information.</string>
+    <string name="app_description">A QR code scanning application that allows you to scan various types of
+        QR codes, save them (resubmit or delete) and retrieve the information.</string>
     <string name="action_2">QR Info</string>
     <string name="scan">Scan</string>
     <string name="action_3">Failed/Saved Scans</string>
@@ -63,6 +64,14 @@
     <string name="release_info_21.02.25.V1.1">- Implemented offline "From/To" by scanning the locations.
     \n - Improved UI in retrieve scan information. \n - Added scan configuration (Enable/disable Triggers etc.).
     \n - Saving states in Retrieve scan Information. </string>
+    <string name="release_info_06.03.25.V1.2">
+        - Implemented Failed/Save scan session UI.
+        \n- Added the About session UI.
+        \n- Session are automatically / Manually saved.
+        \n- Session can be resubmitted or deleted.
+        \n- Improved overall application UI.
+        \n- Fixed bugs in sending scans (Application crash).
+    </string>
     <string name="help_and_support">Help and Support</string>
     <string name="contact_us">Contact us at informatique@maf-france.com</string>
     <string name="legal">Legal</string>
