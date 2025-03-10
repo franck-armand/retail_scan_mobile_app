@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.NavUtils;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.textfield.TextInputEditText;
@@ -268,6 +267,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
                 String selectedLocation = locations.get(position);
                 if (!selectedLocation.isEmpty()) {
                     Map<String, String> locationDetails = locationMap.get(selectedLocation);
+                    assert locationDetails != null;
                     fromDescription.setText(locationDetails.get("Loc_Description"));
                     fromLocationId = locationDetails.get("Loc_Id");
                     fromLocationCode = locationDetails.get("Loc_Code");
@@ -295,6 +295,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
                 String selectedLocation = locations.get(position);
                 if (!selectedLocation.isEmpty()) {
                     Map<String, String> locationDetails = locationMap.get(selectedLocation);
+                    assert locationDetails != null;
                     toDescription.setText(locationDetails.get("Loc_Description"));
                     toLocationId = locationDetails.get("Loc_Id");
                     toLocationCode = locationDetails.get("Loc_Code");
