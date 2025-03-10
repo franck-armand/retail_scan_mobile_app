@@ -17,7 +17,6 @@ public class FailedOrSavedScanActivity extends AppCompatActivity {
     private RecyclerView failedScansRecyclerView;
     private TextView emptyFailedScansTextView;
     private ScanSessionAdapter scanSessionAdapter;
-    private FailedOrSavedScanViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +38,8 @@ public class FailedOrSavedScanActivity extends AppCompatActivity {
         failedScansRecyclerView.setAdapter(scanSessionAdapter);
 
         // Set up the ViewModel
-        viewModel = new ViewModelProvider(this).get(FailedOrSavedScanViewModel.class);
+        FailedOrSavedScanViewModel viewModel = new
+                ViewModelProvider(this).get(FailedOrSavedScanViewModel.class);
 
         // Observe the LiveData for ScanSessions
         viewModel.getAllScanSessions().observe(this, scanSessions -> {
