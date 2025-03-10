@@ -20,7 +20,6 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.net.ParseException;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -30,7 +29,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.Objects;
 import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Date;
@@ -458,9 +456,15 @@ public class ScanMainActivity extends AppCompatActivity implements
                 int finalSuccessCount = successCount;
                 handler.post(() -> {
                     OnProcessComplete();
+                    if (finalSuccessCount == total) {
+                        String message = String.format(
+                                this.getString(R.string.scan_resubmitted_success_msg),
+                                finalSuccessCount);
+                        showToast(this, message, 1);
+                    } else {
+                        showSummary(finalSuccessCount, failedRecords.size(), total);
+                    }
                     clearScanSession();
-                    //showSummary(finalSuccessCount, failedRecords.size(), total);
-                    showToast(this, "Data sent successfully!", 1);
                 });
             } catch (SQLException e) {
                 handler.post(() -> {
