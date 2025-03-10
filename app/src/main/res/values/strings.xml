@@ -4,7 +4,7 @@
         QR codes, save them (resubmit or delete) and retrieve the information.</string>
     <string name="action_2">QR Info</string>
     <string name="scan">Scan</string>
-    <string name="action_3">Failed/Saved Scans</string>
+    <string name="action_3">Failed/Saved</string>
     <string name="action_4">Action 4</string>
     <string name="maf_logo">maf_logo</string>
     <string name="scan_icon_desc">scan_img_view_desc</string>
