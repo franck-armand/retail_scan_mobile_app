@@ -7,13 +7,12 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 
-import java.util.Collections;
 import java.util.List;
 
 public class FailedOrSavedScanViewModel extends AndroidViewModel {
 
-    private FailedOrSavedScanRepository repository;
-    private LiveData<List<ScanSession>> allScanSessions;
+    private final FailedOrSavedScanRepository repository;
+    private final LiveData<List<ScanSession>> allScanSessions;
 
     public FailedOrSavedScanViewModel(@NonNull Application application) {
         super(application);
