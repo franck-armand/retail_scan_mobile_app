@@ -34,9 +34,9 @@ public class ScanRecordAdapter extends ListAdapter<ScanRecord, ScanRecordViewHol
         }
     };
 
-    public void setOnItemClickListener(OnItemClickListener listener) {
-        mListener = listener;
-    }
+//    public void setOnItemClickListener(OnItemClickListener listener) {
+//        mListener = listener;
+//    }
 
     @NonNull
     @Override
