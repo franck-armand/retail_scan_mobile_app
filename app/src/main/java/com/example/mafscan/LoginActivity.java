@@ -130,7 +130,7 @@ public class LoginActivity extends AppCompatActivity implements
     }
 
     private void updateScanButtonState() {
-        String scanResult = scanUsernameEditText.getText().toString().trim();
+        String scanResult = Objects.requireNonNull(scanUsernameEditText.getText()).toString().trim();
         authenticationScanButton.setEnabled(!scanResult.isEmpty());
     }
 }
