@@ -20,12 +20,10 @@ import java.util.Map;
 public class ScanSessionAdapter extends ListAdapter<ScanSession, ScanSessionViewHolder> {
 
     private final FailedOrSavedScanRepository repository;
-    private Application application;
     private final Map<String, Observer<List<ScanRecord>>> observers = new HashMap<>();
 
     public ScanSessionAdapter(Application application) {
         super(DIFF_CALLBACK);
-        this.application = application;
         repository = new FailedOrSavedScanRepository(application);
     }
 
