@@ -57,29 +57,27 @@ android {
 dependencies {
     //implementation(libs.firebase.crashlytics)
     // Import the BoM for the Firebase platform
-    implementation(platform("com.google.firebase:firebase-bom:33.9.0"))
+    implementation(platform(libs.firebase.bom))
 
     // Add the dependencies for the Crashlytics and Analytics libraries
     // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-crashlytics")
-    implementation("com.google.firebase:firebase-analytics")
+    implementation(libs.google.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
 
     // To use room
-    val room_version = "2.6.1"
-    implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
 
     // Ui dependencies
     implementation(libs.appcompat)
     implementation(libs.material)
-    implementation("androidx.core:core-splashscreen:1.0.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.0")
-    implementation("androidx.appcompat:appcompat:1.7.0-alpha04")
+    implementation(libs.core.splashscreen)
+    implementation(libs.constraintlayout)
+    implementation(libs.constraintlayout.compose)
 
     // external lib and dependencies
-    implementation("net.sourceforge.jtds:jtds:1.3.1")
-    implementation("com.github.datalogic:datalogic-android-sdk:1.42")
+    implementation(libs.jtds)
+    implementation(libs.datalogic.android.sdk)
 
     // Test dependencies
     testImplementation(libs.junit)
