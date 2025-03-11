@@ -45,9 +45,9 @@ public class ScanRecordViewHolder extends RecyclerView.ViewHolder {
         }
         scanCountTextView.setText(String.valueOf(scanRecord.scanCount));
         if (scanRecord.isSentToServer == 1) {
-            scanStatusTextView.setText("Sent");
+            scanStatusTextView.setText(R.string.scan_status_sent);
         } else {
-            scanStatusTextView.setText("Not Sent");
+            scanStatusTextView.setText(R.string.scan_status_not_sent);
         }
     }
 }
