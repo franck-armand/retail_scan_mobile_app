@@ -1,5 +1,7 @@
 package com.example.mafscan;
 
+import static com.example.mafscan.Utils.showToast;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -215,7 +217,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
                     throw new SQLException("Connection to SQL Server failed.");
                 }
 
-                String query = "SELECT Loc_Id, Loc_Code, Loc_Name, Loc_Description FROM Scan_Location";
+                String query = "SELECT Loc_Id, Loc_Code, Loc_Name, Loc_Description FROM Scan_Location ORDER BY Loc_Name";
                 try (PreparedStatement statement = connection.prepareStatement(query);
                      ResultSet resultSet = statement.executeQuery()) {
 
@@ -241,9 +243,8 @@ public class ScanFromToActivity extends AppCompatActivity implements
             } catch (SQLException e) {
                 // Post error message to the main thread
                 handler.post(() -> {
-                    Toast.makeText(ScanFromToActivity.this,
-                            "Error loading locations: " + e.getMessage(),
-                            Toast.LENGTH_LONG).show();
+                    showToast(this, "Error loading locations: " + e.getMessage(),
+                            0);
                 });
                 Log.e(TAG, "Error loading locations: " + e.getMessage());
             }
@@ -356,8 +357,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
     private void parseScannedData(String scannedData) {
         // Format: (00)LOC|(10)0F6B321C-8E4E-41BD-B9B3-06A0B5DC9352|(11)PNT-M1|(12)MALTE
         if(!scannedData.startsWith("(00)LOC")){
-            Toast.makeText(this, "Invalid QR Code: Not a location code",
-                    Toast.LENGTH_SHORT).show();
+            showToast(this, "Invalid QR Code: Not a location code", 0);
             return;
         }
         // Parse the scanned data
@@ -388,8 +388,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
             toLocationCode = locationCode;
         }
         else {
-            Toast.makeText(this, "Both 'From' and 'To' fields are full",
-                    Toast.LENGTH_LONG).show();
+            showToast(this, "Both 'From' and 'To' fields are full", 0);
         }
         updateDeleteButtonVisibility();
         updateValidateButtonState();
@@ -400,7 +399,6 @@ public class ScanFromToActivity extends AppCompatActivity implements
         super.onDestroy();
         executor.shutdown();
     }
-
     @Override
     protected void onResume() {
         super.onResume();
