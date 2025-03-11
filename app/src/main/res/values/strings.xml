@@ -1,7 +1,6 @@
 <resources>
+    <!-- Home activity -->
     <string name="app_name">MafScan</string>
-    <string name="app_description">A QR code scanning application that allows you to scan various types of
-        QR codes, save them (resubmit or delete) and retrieve the information.</string>
     <string name="action_2">QR Info</string>
     <string name="scan">Scan</string>
     <string name="action_3">Failed/Saved</string>
@@ -11,35 +10,45 @@
     <string name="action_2_icon_desc">btn2_icon_desc</string>
     <string name="action_3_icon_desc">action_3_icon_desc</string>
     <string name="action_4_icon_desc">action_4_icon_desc</string>
+    <string name="app">Navigation Drawer</string>
+    <string name="open_nav">Open Navigation Drawer</string>
+    <string name="close_nav">Close Navigation Drawer</string>
+
+    <!-- Scan From/To activity -->
+    <string name="online_tab_label">Online Mode</string>
+    <string name="offline_tab_label">Offline Mode</string>
+    <string name="scan_0_from_hint">Scan Provenance </string>
+    <string name="scan_0_to_hint">Scan Destination </string>
+    <string name="clear_from_field">Clear from Scan location</string>
+    <string name="clear_to_field">Clear To scan</string>
     <string name="scan_0_validate">Validate</string>
     <string name="scan_0_from_label">--- Select From location ---</string>
     <string name="scan_0_to_label">---- Select To location ----</string>
     <string name="offline_0_from_label">--- Scan From location ---</string>
     <string name="offline_0_to_label">---- Scan To location ----</string>
     <string name="scan_activity_label">Provenance → Destination</string>
+
+    <!-- Update quantity dialog -->
     <string name="scan_qty_dialog_first">Scanned Data</string>
     <string name="scan_qty_dialog_second">Scanned Type</string>
     <string name="scan_qty_dialog_third">Scanned Date</string>
     <string name="scan_qty_dialog_hint">Enter Quantity</string>
     <string name="scan_qty_dialog_btn">Update Quantity</string>
+
+    <!-- Scan Activity -->
     <string name="fab_cont_des">Floating Action Button (Clear Scans)</string>
     <string name="scan_hint_msg">Press the trigger to start scanning</string>
-    <string name="place_holder_card_scan_data">Scanned Data</string>
-    <string name="place_holder_card_scan_type">Scan Type</string>
-    <string name="place_holder_card_scan_date">Scan Date</string>
-    <string name="place_holder_card_scan_qty">1</string>
-    <string name="scan_hint_message">Scan QR code to retrieve informations</string>
-    <string name="retrieve_scan_info_activity_title">Retrieve Scan Information</string>
-    <string name="scanned_hint_message">"Scanned Code Information"</string>
-    <string name="sending_scans_to_server_dialog_msg">Sending scans to server...</string>
+    <string name="sending_scans_to_server_dialog_msg">Sending scans to server ⏳</string>
     <string name="progress">progress</string>
     <string name="slash">/</string>
     <string name="progress_init">Progress: 0/ </string>
-    <string name="app">Navigation Drawer</string>
-    <string name="open_nav">Open Navigation Drawer</string>
-    <string name="close_nav">Close Navigation Drawer</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment"> </string>
+
+    <!-- Retrieve scan information -->
+    <string name="scan_hint_message">Scan QR code to retrieve details</string>
+    <string name="retrieve_scan_info_activity_title">Retrieve Scan Information</string>
+    <string name="scanned_hint_message">"Scanned Code Information"</string>
+
+    <!-- Authentication -->
     <string name="login">Authentication</string>
     <string name="ldap_auth">Windows Auth.</string>
     <string name="scan_auth">Scan Auth.</string>
@@ -50,16 +59,12 @@
     <string name="scan_result_placeholder">Scan result will be displayed here</string>
     <string name="clear_scan">Clear Scan</string>
     <string name="ldap_hint_msg">"Enter your Username/Password (Windows Credentials) "</string>
-    <string name="online_tab_label">Online Mode</string>
-    <string name="offline_tab_label">Offline Mode</string>
-    <string name="scan_0_from_hint">Scan Provenance </string>
-    <string name="scan_0_to_hint">Scan Destination </string>
-    <string name="clear_from_field">Clear from Scan location</string>
-    <string name="clear_to_field">Clear To scan</string>
+
+    <!-- About session -->
     <string name="about">About</string>
-    <string name="key_features">Key Feature</string>
-    <string name="scan_qr_codes"> - Scan, send and retrieve QR codes information.</string>
-    <string name="view_scan_history"> - Implements an online and offline mode.</string>
+    <string name="app_description">A QR code scanning application that allows you to scan various types of
+        QR codes, save them (resubmit or delete) and retrieve the information.
+    </string>
     <string name="release_notes">Release Notes</string>
     <string name="release_info_21.02.25.V1.1">- Implemented offline "From/To" by scanning the locations.
     \n - Improved UI in retrieve scan information. \n - Added scan configuration (Enable/disable Triggers etc.).
@@ -72,13 +77,18 @@
         \n- Improved overall application UI.
         \n- Fixed bugs in sending scans (Application crash).
     </string>
+    <string name="key_features">Key Feature</string>
+    <string name="scan_qr_codes"> - Scan, send and retrieve QR codes information.</string>
+    <string name="view_scan_history"> - Implements an online and offline mode.</string>
     <string name="help_and_support">Help and Support</string>
     <string name="contact_us">Contact us at informatique@maf-france.com</string>
     <string name="legal">Legal</string>
     <string name="privacy_policy">Privacy Policy</string>
     <string name="terms_of_service">Terms of Service</string>
     <string name="copyright">Ⓒ F.KOUASSI/MAF RODA AGROBOTIC</string>
-    <string name="app_icon">"scan icon description "</string>
+    <string name="app_icon">scan icon description</string>
+
+    <!-- Failed / save scans -->
     <string name="failed_saved_scans">"Failed/Saved Scans "</string>
     <string name="no_failed_saved_scans">No failed or saved scans found</string>
     <string name="resend">Resend</string>
@@ -94,4 +104,8 @@
     <string name="clear_session_desc">"Clear Scans description "</string>
     <string name="clear_session">Clear</string>
     <string name="qr_code_scanner_content_description">QR code scanner</string>
+
+    <!-- Item scan record -->
+    <string name="scan_status_sent">Sent</string>
+    <string name="scan_status_not_sent">Not sent</string>
 </resources>
