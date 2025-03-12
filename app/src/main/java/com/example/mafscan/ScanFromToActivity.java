@@ -1,5 +1,4 @@
 package com.example.mafscan;
-
 import static com.example.mafscan.Utils.showToast;
 
 import android.content.Intent;
@@ -10,14 +9,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -43,7 +38,9 @@ public class ScanFromToActivity extends AppCompatActivity implements
     private String fromLocationCode;
     private String toLocationId;
     private String toLocationCode;
-    private Spinner fromSpinner, toSpinner;
+    private SearchableSpinner fromSpinner;
+    private SearchableSpinner toSpinner;
+//    private Spinner toSpinner;
     private TextView fromDescription, toDescription;
     private TabLayout tabLayout;
     private LinearLayout spinnerLayout, qrCodeLayout;
@@ -54,6 +51,8 @@ public class ScanFromToActivity extends AppCompatActivity implements
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final String TAG = getClass().getSimpleName();
+    private String selectedFromLocation = "";
+    private String selectedToLocation = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,8 +105,10 @@ public class ScanFromToActivity extends AppCompatActivity implements
             String fromLocation;
             String toLocation;
             if (spinnerLayout.getVisibility() == View.VISIBLE) {
-                fromLocation = fromSpinner.getSelectedItem().toString();
-                toLocation = toSpinner.getSelectedItem().toString();
+//                fromLocation = fromSpinner.getSelectedItem().toString();
+                fromLocation = selectedFromLocation;
+//                toLocation = toSpinner.getSelectedItem().toString();
+                toLocation = selectedToLocation;
             } else {
                 fromLocation = Objects.requireNonNull(fromQrCodeEditText.getText()).toString().trim();
                 toLocation = Objects.requireNonNull(toQrCodeEditText.getText()).toString().trim();
@@ -194,12 +195,16 @@ public class ScanFromToActivity extends AppCompatActivity implements
         String currentFromLocation = "";
         String currentToLocation = "";
         if (spinnerLayout.getVisibility() == View.VISIBLE) {
-            if (fromSpinner.getSelectedItem() != null && toSpinner.getSelectedItem() != null) {
-                currentFromLocation = fromSpinner.getSelectedItem().toString();
-                currentToLocation = toSpinner.getSelectedItem().toString();
-            }
-            validateButton.setEnabled(!currentFromLocation.isEmpty() && !currentToLocation.isEmpty());
-
+//            if (fromSpinner.getSelectedItem() != null && toSpinner.getSelectedItem() != null) {
+//                currentFromLocation = fromSpinner.getSelectedItem().toString();
+//                currentToLocation = toSpinner.getSelectedItem().toString();
+//            }
+//            if (fromSpinner.getSelectedItem() != null && toSpinner.getSelectedItem() != null) {
+//                currentFromLocation = fromSpinner.getSelectedItem().toString();
+//                currentToLocation = toSpinner.getSelectedItem().toString();
+//            }
+//            validateButton.setEnabled(!currentFromLocation.isEmpty() && !currentToLocation.isEmpty());
+            validateButton.setEnabled(!selectedFromLocation.isEmpty() && !selectedToLocation.isEmpty());
         }
         else if (qrCodeLayout.getVisibility() == View.VISIBLE) {
             if (fromQrCodeEditText.getText() != null && toQrCodeEditText.getText() != null) {
@@ -242,10 +247,9 @@ public class ScanFromToActivity extends AppCompatActivity implements
                 }
             } catch (SQLException e) {
                 // Post error message to the main thread
-                handler.post(() -> {
-                    showToast(this, "Error loading locations: " + e.getMessage(),
-                            0);
-                });
+                handler.post(() -> showToast(this,
+                        "Error loading locations: " + e.getMessage(),
+                        0));
                 Log.e(TAG, "Error loading locations: " + e.getMessage());
             }
         });
@@ -253,67 +257,103 @@ public class ScanFromToActivity extends AppCompatActivity implements
 
     private void populateSpinners(List<String> locations) {
         // Empty item to the beginning of the list
-        locations.add(0, "");
+//        locations.add(0, "");
+//
+//        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
+//                android.R.layout.simple_spinner_item, locations);
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//
+//        // set up "From" Spinner
+//        fromSpinner.setAdapter(adapter);
+//        fromSpinner.setSelection(0, false); // initial empty position is selected
+//        fromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                String selectedLocation = locations.get(position);
+//                if (!selectedLocation.isEmpty()) {
+//                    Map<String, String> locationDetails = locationMap.get(selectedLocation);
+//                    assert locationDetails != null;
+//                    fromDescription.setText(locationDetails.get("Loc_Description"));
+//                    fromLocationId = locationDetails.get("Loc_Id");
+//                    fromLocationCode = locationDetails.get("Loc_Code");
+//                } else {
+//                    fromDescription.setText("");
+//                    fromLocationId = null;
+//                    fromLocationCode = null;
+//                }
+//                updateValidateButtonState();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                fromDescription.setText("");
+//                updateValidateButtonState();
+//            }
+//        });
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item, locations);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        // set up "From" Spinner
-        fromSpinner.setAdapter(adapter);
-        fromSpinner.setSelection(0, false); // initial empty position is selected
-        fromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedLocation = locations.get(position);
-                if (!selectedLocation.isEmpty()) {
-                    Map<String, String> locationDetails = locationMap.get(selectedLocation);
-                    assert locationDetails != null;
-                    fromDescription.setText(locationDetails.get("Loc_Description"));
-                    fromLocationId = locationDetails.get("Loc_Id");
-                    fromLocationCode = locationDetails.get("Loc_Code");
-                } else {
-                    fromDescription.setText("");
-                    fromLocationId = null;
-                    fromLocationCode = null;
-                }
-                updateValidateButtonState();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+        // Set up "From" SearchableSpinner
+        fromSpinner.setItems(locations);
+        fromSpinner.setOnItemSelectedListener(selectedLocation -> {
+            selectedFromLocation = selectedLocation;
+            if (!selectedLocation.isEmpty()) {
+                Map<String, String> locationDetails = locationMap.get(selectedLocation);
+                assert locationDetails != null;
+                fromDescription.setText(locationDetails.get("Loc_Description"));
+                fromLocationId = locationDetails.get("Loc_Id");
+                fromLocationCode = locationDetails.get("Loc_Code");
+            } else {
                 fromDescription.setText("");
-                updateValidateButtonState();
+                fromLocationId = null;
+                fromLocationCode = null;
             }
+            updateValidateButtonState();
+        });
+
+        // Set up "To" SearchableSpinner
+        toSpinner.setItems(locations);
+        toSpinner.setOnItemSelectedListener(selectedLocation -> {
+            selectedToLocation = selectedLocation; // Update the variable
+            if (!selectedLocation.isEmpty()) {
+                Map<String, String> locationDetails = locationMap.get(selectedLocation);
+                assert locationDetails != null;
+                toDescription.setText(locationDetails.get("Loc_Description"));
+                toLocationId = locationDetails.get("Loc_Id");
+                toLocationCode = locationDetails.get("Loc_Code");
+            } else {
+                toDescription.setText("");
+                toLocationId = null;
+                toLocationCode = null;
+            }
+            updateValidateButtonState();
         });
 
         // set up "To" Spinner
-        toSpinner.setAdapter(adapter);
-        toSpinner.setSelection(0, false); // initial empty position is selected
-        toSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selectedLocation = locations.get(position);
-                if (!selectedLocation.isEmpty()) {
-                    Map<String, String> locationDetails = locationMap.get(selectedLocation);
-                    assert locationDetails != null;
-                    toDescription.setText(locationDetails.get("Loc_Description"));
-                    toLocationId = locationDetails.get("Loc_Id");
-                    toLocationCode = locationDetails.get("Loc_Code");
-                } else {
-                    toDescription.setText("");
-                    toLocationId = null;
-                    toLocationCode = null;
-                }
-                updateValidateButtonState();
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                toDescription.setText("");
-                updateValidateButtonState();
-            }
-        });
+//        toSpinner.setAdapter(adapter);
+//        toSpinner.setSelection(0, false); // initial empty position is selected
+//        toSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+//            @Override
+//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+//                String selectedLocation = locations.get(position);
+//                if (!selectedLocation.isEmpty()) {
+//                    Map<String, String> locationDetails = locationMap.get(selectedLocation);
+//                    assert locationDetails != null;
+//                    toDescription.setText(locationDetails.get("Loc_Description"));
+//                    toLocationId = locationDetails.get("Loc_Id");
+//                    toLocationCode = locationDetails.get("Loc_Code");
+//                } else {
+//                    toDescription.setText("");
+//                    toLocationId = null;
+//                    toLocationCode = null;
+//                }
+//                updateValidateButtonState();
+//            }
+//
+//            @Override
+//            public void onNothingSelected(AdapterView<?> parent) {
+//                toDescription.setText("");
+//                updateValidateButtonState();
+//            }
+//        });
     }
 
     private final TextWatcher OfflineTextWatcher = new TextWatcher() {
