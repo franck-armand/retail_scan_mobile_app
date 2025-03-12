@@ -83,12 +83,19 @@
                 android:background="@drawable/spinner_border"
                 android:padding="4dp">
 
-                <Spinner
+                <com.example.mafscan.SearchableSpinner
                     android:id="@+id/fromSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:backgroundTint="@color/primary_color"
                     android:minHeight="48dp" />
+
+<!--                <Spinner-->
+<!--                    android:id="@+id/fromSpinner"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:backgroundTint="@color/primary_color"-->
+<!--                    android:minHeight="48dp" />-->
             </LinearLayout>
 
             <TextView
@@ -121,7 +128,14 @@
                 android:background="@drawable/spinner_border"
                 android:padding="4dp">
 
-                <Spinner
+<!--                <Spinner-->
+<!--                    android:id="@+id/toSpinner"-->
+<!--                    android:layout_width="match_parent"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:backgroundTint="@color/primary_color"-->
+<!--                    android:minHeight="48dp" />-->
+
+                <com.example.mafscan.SearchableSpinner
                     android:id="@+id/toSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
