@@ -1,4 +1,5 @@
 package com.example.mafscan;
+import static com.example.mafscan.Utils.showToast;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -87,6 +88,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             vibrator.vibrate(clickVibration);
             Intent intent = new Intent(MainActivity.this, FailedOrSavedScanActivity.class);
             startActivity(intent);
+        });
+
+        // Set up the scan history button navigation
+        LinearLayout scanHistoryButton = findViewById(R.id.btn_action4);
+        scanHistoryButton.setOnClickListener(v -> {
+            vibrator.vibrate(clickVibration);
+            showToast(this, "Not implemented yet!", 0);
         });
 
 
