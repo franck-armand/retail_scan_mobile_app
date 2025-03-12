@@ -108,4 +108,7 @@
     <!-- Item scan record -->
     <string name="scan_status_sent">Sent</string>
     <string name="scan_status_not_sent">Not sent</string>
+
+    <string name="search_hint">Search Location</string>
+    <string name="select_item">Select a location</string>
 </resources>
