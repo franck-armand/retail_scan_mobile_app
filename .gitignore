@@ -13,3 +13,8 @@
 .externalNativeBuild
 .cxx
 local.properties
+mafScanLocal.properties
+/.idea/misc.xml
+/.idea/appInsightsSettings.xml
+/.idea/deploymentTargetSelector.xml
+
