@@ -1,6 +1,5 @@
 package com.example.mafscan;
 import static com.example.mafscan.Utils.showToast;
-import com.example.mafscan.Constants;
 
 import android.content.Intent;
 import android.os.Bundle;
