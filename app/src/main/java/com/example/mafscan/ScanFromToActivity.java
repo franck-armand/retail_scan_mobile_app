@@ -1,5 +1,6 @@
 package com.example.mafscan;
 import static com.example.mafscan.Utils.showToast;
+import com.example.mafscan.Constants;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -354,7 +355,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
 
     private void parseScannedData(String scannedData) {
         // Format: (00)LOC|(10)0F6B321C-8E4E-41BD-B9B3-06A0B5DC9352|(11)PNT-M1|(12)MALTE
-        if(!scannedData.startsWith("(00)LOC")){
+        if(!scannedData.startsWith(Constants.LOCATION_CODE_PREFIX)){
             showToast(this, "Invalid QR Code: Not a location code", 0);
             return;
         }
