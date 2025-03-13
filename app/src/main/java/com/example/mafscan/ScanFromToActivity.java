@@ -40,7 +40,6 @@ public class ScanFromToActivity extends AppCompatActivity implements
     private String toLocationCode;
     private SearchableSpinner fromSpinner;
     private SearchableSpinner toSpinner;
-//    private Spinner toSpinner;
     private TextView fromDescription, toDescription;
     private TabLayout tabLayout;
     private LinearLayout spinnerLayout, qrCodeLayout;
@@ -71,21 +70,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         // Initialize views
-        fromSpinner = findViewById(R.id.fromSpinner);
-        toSpinner = findViewById(R.id.toSpinner);
-        fromDescription = findViewById(R.id.fromDescription);
-        toDescription = findViewById(R.id.toDescription);
-        spinnerLayout = findViewById(R.id.spinnerLayout);
-        qrCodeLayout = findViewById(R.id.qrCodeLayout);
-        fromQrCodeEditText = findViewById(R.id.fromQrCodeEditText);
-        toQrCodeEditText = findViewById(R.id.toQrCodeEditText);
-        fromQrCodeEditText.addTextChangedListener(OfflineTextWatcher);
-        toQrCodeEditText.addTextChangedListener(OfflineTextWatcher);
-        fromDeleteButton = findViewById(R.id.fromDeleteButton);
-        toDeleteButton = findViewById(R.id.toDeleteButton);
-        validateButton = findViewById(R.id.validateButton);
-        tabLayout = findViewById(R.id.tabLayoutFromTo);
-        tabLayout.addOnTabSelectedListener(this);
+        initialization();
 
         // Loading data to spinners
         loadLocations();
@@ -105,9 +90,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
             String fromLocation;
             String toLocation;
             if (spinnerLayout.getVisibility() == View.VISIBLE) {
-//                fromLocation = fromSpinner.getSelectedItem().toString();
                 fromLocation = selectedFromLocation;
-//                toLocation = toSpinner.getSelectedItem().toString();
                 toLocation = selectedToLocation;
             } else {
                 fromLocation = Objects.requireNonNull(fromQrCodeEditText.getText()).toString().trim();
@@ -147,6 +130,24 @@ public class ScanFromToActivity extends AppCompatActivity implements
         updateValidateButtonState();
     }
 
+    private void initialization() {
+        fromSpinner = findViewById(R.id.fromSpinner);
+        toSpinner = findViewById(R.id.toSpinner);
+        fromDescription = findViewById(R.id.fromDescription);
+        toDescription = findViewById(R.id.toDescription);
+        spinnerLayout = findViewById(R.id.spinnerLayout);
+        qrCodeLayout = findViewById(R.id.qrCodeLayout);
+        fromQrCodeEditText = findViewById(R.id.fromQrCodeEditText);
+        toQrCodeEditText = findViewById(R.id.toQrCodeEditText);
+        fromQrCodeEditText.addTextChangedListener(OfflineTextWatcher);
+        toQrCodeEditText.addTextChangedListener(OfflineTextWatcher);
+        fromDeleteButton = findViewById(R.id.fromDeleteButton);
+        toDeleteButton = findViewById(R.id.toDeleteButton);
+        validateButton = findViewById(R.id.validateButton);
+        tabLayout = findViewById(R.id.tabLayoutFromTo);
+        tabLayout.addOnTabSelectedListener(this);
+    }
+
     private void callInvalidSelectionDialog() {
         DialogUtils.showInvalidSelectionDialog(
                 this,
@@ -172,7 +173,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
             qrCodeLayout.setVisibility(View.VISIBLE);
             // Enable triggers for Offline Mode
             DataLogicUtils.setTriggersEnabled(true);
-            clearSetAndDisableField();
+            updateDeleteButtonVisibility();
             updateValidateButtonState();
         }
     }
@@ -185,25 +186,10 @@ public class ScanFromToActivity extends AppCompatActivity implements
     public void onTabReselected(TabLayout.Tab tab) {
     }
 
-    private void clearSetAndDisableField() {
-//        fromQrCodeEditText.setText("");
-//        toQrCodeEditText.setText("");
-        updateDeleteButtonVisibility();
-    }
-
     private void updateValidateButtonState() {
         String currentFromLocation = "";
         String currentToLocation = "";
         if (spinnerLayout.getVisibility() == View.VISIBLE) {
-//            if (fromSpinner.getSelectedItem() != null && toSpinner.getSelectedItem() != null) {
-//                currentFromLocation = fromSpinner.getSelectedItem().toString();
-//                currentToLocation = toSpinner.getSelectedItem().toString();
-//            }
-//            if (fromSpinner.getSelectedItem() != null && toSpinner.getSelectedItem() != null) {
-//                currentFromLocation = fromSpinner.getSelectedItem().toString();
-//                currentToLocation = toSpinner.getSelectedItem().toString();
-//            }
-//            validateButton.setEnabled(!currentFromLocation.isEmpty() && !currentToLocation.isEmpty());
             validateButton.setEnabled(!selectedFromLocation.isEmpty() && !selectedToLocation.isEmpty());
         }
         else if (qrCodeLayout.getVisibility() == View.VISIBLE) {
@@ -326,34 +312,6 @@ public class ScanFromToActivity extends AppCompatActivity implements
             }
             updateValidateButtonState();
         });
-
-        // set up "To" Spinner
-//        toSpinner.setAdapter(adapter);
-//        toSpinner.setSelection(0, false); // initial empty position is selected
-//        toSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-//                String selectedLocation = locations.get(position);
-//                if (!selectedLocation.isEmpty()) {
-//                    Map<String, String> locationDetails = locationMap.get(selectedLocation);
-//                    assert locationDetails != null;
-//                    toDescription.setText(locationDetails.get("Loc_Description"));
-//                    toLocationId = locationDetails.get("Loc_Id");
-//                    toLocationCode = locationDetails.get("Loc_Code");
-//                } else {
-//                    toDescription.setText("");
-//                    toLocationId = null;
-//                    toLocationCode = null;
-//                }
-//                updateValidateButtonState();
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> parent) {
-//                toDescription.setText("");
-//                updateValidateButtonState();
-//            }
-//        });
     }
 
     private final TextWatcher OfflineTextWatcher = new TextWatcher() {
