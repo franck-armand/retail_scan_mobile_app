@@ -53,8 +53,10 @@ public class ScanDataAdapter extends RecyclerView.Adapter<ScanViewHolder> {
         return dataList.size();
     }
     public void updateItem(int position, ScanData scanData) {
-        dataList.set(position, scanData);
-        notifyItemChanged(position);
+        if (position >= 0 && position < dataList.size()) {
+            dataList.set(position, scanData);
+            notifyItemChanged(position);
+        }
     }
     public void removeItem(int position) {
         dataList.remove(position);

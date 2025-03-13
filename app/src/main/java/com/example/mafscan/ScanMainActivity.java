@@ -4,6 +4,8 @@ import static com.example.mafscan.Utils.showToast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.ItemTouchHelper;
+
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -208,10 +210,9 @@ public class ScanMainActivity extends AppCompatActivity implements
                 position -> {
                     // Swipe right to update
                     ScanData scanData = scanDataList.get(position);
-                    DialogUtils.showItemDialog(this, scanData, (scanData1, quantity) -> {
-                        scanData1.setScanCount(quantity);
-                        adapter.updateItem(position, scanData1);
-                    });
+                    DialogUtils.showItemDialog(this, scanData, position,
+                            (scanData1, quantity, position1) ->
+                                    adapter.updateItem(position1, scanData1));
                 });
         return new ItemTouchHelper(swipeToDeleteCallback);
     }
@@ -602,10 +603,12 @@ public class ScanMainActivity extends AppCompatActivity implements
 
     @Override
     public void onItemClick(ScanData scanData) {
-        DialogUtils.showItemDialog(this, scanData, (scanData1, quantity) -> {
-            int position = scanDataList.indexOf(scanData1);
-            adapter.updateItem(position, scanData1);
-        });
+        int position = scanDataList.indexOf(scanData);
+        if (position != -1) {
+            DialogUtils.showItemDialog(this, scanData, position,
+                    (scanData1, quantity, position1) ->
+                            adapter.updateItem(position1, scanData1));
+        }
     }
 
     // Implement the scanning UI state
@@ -620,6 +623,7 @@ public class ScanMainActivity extends AppCompatActivity implements
         DataLogicUtils.setTriggersEnabled(true);
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void clearScanSession() {
         runOnUiThread(() -> {
             scanDataList.clear();

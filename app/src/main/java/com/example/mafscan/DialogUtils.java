@@ -46,6 +46,7 @@ public class DialogUtils {
     public static void showItemDialog(
             Context context,
             ScanData scanData,
+            int position,
             final OnItemClickListener positiveAction)
     {
         android.app.AlertDialog.Builder dialogBuilder = new android.app.AlertDialog.Builder(context,
@@ -119,7 +120,7 @@ public class DialogUtils {
                 scanData.setScanCount(quantity);
 
                 if (positiveAction != null) {
-                    positiveAction.onValidate(scanData, quantity);
+                    positiveAction.onValidate(scanData, quantity, position);
                 }
 
                 dialog.dismiss();
@@ -131,7 +132,7 @@ public class DialogUtils {
         dialog.show();
     }
     public interface OnItemClickListener {
-        void onValidate(ScanData scanData, float quantity);
+        void onValidate(ScanData scanData, float quantity, int position);
     }
 }
 
