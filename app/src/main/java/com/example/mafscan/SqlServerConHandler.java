@@ -7,12 +7,9 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class SqlServerConHandler {
-    private static final String DB_URL = "jdbc:jtds:sqlserver://10.10.1.24:1433;" +
-                                            "databaseName=ProductionProgress;" +
-                                            "encrypt=true;" +
-                                            "trustServerCertificate=true;";
-    private static final String USER = "ScanDataLogicLogin";
-    private static final String PASS = "scandatalogic";
+    private static final String DB_URL = BuildConfig.DB_URL;
+    private static final String USER = BuildConfig.DB_USER;
+    private static final String PASS = BuildConfig.DB_PASS;
     private static final String TAG = SqlServerConHandler.class.getSimpleName();
 
     public static Connection establishSqlServCon() throws SQLException {

@@ -1,6 +1,16 @@
 import java.io.FileInputStream
 import java.util.Properties
 
+fun getLocalProperty(propertyName: String): String? {
+    val properties = Properties()
+    try {
+        properties.load(FileInputStream(rootProject.file("mafScanLocal.properties")))
+    } catch (e: Exception) {
+        println("Error loading mafScanLocal.properties: ${e.message}")
+    }
+    return properties.getProperty(propertyName)
+}
+
 plugins {
     alias(libs.plugins.android.application)
     id("androidx.room")
@@ -9,6 +19,9 @@ plugins {
 }
 
 android {
+    buildFeatures {
+        buildConfig = true
+    }
     // keystore.properties file, in the rootProject folder.
     val keystorePropertiesFile = rootProject.file("keystore.properties")
     // Initialize a new Properties() object called keystoreProperties.
@@ -35,6 +48,13 @@ android {
         versionName = "06_03_25_V1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "DB_URL",
+            "\"${getLocalProperty("db.url")}\"")
+        buildConfigField("String", "DB_USER",
+            "\"${getLocalProperty("db.user")}\"")
+        buildConfigField("String", "DB_PASS",
+            "\"${getLocalProperty("db.password")}\"")
     }
     buildTypes {
         release {
@@ -55,12 +75,9 @@ android {
 }
 
 dependencies {
-    //implementation(libs.firebase.crashlytics)
-    // Import the BoM for the Firebase platform
     implementation(platform(libs.firebase.bom))
 
     // Add the dependencies for the Crashlytics and Analytics libraries
-    // When using the BoM, you don't specify versions in Firebase library dependencies
     implementation(libs.google.firebase.crashlytics)
     implementation(libs.firebase.analytics)
 
