@@ -16,6 +16,8 @@
 
     <!-- Scan From/To activity -->
     <string name="online_tab_label">Online Mode</string>
+    <string name="search_hint">Search Location</string>
+    <string name="select_item">Select a location</string>
     <string name="offline_tab_label">Offline Mode</string>
     <string name="scan_0_from_hint">Scan Provenance </string>
     <string name="scan_0_to_hint">Scan Destination </string>
@@ -109,6 +111,11 @@
     <string name="scan_status_sent">Sent</string>
     <string name="scan_status_not_sent">Not sent</string>
 
-    <string name="search_hint">Search Location</string>
-    <string name="select_item">Select a location</string>
+
+    <!-- Technical Guide -->
+    <string name="user_guide">User Guide</string>
+    <string name="user_guide_content">User Guide Content</string>
+    <string name="scan_code_table_label_1">Prefix</string>
+    <string name="scan_code_table_label_2">Data Field</string>
+
 </resources>
