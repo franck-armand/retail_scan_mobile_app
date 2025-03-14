@@ -13,6 +13,7 @@ appcompat = "1.7.0"
 material = "1.12.0"
 googleGmsGoogleServices = "4.4.2"
 googleFirebaseCrashlytics = "3.0.3"
+photoview = "2.3.0"
 roomRuntime = "2.6.1"
 
 [libraries]
@@ -29,6 +30,7 @@ ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitV
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
 appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+photoview = { module = "com.github.chrisbanes:PhotoView", version.ref = "photoview" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
 
