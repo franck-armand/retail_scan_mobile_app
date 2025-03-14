@@ -1,4 +1,5 @@
 package com.example.mafscan;
+import static com.example.mafscan.Utils.showToast;
 
 import android.annotation.SuppressLint;
 import android.graphics.Typeface;
@@ -6,7 +7,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TableLayout;
@@ -112,15 +112,21 @@ public class RetrieveScanInfoActivity extends AppCompatActivity {
 
         if (id == R.id.action_settings) {
             // Handle Settings click
-            Toast.makeText(this, "Settings Clicked", Toast.LENGTH_SHORT).show();
+            showToast(this, "Settings Clicked", 0);
             return true;
         } else if (id == R.id.Help) {
             // Handle Help click
-            Toast.makeText(this, "Help Clicked", Toast.LENGTH_SHORT).show();
+//            showToast(this, "Help Clicked", 0);
+            showHelpDialog();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showHelpDialog() {
+        HelpDialogFragment dialog = new HelpDialogFragment();
+        dialog.show(getSupportFragmentManager(), "HelpDialogFragment");
     }
 
     @Override
