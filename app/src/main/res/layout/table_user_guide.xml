@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dynamicTable"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:stretchColumns="1"
+    android:background="@color/light_gray">
+
+    <!-- Header Row -->
+    <TableRow>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:padding="3dp"
+            android:text="@string/scan_code_table_label_1"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/primary_color" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:padding="3dp"
+            android:text="@string/scan_code_table_label_2"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/primary_color" />
+
+    </TableRow>
+    <!-- Data Rows will be added here dynamically -->
+</TableLayout>
