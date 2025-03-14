@@ -6,7 +6,8 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_gray">
+    android:background="@color/light_gray"
+    tools:context=".MainActivity">
 
     <!-- Main Content -->
     <LinearLayout
@@ -56,6 +57,17 @@
                     android:contentDescription="@string/maf_logo"
                     android:src="@drawable/maf_logo" />
 
+                <!-- App Version -->
+                <TextView
+                    android:id="@+id/appVersionTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="2dp"
+                    tools:text="Version 1.0.0"
+                    android:textColor="@color/gray"
+                    android:textSize="14sp" />
+
                 <!-- Buttons -->
                 <GridLayout
                     android:layout_width="match_parent"
@@ -90,6 +102,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/scan"
                             android:textColor="@android:color/black"
+                            android:textStyle="bold"
                             android:textSize="20sp"
                             android:layout_gravity="center" />
                     </LinearLayout>
@@ -118,6 +131,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/action_2"
+                            android:textStyle="bold"
                             android:textColor="@android:color/black"
                             android:textSize="20sp"
                             android:layout_gravity="center" />
@@ -140,13 +154,14 @@
                         <ImageView
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:src="@drawable/ic_baseline_menu_24_xml"
+                            android:src="@drawable/save_white"
                             android:contentDescription="@string/action_3_icon_desc" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="@string/action_3"
+                            android:textStyle="bold"
                             android:textColor="@android:color/black"
                             android:textSize="20sp"
                             android:layout_gravity="center" />
@@ -169,7 +184,7 @@
                         <ImageView
                             android:layout_width="48dp"
                             android:layout_height="48dp"
-                            android:src="@drawable/ic_baseline_menu_24_xml"
+                            android:src="@drawable/help"
                             android:contentDescription="@string/action_4_icon_desc" />
 
                         <TextView
@@ -177,6 +192,7 @@
                             android:layout_height="wrap_content"
                             android:text="@string/action_4"
                             android:textColor="@android:color/black"
+                            android:textStyle="bold"
                             android:textSize="20sp"
                             android:layout_gravity="center" />
                     </LinearLayout>

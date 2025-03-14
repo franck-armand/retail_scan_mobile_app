@@ -16,6 +16,7 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import android.os.Vibrator;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.navigation.NavigationView;
@@ -45,9 +46,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            String title = getString(R.string.app_name) + " _ " + appVersion;
+            //String title = getString(R.string.app_name) + " _ " + appVersion;
+            String title = getString(R.string.app_name);
             getSupportActionBar().setTitle(title);
         }
+
+        // Set up the app version
+        TextView appVersionTextView = findViewById(R.id.appVersionTextView);
+        appVersionTextView.setText(appVersion);
 
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -90,11 +96,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startActivity(intent);
         });
 
-        // Set up the scan history button navigation
+        // Set up the user guide button navigation
         LinearLayout scanHistoryButton = findViewById(R.id.btn_action4);
         scanHistoryButton.setOnClickListener(v -> {
             vibrator.vibrate(clickVibration);
-            showToast(this, "Not implemented yet!", 0);
+            //showToast(this, "Not implemented yet!", 0);
+            Intent intent = new Intent(MainActivity.this, UserGuideActivity.class);
+            startActivity(intent);
         });
 
 
