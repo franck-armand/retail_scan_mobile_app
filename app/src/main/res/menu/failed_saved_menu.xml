@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/failed_saved_new_session"
+        android:title="@string/new_scan_session"
+        android:icon="@drawable/qr_code_scanner"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/failed_saved_scan_info"
+        android:title="@string/retrieve_scan_info_activity_title"
+        android:icon="@drawable/scan_info"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/failed_saved_action_about"
+        android:title="@string/action_about"
+        android:icon="@drawable/info"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/failed_saved_action_auth"
+        android:title="@string/authentication"
+        android:icon="@drawable/baseline_login_24"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/failed_saved_action_settings"
+        android:title="@string/action_settings"
+        android:icon="@drawable/settings_black"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/failed_saved_action_Help"
+        android:title="@string/action_help"
+        android:icon="@drawable/help_black"
+        app:showAsAction="ifRoom" />
+</menu>
