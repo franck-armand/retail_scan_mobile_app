@@ -37,11 +37,9 @@ public class HelpDialogFragment extends DialogFragment {
         int width = getResources().getDisplayMetrics().widthPixels;
         int height = getResources().getDisplayMetrics().heightPixels;
 
-        // Calculate the desired width and height for the image
         int desiredWidth = (int) (width * 0.9); // 90% of screen width
         int desiredHeight = (int) (height * 0.45); // 45% of screen height
 
-        // Set the layout parameters for the ImageView
         return new LinearLayout.LayoutParams(
                 desiredWidth,
                 desiredHeight

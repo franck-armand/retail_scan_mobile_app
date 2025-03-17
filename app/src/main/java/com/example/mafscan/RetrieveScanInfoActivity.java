@@ -1,7 +1,6 @@
 package com.example.mafscan;
-import static com.example.mafscan.Utils.showToast;
 
-import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.appcompat.widget.Toolbar;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -95,14 +93,9 @@ public class RetrieveScanInfoActivity extends AppCompatActivity {
     }
 
     // Google has blocked showing the icon on the toolbar, just a work around
-    @SuppressLint("RestrictedApi")
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.retrieve_scan_info_menu, menu);
-        if(menu instanceof MenuBuilder){
-            MenuBuilder m = (MenuBuilder) menu;
-            m.setOptionalIconsVisible(true);
-        }
+        Utils.inflateMenu(this, menu, R.menu.retrieve_scan_info_menu);
         return true;
     }
 
@@ -110,23 +103,24 @@ public class RetrieveScanInfoActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.action_settings) {
-            // Handle Settings click
-            showToast(this, "Settings Clicked", 0);
+        if (id == R.id.action_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
             return true;
-        } else if (id == R.id.Help) {
-            // Handle Help click
-//            showToast(this, "Help Clicked", 0);
-            showHelpDialog();
+        } else if (id == R.id.action_Help) {
+            Utils.showHelpDialog(getSupportFragmentManager());
+            return true;
+        } else if (id == R.id.action_scan_session) {
+            Intent intent = new Intent(this, ScanFromToActivity.class);
+            startActivity(intent);
+            return true;
+        } else if (id == R.id.action_failed_saved) {
+            Intent intent = new Intent(this, FailedOrSavedScanActivity.class);
+            startActivity(intent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void showHelpDialog() {
-        HelpDialogFragment dialog = new HelpDialogFragment();
-        dialog.show(getSupportFragmentManager(), "HelpDialogFragment");
     }
 
     @Override
