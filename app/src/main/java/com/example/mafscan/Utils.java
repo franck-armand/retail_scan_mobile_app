@@ -1,5 +1,6 @@
 package com.example.mafscan;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -8,12 +9,18 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.view.menu.MenuBuilder;
 import androidx.core.content.ContextCompat;
 import androidx.core.net.ParseException;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -176,5 +183,19 @@ public class Utils {
         Toast.makeText(context, message, duration).show();
     }
 
+    @SuppressLint("RestrictedApi")
+    public static void inflateMenu(AppCompatActivity activity, Menu menu, int menuResId) {
+        MenuInflater inflater = activity.getMenuInflater();
+        inflater.inflate(menuResId, menu);
+        if (menu instanceof MenuBuilder) {
+            MenuBuilder menuBuilder = (MenuBuilder) menu;
+            menuBuilder.setOptionalIconsVisible(true);
+        }
+    }
+
+    public static void showHelpDialog(FragmentManager fragmentManager) {
+        HelpDialogFragment dialog = new HelpDialogFragment();
+        dialog.show(fragmentManager, "ScanCodeHelpDialogFragment");
+    }
 }
 
