@@ -1,9 +1,9 @@
 package com.example.mafscan;
-import static com.example.mafscan.Utils.showToast;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.VibrationEffect;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
 
@@ -119,6 +119,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         };
         getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        Utils.inflateMenu(this, menu, R.menu.home_menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.home_action_auth) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return true;
+        }else if (id == R.id.home_action_Help) {
+            Utils.showHelpDialog(getSupportFragmentManager());
+            return true;
+        } else if (id == R.id.home_action_settings) {
+            Utils.showToast(this, "Not implemented yet!", 0);
+        } else if (id == R.id.home_action_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
