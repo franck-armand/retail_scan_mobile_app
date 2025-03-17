@@ -11,6 +11,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.LinearLayout;
@@ -164,7 +166,40 @@ public class ScanMainActivity extends AppCompatActivity implements
                     }
                 });
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        Utils.inflateMenu(this, menu, R.menu.scan_session_menu);
+        return true;
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        int id = item.getItemId();
+        if (id == R.id.session_action_Help) {
+            Utils.showHelpDialog(getSupportFragmentManager());
+            return true;
+        }else if (id == R.id.session_action_about) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+            return true;
+        }else if (id == R.id.session_action_auth) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivity(intent);
+            return true;
+        }else if (id == R.id.session_action_settings) {
+            showToast(this, "Settings not implemented yet!", 0);
+            return true;
+        }else if (id == R.id.session_failed_saved) {
+            Intent intent = new Intent(this, FailedOrSavedScanActivity.class);
+            startActivity(intent);
+            return true;
+//        } else if (id == R.id.session_scan_info) {
+//            Intent intent = new Intent(this, RetrieveScanInfoActivity.class);
+//            startActivity(intent);
+//            return true;
+        }
 
+        return super.onOptionsItemSelected(item);
+    }
     private CompletableFuture<String> createNewScanSession() {
         CompletableFuture<String> future = new CompletableFuture<>();
         executor.execute(() -> {
@@ -590,7 +625,7 @@ public class ScanMainActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         executor.shutdown();
-        DataLogicUtils.stopScanning();
+        //DataLogicUtils.stopScanning();
         //DataLogicUtils.releaseScanner();
 
     }
