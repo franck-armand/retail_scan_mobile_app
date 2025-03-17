@@ -2,11 +2,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item
-        android:id="@+id/session_failed_saved"
-        android:title="@string/failed_saved_scans"
-        android:icon="@drawable/save_black"
-        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/session_failed_saved"-->
+<!--        android:title="@string/failed_saved_scans"-->
+<!--        android:icon="@drawable/save_black"-->
+<!--        app:showAsAction="never" />-->
 <!--    <item-->
 <!--        android:id="@+id/session_scan_info"-->
 <!--        android:title="@string/retrieve_scan_info_activity_title"-->
@@ -17,11 +17,11 @@
         android:title="@string/action_about"
         android:icon="@drawable/info"
         app:showAsAction="never" />
-    <item
-        android:id="@+id/session_action_auth"
-        android:title="@string/authentication"
-        android:icon="@drawable/baseline_login_24"
-        app:showAsAction="never" />
+<!--    <item-->
+<!--        android:id="@+id/session_action_auth"-->
+<!--        android:title="@string/authentication"-->
+<!--        android:icon="@drawable/baseline_login_24"-->
+<!--        app:showAsAction="never" />-->
     <item
         android:id="@+id/session_action_settings"
         android:title="@string/action_settings"

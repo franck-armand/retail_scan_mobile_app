@@ -18,7 +18,6 @@ import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
@@ -146,7 +145,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                         if (scannedData != null && !scannedData.isEmpty()) {
                             handleScannedData(scannedData, codeType);
                         } else {
-                            Toast.makeText(this, "Empty Scan", Toast.LENGTH_SHORT).show();
+                            Utils.showToast(this, "Empty Scan", 0);
                         }
                     })
             );
@@ -157,8 +156,8 @@ public class ScanMainActivity extends AppCompatActivity implements
                     @Override
                     public void handleOnBackPressed() {
                         if (isSendingData) {
-                            Toast.makeText(ScanMainActivity.this,
-                                    "Please wait while data is being sent.", Toast.LENGTH_SHORT).show();
+                            Utils.showToast(ScanMainActivity.this,
+                                    "Please wait while data is being sent.", 0);
                         } else {
                             setEnabled(false);
                             finish();
@@ -181,17 +180,17 @@ public class ScanMainActivity extends AppCompatActivity implements
             Intent intent = new Intent(this, AboutActivity.class);
             startActivity(intent);
             return true;
-        }else if (id == R.id.session_action_auth) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
-            return true;
+//        }else if (id == R.id.session_action_auth) {
+//            Intent intent = new Intent(this, LoginActivity.class);
+//            startActivity(intent);
+//            return true;
         }else if (id == R.id.session_action_settings) {
             showToast(this, "Settings not implemented yet!", 0);
             return true;
-        }else if (id == R.id.session_failed_saved) {
-            Intent intent = new Intent(this, FailedOrSavedScanActivity.class);
-            startActivity(intent);
-            return true;
+//        }else if (id == R.id.session_failed_saved) {
+//            Intent intent = new Intent(this, FailedOrSavedScanActivity.class);
+//            startActivity(intent);
+//            return true;
 //        } else if (id == R.id.session_scan_info) {
 //            Intent intent = new Intent(this, RetrieveScanInfoActivity.class);
 //            startActivity(intent);
@@ -381,13 +380,11 @@ public class ScanMainActivity extends AppCompatActivity implements
                     sessionStatement.setString(1, sessionId);
                     sessionStatement.setString(2, fromLocationId);
                     sessionStatement.setString(3, toLocationId);
-
 //                    java.util.Calendar calendar = java.util.Calendar.getInstance();
 //                    java.util.TimeZone utcTimeZone = java.util.TimeZone.getTimeZone("UTC");
 //                    calendar.setTimeZone(utcTimeZone);
 //                    Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
 //                    sessionStatement.setTimestamp(4, timestamp);
-
                     sessionStatement.setTimestamp(4, new Timestamp(new Date().getTime()));
                     sessionStatement.executeUpdate();
                     connection.commit();
