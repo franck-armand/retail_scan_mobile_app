@@ -132,6 +132,18 @@
     <string name="help_image_description">scan code help image description</string>
     <string name="new_scan_session">New scan session</string>
 
+    <!-- Home button title -->
+    <string name="card_1">Retail Activities</string>
+    <string name="transfer">Transfer</string>
+    <string name="expedition">Expedition</string>
+    <string name="reception">Reception</string>
+    <string name="shuttle">Shuttle</string>
+    <string name="inventory">Inventory</string>
+    <string name="card_2">Utils</string>
+    <string name="retail_activities">Retail Activities</string>
+    <string name="failed_or_saved_scans">Failed/Saved</string>
+    <string name="qr_info">QR Info</string>
+
     <string name="action_about">About Mafscan</string>
     <string name="home">Home</string>
     <string name="card_icon_desc">card icon description</string>
