@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements
         clickVibration = VibrationEffect.createPredefined(VibrationEffect.EFFECT_CLICK);
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_home4); // Changed to activity_home4
+        setContentView(R.layout.activity_home4);
 
         // Get app version
         String appVersion = Utils.getAppVersion(this);
@@ -267,48 +267,49 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void setupRecyclerView() {
-        // 1. Get a reference to the RecyclerView
+        // Get a reference to the RecyclerView
         RecyclerView recyclerView = findViewById(R.id.recycler_view_home);
 
-        // 2. Create sample HomeCard data
+        // Create sample HomeCard data
         List<HomeCard> cardList = new ArrayList<>();
 
         // Card 1
         List<String> buttonTitles1 = Arrays.asList(
-                "Transfer",
-                "Expedition",
-                "Reception",
-                "Shuttle",
-                "Inventory");
+                getString(R.string.transfer),
+                getString(R.string.expedition),
+                getString(R.string.reception),
+                getString(R.string.shuttle),
+                getString(R.string.inventory));
         List<Integer> buttonIcons1 = Arrays.asList(
                 R.drawable.transfert,
                 R.drawable.expedition,
                 R.drawable.reception,
                 R.drawable.shuttle,
                 R.drawable.inventory);
-        cardList.add(new HomeCard("Retail Activities", buttonTitles1, buttonIcons1));
+        cardList.add(new HomeCard(getString(R.string.card_1), buttonTitles1, buttonIcons1));
 
         // Card 2
         List<String> buttonTitles2 = Arrays.asList(
-                "Failed/Saved",
-                "QR Info",
-                "Help");
+                getString(R.string.failed_or_saved_scans),
+                getString(R.string.qr_info),
+                getString(R.string.user_guide)
+                );
         List<Integer> buttonIcons2 = Arrays.asList(
                 R.drawable.ic_save,
                 R.drawable.qr_info,
                 R.drawable.user_guide);
-        cardList.add(new HomeCard("Utils", buttonTitles2, buttonIcons2));
+        cardList.add(new HomeCard(getString(R.string.card_2), buttonTitles2, buttonIcons2));
 
-        // 3. Create an instance of HomeCardAdapter
+        // Create an instance of HomeCardAdapter
         HomeCardAdapter adapter = new HomeCardAdapter(cardList, this);
 
-        // 4. Set the Layout Manager
+        // Set the Layout Manager
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // 5. Set the Adapter
+        // Set the Adapter
         recyclerView.setAdapter(adapter);
 
-        // 6. Set the button click listener
+        // Set the button click listener
         adapter.setOnButtonClickListener(this);
     }
 
