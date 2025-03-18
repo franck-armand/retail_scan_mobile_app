@@ -47,11 +47,12 @@
 
     <!-- Retrieve scan information -->
     <string name="scan_hint_message">Scan QR code to retrieve details</string>
-    <string name="retrieve_scan_info_activity_title">Retrieve Scan Information</string>
+    <string name="retrieve_scan_info_activity_title">Retrieve Scan Info</string>
     <string name="scanned_hint_message">"Scanned Code Information"</string>
 
     <!-- Authentication -->
     <string name="login">Authentication</string>
+    <string name="login_label">Sign in</string>
     <string name="ldap_auth">Windows Auth.</string>
     <string name="scan_auth">Scan Auth.</string>
     <string name="hint_username_ldap_auth">Enter your Username</string>
@@ -78,6 +79,15 @@
         \n- Session can be resubmitted or deleted.
         \n- Improved overall application UI.
         \n- Fixed bugs in sending scans (Application crash).
+    </string>
+    <string name="release_info_17.03.25.V1.3">
+        - Resend Scans to SQL Server: Improved handling of scan resubmission with UI updates and progress tracking.
+        \n- Session Management: Automatic/manual saving, resubmission, and deletion of scan sessions.
+        \n- Enhanced UI and UX: Added a searchable dropdown, improved dialogs, and better error handling.
+        \n- Improved Messaging: Unified success messages, refined toast notifications, and added failure alerts.
+        \n- Bug Fixes and Stability: Fixed crashes, optimized scan data updates, and enhanced logging.
+        \n- User Guide and Help: Added a barcode scanning guide and a help dialog with images.
+        \n- Navigation: Added menu items to navigate between activities.
     </string>
     <string name="key_features">Key Feature</string>
     <string name="scan_qr_codes"> - Scan, send and retrieve QR codes information.</string>
@@ -120,5 +130,11 @@
     <string name="action_settings">Settings</string>
     <string name="action_help">Help</string>
     <string name="help_image_description">scan code help image description</string>
+    <string name="new_scan_session">New scan session</string>
+
+    <string name="action_about">About Mafscan</string>
+    <string name="home">Home</string>
+    <string name="card_icon_desc">card icon description</string>
+
 
 </resources>

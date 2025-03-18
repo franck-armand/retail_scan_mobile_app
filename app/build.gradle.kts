@@ -44,8 +44,8 @@ android {
         applicationId = "com.maf.mafscan"
         minSdk = 30
         targetSdk = 33
-        versionCode = 3
-        versionName = "06_03_25_V1.2"
+        versionCode = 4
+        versionName = "17_03_25_V1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -101,6 +101,10 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
+    // Photo dependencies
     implementation(libs.photoview)
+
+    // Flexbox dependencies
+    implementation(libs.flexbox)
 
 }

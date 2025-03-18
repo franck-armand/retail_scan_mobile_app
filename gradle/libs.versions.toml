@@ -5,6 +5,7 @@ constraintlayoutCompose = "1.1.1"
 coreSplashscreen = "1.0.1"
 datalogicAndroidSdk = "1.42"
 firebaseBom = "33.10.0"
+flexbox = "3.0.0"
 jtds = "1.3.1"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -23,6 +24,7 @@ core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = 
 datalogic-android-sdk = { module = "com.github.datalogic:datalogic-android-sdk", version.ref = "datalogicAndroidSdk" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
+flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexbox" }
 google-firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics" }
 jtds = { module = "net.sourceforge.jtds:jtds", version.ref = "jtds" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
