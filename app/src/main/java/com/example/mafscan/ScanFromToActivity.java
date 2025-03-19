@@ -14,6 +14,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -108,13 +109,7 @@ public class ScanFromToActivity extends AppCompatActivity implements
                     Log.d(TAG, "Start Scanning: From Location: " + fromLocation + "," +
                             " To Location: " + toLocation);
                     // Navigate to scanning activity
-                    Intent intent = new Intent(ScanFromToActivity.this, ScanMainActivity.class);
-                    intent.putExtra("fromLocation", fromLocation);
-                    intent.putExtra("toLocation", toLocation);
-                    intent.putExtra("fromLocationId", fromLocationId);
-                    intent.putExtra("fromLocationCode", fromLocationCode);
-                    intent.putExtra("toLocationId", toLocationId);
-                    intent.putExtra("toLocationCode", toLocationCode);
+                    Intent intent = getTransferIntent(fromLocation, toLocation);
                     startActivity(intent);
                 }
             }
@@ -128,6 +123,19 @@ public class ScanFromToActivity extends AppCompatActivity implements
         // Set initial validate button state
         updateDeleteButtonVisibility();
         updateValidateButtonState();
+    }
+
+    @NonNull
+    private Intent getTransferIntent(String fromLocation, String toLocation) {
+        Intent intent = new Intent(ScanFromToActivity.this, ScanMainActivity.class);
+        intent.putExtra("fromLocation", fromLocation);
+        intent.putExtra("toLocation", toLocation);
+        intent.putExtra("fromLocationId", fromLocationId);
+        intent.putExtra("fromLocationCode", fromLocationCode);
+        intent.putExtra("toLocationId", toLocationId);
+        intent.putExtra("toLocationCode", toLocationCode);
+        intent.putExtra("sessionType", Constants.SCAN_SESSION_TRANSFER);
+        return intent;
     }
 
     private void initialization() {
