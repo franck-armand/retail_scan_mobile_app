@@ -15,9 +15,6 @@ import java.util.concurrent.Executors;
 @Database(
         entities = {ScanRecord.class, ScanSession.class},
         version = 4
-//        autoMigrations = {
-//                @AutoMigration(from = 1, to = 2)
-//        }
 )
 
 public abstract class AppDatabase extends RoomDatabase {
