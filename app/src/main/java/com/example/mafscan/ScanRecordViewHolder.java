@@ -13,11 +13,11 @@ import java.util.Locale;
 
 public class ScanRecordViewHolder extends RecyclerView.ViewHolder {
 
-    TextView scannedDataTextView;
-    TextView codeTypeTextView;
-    TextView scanDateTextView;
-    TextView scanCountTextView;
-    TextView scanStatusTextView;
+    private final TextView scannedDataTextView;
+    private final TextView codeTypeTextView;
+    private final TextView scanDateTextView;
+    private final TextView scanCountTextView;
+    private final TextView scanStatusTextView;
     private final String TAG = getClass().getSimpleName();
 
     public ScanRecordViewHolder(@NonNull View itemView) {
