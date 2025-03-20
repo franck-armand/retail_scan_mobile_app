@@ -15,7 +15,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Objects;
 
-public class FailedOrSavedScanActivity extends AppCompatActivity {
+public class FailedOrSavedScanActivity extends AppCompatActivity
+        implements ScanSessionAdapter.OnListChangedListener {
 
     private RecyclerView failedScansRecyclerView;
     private TextView emptyFailedScansTextView;
@@ -37,7 +38,8 @@ public class FailedOrSavedScanActivity extends AppCompatActivity {
 
         // Set up the RecyclerView
         failedScansRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        scanSessionAdapter = new ScanSessionAdapter(getApplication());
+        scanSessionAdapter = new ScanSessionAdapter(getApplication(), this);
+        scanSessionAdapter.setOnListChangedListener(this);
         failedScansRecyclerView.setAdapter(scanSessionAdapter);
 
         // Set up the ViewModel
@@ -51,6 +53,10 @@ public class FailedOrSavedScanActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onListChanged() {
+        updateEmptyState();
+    }
     public void updateEmptyState() {
         if (scanSessionAdapter.getCurrentList().isEmpty()) {
             emptyFailedScansTextView.setVisibility(View.VISIBLE);

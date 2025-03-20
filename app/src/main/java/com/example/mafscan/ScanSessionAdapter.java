@@ -1,11 +1,13 @@
 package com.example.mafscan;
 
 import android.app.Application;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
@@ -19,16 +21,26 @@ import java.util.Map;
 
 public class ScanSessionAdapter extends ListAdapter<ScanSession, ScanSessionViewHolder> {
 
+    public interface OnListChangedListener {
+        void onListChanged();
+    }
     private final FailedOrSavedScanRepository repository;
+    private final AppCompatActivity activity;
     private final Map<String, Observer<List<ScanRecord>>> observers = new HashMap<>();
+    private OnListChangedListener listChangedListener;
+    private final String TAG = getClass().getSimpleName();
 
-    public ScanSessionAdapter(Application application) {
+    public void setOnListChangedListener(OnListChangedListener listener) {
+        this.listChangedListener = listener;
+    }
+    public ScanSessionAdapter(Application application, AppCompatActivity activity) {
         super(DIFF_CALLBACK);
         repository = new FailedOrSavedScanRepository(application);
+        this.activity = activity;
     }
 
     private static final DiffUtil.ItemCallback<ScanSession>
-            DIFF_CALLBACK = new DiffUtil.ItemCallback<ScanSession>() {
+            DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull ScanSession oldItem, @NonNull ScanSession newItem) {
             return oldItem.sessionId.equals(newItem.sessionId);
@@ -45,7 +57,7 @@ public class ScanSessionAdapter extends ListAdapter<ScanSession, ScanSessionView
     public ScanSessionViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_scan_session, parent, false);
-        return new ScanSessionViewHolder(itemView, parent.getContext(), repository, this);
+        return new ScanSessionViewHolder(itemView, parent.getContext(), repository, this, activity);
     }
 
     @Override
@@ -75,9 +87,15 @@ public class ScanSessionAdapter extends ListAdapter<ScanSession, ScanSessionView
 
     public void remove(ScanSession scanSession) {
         List<ScanSession> currentList = new ArrayList<>(getCurrentList());
-        if (currentList.contains(scanSession)) {
-            currentList.remove(scanSession);
-            submitList(currentList);
+        List<ScanSession> newList = new ArrayList<>();
+        for (ScanSession item : currentList) {
+            if (!item.sessionId.equals(scanSession.sessionId)) {
+                newList.add(item);
+            }
+        }
+        submitList(newList);
+        if (listChangedListener != null) {
+            listChangedListener.onListChanged();
         }
     }
 }

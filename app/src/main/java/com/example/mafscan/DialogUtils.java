@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -12,36 +13,74 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 public class DialogUtils {
-    public static void showInvalidSelectionDialog(Context context,
-                                                  String title,
-                                                  String message,
-                                                  String positiveButtonText,
-                                                  DialogInterface.OnClickListener positiveAction,
-                                                  String negativeButtonText,
-                                                  DialogInterface.OnClickListener negativeAction) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomAlertDialogTheme);
-        builder.setTitle(title)
-                .setMessage(message)
-                .setPositiveButton(positiveButtonText, positiveAction)
-                .setNegativeButton(negativeButtonText, negativeAction)
-                .setCancelable(false); // Prevent dismissal by clicking outside
-        AlertDialog dialog = builder.create();
-        dialog.setOnShowListener(d -> {
-            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
-            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-            if(positiveButton != null) {
-                positiveButton.setTextColor(ContextCompat.getColor(context, R.color.primary_color));
-            }
-            if(negativeButton != null) {
-                negativeButton.setTextColor(ContextCompat.getColor(context, R.color.primary_color));
-            }
-        });
-        dialog.show();
+    private static final String TAG = DialogUtils.class.getSimpleName();
+//    public static void showInvalidSelectionDialog(Context context,
+//                                                  String title,
+//                                                  String message,
+//                                                  String positiveButtonText,
+//                                                  DialogInterface.OnClickListener positiveAction,
+//                                                  String negativeButtonText,
+//                                                  DialogInterface.OnClickListener negativeAction) {
+//        AlertDialog.Builder builder = new AlertDialog.Builder(context, R.style.CustomAlertDialogTheme);
+//        builder.setTitle(title)
+//                .setMessage(message)
+//                .setPositiveButton(positiveButtonText, positiveAction)
+//                .setNegativeButton(negativeButtonText, negativeAction)
+//                .setCancelable(false); // Prevent dismissal by clicking outside
+//        AlertDialog dialog = builder.create();
+//        dialog.setOnShowListener(d -> {
+//            Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+//            Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+//
+//            if(positiveButton != null) {
+//                positiveButton.setTextColor(ContextCompat.getColor(context, R.color.primary_color));
+//            }
+//            if(negativeButton != null) {
+//                negativeButton.setTextColor(ContextCompat.getColor(context, R.color.primary_color));
+//            }
+//        });
+//        dialog.show();
+//    }
+public static void showInvalidSelectionDialog(AppCompatActivity activity,
+                                              String title,
+                                              String message,
+                                              String positiveButtonText,
+                                              DialogInterface.OnClickListener positiveAction,
+                                              String negativeButtonText,
+                                              DialogInterface.OnClickListener negativeAction) {
+    if (activity == null || activity.isFinishing() || activity.isDestroyed()) {
+        Log.w(TAG, "Attempting to show dialog after activity has been destroyed or finished.");
+        return; // Don't show the dialog if the activity is not valid
     }
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(activity, R.style.CustomAlertDialogTheme);
+    builder.setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonText, positiveAction)
+            .setNegativeButton(negativeButtonText, negativeAction)
+            .setCancelable(false); // Prevent dismissal by clicking outside
+    AlertDialog dialog = builder.create();
+    dialog.setOnShowListener(d -> {
+        Button positiveButton = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+        Button negativeButton = dialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+        if(positiveButton != null) {
+            positiveButton.setTextColor(ContextCompat.getColor(activity, R.color.primary_color));
+        }
+        if(negativeButton != null) {
+            negativeButton.setTextColor(ContextCompat.getColor(activity, R.color.primary_color));
+        }
+    });
+    try {
+        dialog.show();
+    } catch (Exception e) {
+        Log.e(TAG, "Error showing dialog: ", e);
+    }
+}
 
     public static void showItemDialog(
             Context context,

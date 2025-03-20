@@ -16,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.net.ParseException;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -29,20 +30,22 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
     //TextView sessionIdTextView;
-    TextView sessionFromToTextView;
-    TextView sessionDateTextView;
-    TextView scanCountTextView;
-    ImageView expandCollapseImageView;
-    RecyclerView scansRecyclerView;
-    Button resendButton;
-    Button deleteButton;
-    View statusIndicatorView;
+    private final TextView sessionFromToTextView;
+    private final TextView sessionDateTextView;
+    private final TextView scanCountTextView;
+    private final TextView sessionTypeTextView;
+    private final ImageView expandCollapseImageView;
+    private final RecyclerView scansRecyclerView;
+    private final Button resendButton;
+    private final Button deleteButton;
+    private final View statusIndicatorView;
     ScanSession currentScanSession;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private final ExecutorService executor = Executors. newSingleThreadExecutor();
@@ -57,12 +60,14 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
     private final FailedOrSavedScanRepository repository;
     private final Context context;
     private final ScanSessionAdapter adapter;
+    private final AppCompatActivity activity;
 
     public ScanSessionViewHolder(@NonNull View itemView, Context context,
                                  FailedOrSavedScanRepository repository,
-                                 ScanSessionAdapter adapter) {
+                                 ScanSessionAdapter adapter, AppCompatActivity activity) {
         super(itemView);
         this.context = context;
+        this.activity = activity;
         this.repository = repository;
         this.adapter = adapter;
 
@@ -74,6 +79,7 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
         }
 
         //sessionIdTextView = itemView.findViewById(R.id.sessionIdTextView);
+        sessionTypeTextView = itemView.findViewById(R.id.sessionTypeTextView);
         sessionFromToTextView = itemView.findViewById(R.id.sessionFromToTextView);
         sessionDateTextView = itemView.findViewById(R.id.sessionDateTextView);
         scanCountTextView = itemView.findViewById(R.id.scanCountTextView);
@@ -118,6 +124,9 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
         } catch (Exception e) {
             Log.e(TAG, "Error parsing date: " + e.getMessage());
         }
+        // Set the session type
+        sessionTypeTextView.setText(scanSession.sessionType);
+        // Set the session scan count
         scanCountTextView.setText(context.getString(R.string.scan_count, scanRecords.size()));
         scanRecordAdapter.submitList(scanRecords);
         boolean isFailed = false;
@@ -135,6 +144,20 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
             statusIndicatorView.setBackgroundColor(Color.BLUE);
         }
         updateUI();
+        // On process fails re-enable buttons
+        reActivateCardButtonsOnBinding();
+    }
+
+    private void reActivateCardButtonsOnBinding() {
+        resendButton.setEnabled(true);
+        deleteButton.setEnabled(true);
+        resendButton.setOnClickListener(v -> {
+            if (!isSendingData) {
+                isSendingData = true;
+                resendScanSession();
+            }
+        });
+        deleteButton.setOnClickListener(v -> showDeleteConfirmationDialog());
     }
 
     private void toggleExpandCollapse() {
@@ -155,16 +178,19 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
     private void resendScanSession(){
         //Utils.showToast(context, "Not implemented yet", 0);
         String sessionId = currentScanSession.sessionId;
+        String sessionType = currentScanSession.sessionType;
         repository.getAllScanRecordsBySessionId(sessionId,
                 scanRecords -> {
                     List<Map<String, Object>> formattedScanData = Utils.formatScanData(scanRecords);
                     Log.d(TAG, "Formatted Scan Data: " + formattedScanData);
-                    resendScanActivity(formattedScanData, sessionId, scanRecords);
+                    if (Objects.equals(sessionType, Constants.SCAN_SESSION_TRANSFER)) {
+                        resendScanActivity(formattedScanData, sessionId, scanRecords, sessionType);
+                    }
                 });
     }
 
     public void resendScanActivity(List<Map<String, Object>> scanDataToSend,String sessionId,
-                                   List<ScanRecord> scanRecords){
+                                   List<ScanRecord> scanRecords, String sessionType){
         if (scanDataToSend.isEmpty()) return;
         int total = scanDataToSend.size();
         progressBar.setMax(total);
@@ -193,23 +219,25 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                 // Step 1: Insert into Scan_Session
                 String sessionQuery = "INSERT INTO Scan_Session (" +
                         "Session_Id, " +
+                        "Session_Type, " +
                         "Loc_Id_From, " +
                         "Loc_Id_To, " +
                         "Session_CreationDate) " +
-                        "VALUES (?, ?, ?, ?)";
+                        "VALUES (?, ?, ?, ?, ?)";
 
                 try (PreparedStatement sessionStatement = connection.prepareStatement(sessionQuery)) {
                     if (!scanRecords.isEmpty()) {
                         ScanRecord firstScanRecord = scanRecords.get(0);
                         sessionStatement.setString(1, firstScanRecord.sessionId.trim());
-                        sessionStatement.setString(2, firstScanRecord.fromLocationId.trim());
-                        sessionStatement.setString(3, firstScanRecord.toLocationId.trim());
+                        sessionStatement.setString(2, sessionType);
+                        sessionStatement.setString(3, firstScanRecord.fromLocationId.trim());
+                        sessionStatement.setString(4, firstScanRecord.toLocationId.trim());
                         String Session_CreationDate = currentScanSession.sessionCreationDate;
                         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:sss",
                                 Locale.getDefault());
                         Date date = dateFormat.parse(Session_CreationDate);
                         assert date != null;
-                        sessionStatement.setTimestamp(4, new Timestamp(date.getTime()));
+                        sessionStatement.setTimestamp(5, new Timestamp(date.getTime()));
                     }
                     sessionStatement.executeUpdate();
                     connection.commit();
@@ -322,27 +350,33 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                                 finalSuccessCount);
                         showToast(context, message, 1);
                     } else {
-                        showSummary(finalSuccessCount, failedRecords.size(), total);
+                        showSummary(finalSuccessCount, failedRecords.size(), total, activity);
+                    }
+                    adapter.remove(currentScanSession);
+                    // Check if the list is now empty and update the empty state
+                    if (adapter.getCurrentList().isEmpty()) {
+                        ((FailedOrSavedScanActivity) context).updateEmptyState();
                     }
                 });
             } catch (SQLException | java.sql.SQLException e) {
                 handler.post(() -> {
                     OnProcessComplete();
-                    showSummary(0, scanDataToSend.size(), total);
-                    showToast(context, "Error sending data: " + e.getMessage(), 0);
+                    showSummary(0, scanDataToSend.size(), total, activity);
+                    showToast(context, "Error: " + e.getMessage(), 0);
+                    adapter.notifyItemChanged(getAdapterPosition());
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
+            } finally {
+                handler.post(() -> isSendingData = false);
             }
         });
-
-        deletionCompleteFuture.thenAccept(v -> {
-           deleteScanSessionsWithoutRecords();
-        });
+        deletionCompleteFuture.thenAccept(v -> deleteScanSessionsWithoutRecords());
     }
     private void OnProcessComplete() {
         showProgressBar(false);
         enableUserInteraction();
-        isSendingData = false;
+        resendButton.setEnabled(true);
+        deleteButton.setEnabled(true);
     }
     private void showProgressBar(boolean show) {
         progressOverlay.setVisibility(show ? View.VISIBLE : View.GONE);
@@ -351,7 +385,8 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
         resendButton.setEnabled(false);
         deleteButton.setEnabled(false);
     }
-    private void showSummary(int successCount, int failedCount, int total) {
+    private void showSummary(int successCount, int failedCount, int total,
+                             AppCompatActivity activity) {
         String title;
         String message;
         if (failedCount == 0) {
@@ -362,7 +397,7 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
             message = "❌ Sent " + successCount + " of " + total + " scans, " + failedCount + " failed";
         }
         DialogUtils.showInvalidSelectionDialog(
-                context,
+                activity,
                 title,
                 message,
                 "OK",
@@ -396,7 +431,7 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
     }
     private void showDeleteConfirmationDialog() {
         DialogUtils.showInvalidSelectionDialog(
-            context,
+            activity,
             "Delete Scan Session",
             "Are you sure you want to delete this session and all its records?",
             "Yes",
@@ -406,12 +441,11 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
         );
     }
     private void deleteScanSession() {
-        repository.deleteScanSessionWithRecordsCallBack(currentScanSession, () -> {
+        repository.deleteScanSessionWithRecordsCallBack(currentScanSession, () ->
                 ((FailedOrSavedScanActivity) itemView.getContext()).runOnUiThread(() -> {
-                adapter.remove(currentScanSession);
-                ((FailedOrSavedScanActivity) itemView.getContext()).updateEmptyState();
-            });
-        });
+        adapter.remove(currentScanSession);
+        ((FailedOrSavedScanActivity) itemView.getContext()).updateEmptyState();
+    }));
     }
 
 }

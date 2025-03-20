@@ -65,6 +65,7 @@ public class ScanMainActivity extends AppCompatActivity implements
     private String fromLocationId;
     private String toLocationId;
     private String toLocationCode;
+    private String sessionType;
     private RecyclerView recyclerView;
     private ScanRecordDao scanRecordDao;
     private ScanSessionDao scanSessionDao;
@@ -83,6 +84,7 @@ public class ScanMainActivity extends AppCompatActivity implements
         toLocation = intent.getStringExtra("toLocation");
         toLocationId = intent.getStringExtra("toLocationId");
         toLocationCode = intent.getStringExtra("toLocationCode");
+        sessionType = intent.getStringExtra("sessionType");
 
         // Set up toolbar
         Toolbar toolbar = findViewById(R.id.scanToolbarMain);
@@ -219,6 +221,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                 String formattedDate = dateFormat.format(new Date());
 
                 scanSession.sessionId = sessionId;
+                scanSession.sessionType = sessionType;
                 scanSession.sessionCreationDate = formattedDate;
                 long result = scanSessionDao.insertScanSession(scanSession);
 
@@ -371,21 +374,23 @@ public class ScanMainActivity extends AppCompatActivity implements
                 // Step 1: Insert into Scan_Session
                 String sessionQuery = "INSERT INTO Scan_Session (" +
                         "Session_Id, " +
+                        "Session_Type, " +
                         "Loc_Id_From, " +
                         "Loc_Id_To, " +
                         "Session_CreationDate) " +
-                        "VALUES (?, ?, ?, ?)";
+                        "VALUES (?, ?, ?, ?, ?)";
 
                 try (PreparedStatement sessionStatement = connection.prepareStatement(sessionQuery)) {
                     sessionStatement.setString(1, sessionId);
-                    sessionStatement.setString(2, fromLocationId);
-                    sessionStatement.setString(3, toLocationId);
+                    sessionStatement.setString(2, sessionType);
+                    sessionStatement.setString(3, fromLocationId);
+                    sessionStatement.setString(4, toLocationId);
 //                    java.util.Calendar calendar = java.util.Calendar.getInstance();
 //                    java.util.TimeZone utcTimeZone = java.util.TimeZone.getTimeZone("UTC");
 //                    calendar.setTimeZone(utcTimeZone);
 //                    Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
 //                    sessionStatement.setTimestamp(4, timestamp);
-                    sessionStatement.setTimestamp(4, new Timestamp(new Date().getTime()));
+                    sessionStatement.setTimestamp(5, new Timestamp(new Date().getTime()));
                     sessionStatement.executeUpdate();
                     connection.commit();
                 } catch (SQLException e) {
