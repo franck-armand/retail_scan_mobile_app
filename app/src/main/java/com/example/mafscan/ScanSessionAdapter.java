@@ -1,7 +1,6 @@
 package com.example.mafscan;
 
 import android.app.Application;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,7 @@ public class ScanSessionAdapter extends ListAdapter<ScanSession, ScanSessionView
     private final AppCompatActivity activity;
     private final Map<String, Observer<List<ScanRecord>>> observers = new HashMap<>();
     private OnListChangedListener listChangedListener;
-    private final String TAG = getClass().getSimpleName();
+
 
     public void setOnListChangedListener(OnListChangedListener listener) {
         this.listChangedListener = listener;
@@ -63,11 +62,11 @@ public class ScanSessionAdapter extends ListAdapter<ScanSession, ScanSessionView
     @Override
     public void onBindViewHolder(@NonNull ScanSessionViewHolder holder, int position) {
         ScanSession currentScanSession = getItem(position);
-        LiveData<List<ScanRecord>> currentScanRecords = repository.getScanRecordsBySessionId(currentScanSession.sessionId);
+        LiveData<List<ScanRecord>> currentScanRecords = repository.getScanRecordsBySessionId(
+                currentScanSession.sessionId);
 
-        Observer<List<ScanRecord>> observer = scanRecords -> {
-            holder.bind(currentScanSession, scanRecords);
-        };
+        Observer<List<ScanRecord>> observer = scanRecords -> holder.bind(currentScanSession,
+                scanRecords);
         observers.put(currentScanSession.sessionId, observer);
         currentScanRecords.observe((LifecycleOwner) holder.itemView.getContext(), observer);
     }

@@ -72,17 +72,15 @@ public class RetrieveScanInfoActivity extends AppCompatActivity {
         DataLogicUtils.setTriggersEnabled(true);
         // Initialize scanner
         if (DataLogicUtils.initializeScanner(this)) {
-            DataLogicUtils.setScanListener((scannedData, codeType) -> {
-                runOnUiThread(() -> {
-                    if (scannedData != null && !scannedData.isEmpty()) {
-                        Log.d(TAG, "Scanned Data: " + scannedData + ", Code Type: " + codeType);
-                        parseAndDisplayData(scannedData);
-                        incrementCounter();
-                    } else {
-                        Toast.makeText(this, "Empty Scan", Toast.LENGTH_SHORT).show();
-                    }
-                });
-            });
+            DataLogicUtils.setScanListener((scannedData, codeType) -> runOnUiThread(() -> {
+                if (scannedData != null && !scannedData.isEmpty()) {
+                    Log.d(TAG, "Scanned Data: " + scannedData + ", Code Type: " + codeType);
+                    parseAndDisplayData(scannedData);
+                    incrementCounter();
+                } else {
+                    Toast.makeText(this, "Empty Scan", Toast.LENGTH_SHORT).show();
+                }
+            }));
         }
 
         // Set up clear button
