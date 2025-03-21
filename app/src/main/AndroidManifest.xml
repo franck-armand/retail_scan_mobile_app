@@ -106,6 +106,15 @@
                 android:value=".MainActivity" />
         </activity>
 
+        <activity android:name=".ScanReceptionExpeditionActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MafScan"
+            android:parentActivityName=".ScanMainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ScanMainActivity" />
+        </activity>
+
     </application>
 
 </manifest>
