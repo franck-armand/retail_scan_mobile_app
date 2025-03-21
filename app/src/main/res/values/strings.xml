@@ -148,5 +148,12 @@
     <string name="home">Home</string>
     <string name="card_icon_desc">card icon description</string>
 
+    <!-- Scan Reception/Expedition -->
+    <string name="reception_tab_label">Reception</string>
+    <string name="expedition_tab_label">Expedition</string>
+    <string name="reception_expedition_activity_title">Reception/Expedition</string>
+    <string name="selectedTab">selectedTab</string>
+    <string name="scan_label">Scan…</string>
+
 
 </resources>
