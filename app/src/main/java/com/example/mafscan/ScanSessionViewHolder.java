@@ -217,13 +217,7 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                 connection.setAutoCommit(false);
 
                 // Step 1: Insert into Scan_Session
-                String sessionQuery = "INSERT INTO Scan_Session (" +
-                        "Session_Id, " +
-                        "Session_Type, " +
-                        "Loc_Id_From, " +
-                        "Loc_Id_To, " +
-                        "Session_CreationDate) " +
-                        "VALUES (?, ?, ?, ?, ?)";
+                String sessionQuery = SqlQueryUtils.INSERT_SCAN_SESSION;
 
                 try (PreparedStatement sessionStatement = connection.prepareStatement(sessionQuery)) {
                     if (!scanRecords.isEmpty()) {
@@ -251,16 +245,7 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                 }
 
                 // Step 2: Insert into Scan_Reading (individual transactions)
-                String readingQuery = "INSERT INTO Scan_Reading (" +
-                        "Scan_Value, " +
-                        "Scan_Type, " +
-                        "Scan_Qty, " +
-                        "Scan_DateUTC, " +
-                        "Scan_DeviceSerialNumber, " +
-                        "Loc_Id_From, " +
-                        "Loc_Id_To, " +
-                        "Session_Id) " +
-                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                String readingQuery = SqlQueryUtils.INSERT_SCAN_READING;
 
                 int successCount = 0;
                 for (int i = 0; i < scanDataToSend.size(); i++) {
@@ -323,7 +308,7 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                 // Step 3: Update Scan_Session
                 try {
                     connection.setAutoCommit(false);
-                    String updateSessionQuery = "UPDATE Scan_Session SET Session_IsActive = 1 WHERE Session_Id = ?";
+                    String updateSessionQuery = SqlQueryUtils.UPDATE_SCAN_SESSION;
                     try (PreparedStatement updateSessionStatement = connection.prepareStatement(updateSessionQuery)) {
                         updateSessionStatement.setString(1, sessionId);
                         updateSessionStatement.executeUpdate();
