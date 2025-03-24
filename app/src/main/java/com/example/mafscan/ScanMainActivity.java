@@ -79,18 +79,25 @@ public class ScanMainActivity extends AppCompatActivity implements
         // Get the from and to locations from the intent
         Intent intent = getIntent();
         fromLocation = intent.getStringExtra("fromLocation");
+        Log.d(TAG, "fromLocation: " + fromLocation);
         fromLocationId = intent.getStringExtra("fromLocationId");
+        Log.d(TAG, "fromLocationId: " + fromLocationId);
         fromLocationCode = intent.getStringExtra("fromLocationCode");
+        Log.d(TAG, "fromLocationCode: " + fromLocationCode);
         toLocation = intent.getStringExtra("toLocation");
+        Log.d(TAG, "toLocation: " + toLocation);
         toLocationId = intent.getStringExtra("toLocationId");
+        Log.d(TAG, "toLocationId: " + toLocationId);
         toLocationCode = intent.getStringExtra("toLocationCode");
+        Log.d(TAG, "toLocationCode: " + toLocationCode);
         sessionType = intent.getStringExtra("sessionType");
+        Log.d(TAG, "sessionType: " + sessionType);
 
         // Set up toolbar
         Toolbar toolbar = findViewById(R.id.scanToolbarMain);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            String title = fromLocationCode + " → " + toLocationCode;
+            String title = setAppBarTitle();
             getSupportActionBar().setTitle(title);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
@@ -167,6 +174,34 @@ public class ScanMainActivity extends AppCompatActivity implements
                     }
                 });
     }
+
+    @NonNull
+    private String setAppBarTitle() {
+        String title = "";
+        String arrow = "";
+        if (sessionType != null) {
+            switch (sessionType) {
+                case Constants.SCAN_SESSION_RECEPTION:
+                    arrow = " ↓ "; // Down arrow for Reception
+                    break;
+                case Constants.SCAN_SESSION_EXPEDITION:
+                    arrow = " ↑ "; // Up arrow for Expedition
+                    break;
+                case Constants.SCAN_SESSION_TRANSFER:
+                    arrow = " → "; // Right arrow for Transfer
+                    break;
+            }
+        }
+        if (fromLocation == null && toLocation != null) {
+            title = arrow + toLocationCode;
+        } else if (toLocation == null && fromLocation != null) {
+            title = arrow + fromLocationCode;
+        } else if (fromLocationCode != null && toLocationCode != null) {
+            title = fromLocationCode + arrow + toLocationCode;
+        }
+        return title;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         Utils.inflateMenu(this, menu, R.menu.scan_session_menu);
@@ -412,8 +447,6 @@ public class ScanMainActivity extends AppCompatActivity implements
                             Log.w(TAG, "scanCount is null or not a Float");
                         }
                         readingStatement.setFloat(3, scanCount);
-                         // readingStatement.setFloat(3, (Float) data.get("scanCount"));
-                        // Parsing date to dateTime (sql server format)
                         Utils.parseDateSqlServerFormat(data, readingStatement);
                         readingStatement.setString(5, (String) data.get("deviceSerialNumber"));
                         readingStatement.setString(6, (String) data.get("fromLocationId"));
