@@ -25,10 +25,8 @@ import java.util.Objects;
 
 public class ScanReceptionExpeditionActivity extends AppCompatActivity implements
         TabLayout.OnTabSelectedListener, DataLogicUtils.ScanListener {
-    private String expFromLocationId;
-    private String expFromLocationCode;
-    private String recToLocationId;
-    private String recToLocationCode;
+    private final ReceptionData receptionData = new ReceptionData();
+    private final ExpeditionData expeditionData = new ExpeditionData();
     private TabLayout tabLayoutRecExp;
     private LinearLayout receptionLayout, expeditionLayout;
     private Button validateButton;
@@ -112,16 +110,16 @@ public class ScanReceptionExpeditionActivity extends AppCompatActivity implement
     private Intent getTransferIntent(String fromLocation, String toLocation, int selectedTabPosition) {
         Intent intent = new Intent(ScanReceptionExpeditionActivity.this,
                 ScanMainActivity.class);
-        intent.putExtra("fromLocation", fromLocation);
-        intent.putExtra("toLocation", toLocation);
-        intent.putExtra("fromLocationId", expFromLocationId);
-        intent.putExtra("fromLocationCode", expFromLocationCode);
-        intent.putExtra("toLocationId", recToLocationId);
-        intent.putExtra("toLocationCode", recToLocationCode);
         if (selectedTabPosition == 0) {
             intent.putExtra("sessionType", Constants.SCAN_SESSION_RECEPTION);
+            intent.putExtra("toLocation", toLocation);
+            intent.putExtra("toLocationId", receptionData.recToLocationId);
+            intent.putExtra("toLocationCode", receptionData.recToLocationCode);
         } else if (selectedTabPosition == 1) {
             intent.putExtra("sessionType", Constants.SCAN_SESSION_EXPEDITION);
+            intent.putExtra("fromLocation", fromLocation);
+            intent.putExtra("fromLocationId", expeditionData.expFromLocationId);
+            intent.putExtra("fromLocationCode", expeditionData.expFromLocationCode);
         }
         return intent;
     }
@@ -242,12 +240,12 @@ public class ScanReceptionExpeditionActivity extends AppCompatActivity implement
         int selectedTabPosition = tabLayoutRecExp.getSelectedTabPosition();
         if (selectedTabPosition == 0) { // Reception
             recToQrCodeEditText.setText(locationName);
-            recToLocationId = locationId;
-            recToLocationCode = locationCode;
+            receptionData.recToLocationId = locationId;
+            receptionData.recToLocationCode = locationCode;
         } else if (selectedTabPosition == 1) { // Expedition
             expFromQrCodeEditText.setText(locationName);
-            expFromLocationId = locationId;
-            expFromLocationCode = locationCode;
+            expeditionData.expFromLocationId = locationId;
+            expeditionData.expFromLocationCode = locationCode;
         }
         updateDeleteButtonVisibility();
         updateValidateButtonState();
