@@ -109,6 +109,8 @@
     <string name="scan_count">%d scan(s)</string>
     <string name="scan_resubmitted_success_msg">"%d scan(s) sent successfully!"</string>
     <string name="session_from_to_code">%s —> %s</string>
+    <string name="arrow_up_w_label">↑ %s</string>
+    <string name="arrow_down_w_label">↓ %s</string>
     <string name="send_session_desc">"Send Scan Session "</string>
     <string name="send_session">Send</string>
     <string name="save_session_desc">Save session</string>
@@ -120,7 +122,6 @@
     <!-- Item scan record -->
     <string name="scan_status_sent">Sent</string>
     <string name="scan_status_not_sent">Not sent</string>
-
 
     <!-- Technical Guide -->
     <string name="user_guide">User Guide</string>

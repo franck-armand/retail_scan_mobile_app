@@ -105,46 +105,58 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
 
     public void bind(ScanSession scanSession, List<ScanRecord> scanRecords) {
         currentScanSession = scanSession;
-        //sessionIdTextView.setText(scanSession.sessionId);
-        if (!scanRecords.isEmpty()){
+        String currentSessionType = scanSession.sessionType;
+
+        if (!scanRecords.isEmpty() && currentSessionType != null) {
             ScanRecord firstScanRecord = scanRecords.get(0);
-            sessionFromToTextView.setText(
-                context.getString(R.string.session_from_to_code,
-                        firstScanRecord.fromLocationCode,
-                        firstScanRecord.toLocationCode));
+            String textToSet = "";
+            switch (currentSessionType) {
+                case Constants.SCAN_SESSION_RECEPTION:
+                    textToSet = context.getString(R.string.arrow_down_w_label,
+                            firstScanRecord.toLocationCode);
+                    break;
+                case Constants.SCAN_SESSION_EXPEDITION:
+                    textToSet = context.getString(R.string.arrow_up_w_label,
+                            firstScanRecord.fromLocationCode);
+                    break;
+                case Constants.SCAN_SESSION_TRANSFER:
+                    textToSet = context.getString(R.string.session_from_to_code,
+                            firstScanRecord.fromLocationCode,
+                            firstScanRecord.toLocationCode);
+                    break;
+            }
+            sessionFromToTextView.setText(textToSet);
         }
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT,
                 Locale.getDefault());
         try {
             Date date = dateFormat.parse(scanSession.sessionCreationDate);
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss",
-                    Locale.getDefault());
             assert date != null;
-            sessionDateTextView.setText(outputFormat.format(date));
-        } catch (Exception e) {
+            String formattedDate = dateFormat.format(date);
+            sessionDateTextView.setText(formattedDate);
+        } catch (java.text.ParseException e) {
             Log.e(TAG, "Error parsing date: " + e.getMessage());
         }
+
         // Set the session type
         sessionTypeTextView.setText(scanSession.sessionType);
         // Set the session scan count
         scanCountTextView.setText(context.getString(R.string.scan_count, scanRecords.size()));
         scanRecordAdapter.submitList(scanRecords);
-        boolean isFailed = false;
-        boolean isSaved = false;
+
+        int statusColor = Color.TRANSPARENT; // Default to transparent
         for (ScanRecord scanRecord : scanRecords) {
-            if (scanRecord.saveType == 0) {
-                isFailed = true;
-            } else if (scanRecord.saveType == 1) {
-                isSaved = true;
+            if (scanRecord.saveType == 0) { // Auto save
+                statusColor = Color.RED;
+                break; // Early exit
+            } else if (scanRecord.saveType == 1) { // Manual save
+                statusColor = Color.BLUE;
             }
         }
-        if (isFailed) {
-            statusIndicatorView.setBackgroundColor(Color.RED);
-        } else if (isSaved) {
-            statusIndicatorView.setBackgroundColor(Color.BLUE);
-        }
+        statusIndicatorView.setBackgroundColor(statusColor);
+
         updateUI();
-        // On process fails re-enable buttons
         reActivateCardButtonsOnBinding();
     }
 
@@ -176,16 +188,13 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void resendScanSession(){
-        //Utils.showToast(context, "Not implemented yet", 0);
         String sessionId = currentScanSession.sessionId;
         String sessionType = currentScanSession.sessionType;
         repository.getAllScanRecordsBySessionId(sessionId,
                 scanRecords -> {
                     List<Map<String, Object>> formattedScanData = Utils.formatScanData(scanRecords);
                     Log.d(TAG, "Formatted Scan Data: " + formattedScanData);
-                    if (Objects.equals(sessionType, Constants.SCAN_SESSION_TRANSFER)) {
-                        resendScanActivity(formattedScanData, sessionId, scanRecords, sessionType);
-                    }
+                    resendScanActivity(formattedScanData, sessionId, scanRecords, sessionType);
                 });
     }
 
@@ -222,12 +231,12 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                 try (PreparedStatement sessionStatement = connection.prepareStatement(sessionQuery)) {
                     if (!scanRecords.isEmpty()) {
                         ScanRecord firstScanRecord = scanRecords.get(0);
-                        sessionStatement.setString(1, firstScanRecord.sessionId.trim());
+                        sessionStatement.setString(1, firstScanRecord.sessionId);
                         sessionStatement.setString(2, sessionType);
-                        sessionStatement.setString(3, firstScanRecord.fromLocationId.trim());
-                        sessionStatement.setString(4, firstScanRecord.toLocationId.trim());
+                        sessionStatement.setString(3, firstScanRecord.fromLocationId);
+                        sessionStatement.setString(4, firstScanRecord.toLocationId);
                         String Session_CreationDate = currentScanSession.sessionCreationDate;
-                        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:sss",
+                        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT,
                                 Locale.getDefault());
                         Date date = dateFormat.parse(Session_CreationDate);
                         assert date != null;

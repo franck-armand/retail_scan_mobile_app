@@ -50,7 +50,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textStyle="bold"
-                        tools:text="GJM-ATT-A1 -> GJM-ATT-A2" />
+                        tools:text="GJM-ATT-A1 -> GJM-ATT-A2"
+                        android:textColor="@color/black"/>
 
                     <TextView
                         android:id="@+id/sessionDateTextView"
@@ -62,6 +63,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         tools:text="TRANSFER"
+                        android:textSize="13sp"
                         android:textStyle="bold|italic"/>
                 </LinearLayout>
 
