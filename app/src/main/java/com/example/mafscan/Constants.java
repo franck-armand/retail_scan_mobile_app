@@ -11,5 +11,5 @@ public class Constants {
     public static final String SCAN_SESSION_TRANSFER = "TRANSFER";
     public static final String SCAN_SESSION_EXPEDITION = "EXPEDITION";
     public static final String SCAN_SESSION_INVENTORY = "INVENTORY";
-    public static final String SCAN_SESSION_SHUTTLE = "EMPTY_SHUTTLE";
+    public static final String SCAN_SESSION_SHUTTLE = "CLRSHUTTLE";
 }

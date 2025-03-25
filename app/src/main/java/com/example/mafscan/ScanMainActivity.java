@@ -2,9 +2,6 @@ package com.example.mafscan;
 
 import static com.example.mafscan.Utils.showToast;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.ItemTouchHelper;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -20,27 +17,28 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
-import java.util.TimeZone;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -182,13 +180,18 @@ public class ScanMainActivity extends AppCompatActivity implements
         if (sessionType != null) {
             switch (sessionType) {
                 case Constants.SCAN_SESSION_RECEPTION:
-                    arrow = " ↓ "; // Down arrow for Reception
+//                    arrow = " ↓ "; // Down arrow for Reception
+                    arrow = getString(R.string.reception_icon);
                     break;
                 case Constants.SCAN_SESSION_EXPEDITION:
-                    arrow = " ↑ "; // Up arrow for Expedition
+//                    arrow = " ↑ "; // Up arrow for Expedition
+                    arrow = getString(R.string.expedition_icon);
                     break;
                 case Constants.SCAN_SESSION_TRANSFER:
                     arrow = " → "; // Right arrow for Transfer
+                    break;
+                case Constants.SCAN_SESSION_INVENTORY:
+                    arrow = getString(R.string.inventory_icon);
                     break;
             }
         }
