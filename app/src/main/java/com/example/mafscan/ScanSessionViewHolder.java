@@ -30,7 +30,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -112,17 +111,22 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
             String textToSet = "";
             switch (currentSessionType) {
                 case Constants.SCAN_SESSION_RECEPTION:
-                    textToSet = context.getString(R.string.arrow_down_w_label,
-                            firstScanRecord.toLocationCode);
+                    textToSet = context.getString(R.string.reception_icon) + " " +
+                                    firstScanRecord.toLocationCode;
                     break;
                 case Constants.SCAN_SESSION_EXPEDITION:
-                    textToSet = context.getString(R.string.arrow_up_w_label,
-                            firstScanRecord.fromLocationCode);
+                    textToSet = context.getString(R.string.expedition_icon) + " " +
+                                    firstScanRecord.fromLocationCode;
                     break;
                 case Constants.SCAN_SESSION_TRANSFER:
-                    textToSet = context.getString(R.string.session_from_to_code,
-                            firstScanRecord.fromLocationCode,
-                            firstScanRecord.toLocationCode);
+                    textToSet = context.getString(R.string.transfer_icon) + " " +
+                            context.getString(R.string.session_from_to_code,
+                                    firstScanRecord.fromLocationCode,
+                                    firstScanRecord.toLocationCode);
+                    break;
+                case Constants.SCAN_SESSION_INVENTORY:
+                    textToSet = context.getString(R.string.inventory_icon) + " " +
+                            firstScanRecord.fromLocationCode;
                     break;
             }
             sessionFromToTextView.setText(textToSet);
