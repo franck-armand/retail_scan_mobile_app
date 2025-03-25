@@ -14,5 +14,18 @@
         <!-- Used for the background -->
         <item name="android:background">@color/white</item>
     </style>
+
+    <!-- Custom TabLayout style -->
+    <style name="CustomTabTextAppearance" parent="TextAppearance.Design.Tab">
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:textSize">14sp</item>
+    </style>
+    <style name="CustomTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextAppearance">@style/CustomTabTextAppearance</item>
+        <item name="tabIndicatorColor">@color/primary_color</item>
+        <item name="tabIndicatorHeight">3dp</item>
+    </style>
 </resources>
 
