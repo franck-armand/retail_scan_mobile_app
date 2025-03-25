@@ -282,8 +282,8 @@ public class MainActivity extends AppCompatActivity implements
                 getString(R.string.inventory));
         List<Integer> buttonIcons1 = Arrays.asList(
                 R.drawable.transfert,
-                R.drawable.expedition,
-                R.drawable.reception,
+                R.drawable.outbox_32,
+                R.drawable.inbox_32,
                 R.drawable.shuttle,
                 R.drawable.inventory);
         cardList.add(new HomeCard(getString(R.string.card_1), buttonTitles1, buttonIcons1));
