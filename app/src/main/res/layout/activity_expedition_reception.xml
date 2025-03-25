@@ -46,12 +46,22 @@
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/reception_tab_label" />
+                android:text="@string/reception_tab_code" />
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/expedition_tab_label" />
+                android:text="@string/expedition_tab_code" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/inventory_tab_code" />
+
+            <com.google.android.material.tabs.TabItem
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shuttle_tab_code" />
         </com.google.android.material.tabs.TabLayout>
 
         <!-- Reception Mode Layout -->
@@ -158,6 +168,63 @@
 
                 <ImageButton
                     android:id="@+id/expFromDeleteButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/clear_from_field"
+                    android:padding="1dp"
+                    android:src="@drawable/round_delete_forever_24" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- inventory Mode Layout -->
+        <LinearLayout
+            android:id="@+id/inventoryLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tabLayoutRecExp">
+
+            <!-- Inventory From QR Code -->
+            <TextView
+                android:id="@+id/invFromQrCodeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/offline_0_from_label"
+                android:textColor="@color/tertiary_color"
+                android:textSize="15sp"
+                android:textStyle="bold|italic" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/invFromQrCodeTextInputLayout"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/scan_label"
+                    app:startIconDrawable="@drawable/ic_scan">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/invFromQrCodeEditText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:focusable="false"
+                        android:inputType="none"
+                        android:textStyle="bold" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <ImageButton
+                    android:id="@+id/invFromDeleteButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackgroundBorderless"

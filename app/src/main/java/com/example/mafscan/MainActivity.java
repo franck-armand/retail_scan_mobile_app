@@ -379,16 +379,24 @@ public class MainActivity extends AppCompatActivity implements
                         startActivity(intent);
                         break;
                     case 1: // Expedition button
-                        Utils.showToast(this, "Not implemented yet!", 0);
+                        intent = new Intent(this, ScanReceptionExpeditionActivity.class);
+                        intent.putExtra(getString(R.string.selectedTab), Constants.TAB_EXPEDITION_ID);
+                        startActivity(intent);
                         break;
                     case 2: // Reception button
-                        Utils.showToast(this, "Not implemented yet!", 0);
+                        intent = new Intent(this, ScanReceptionExpeditionActivity.class);
+                        intent.putExtra(getString(R.string.selectedTab), Constants.TAB_RECEPTION_ID);
+                        startActivity(intent);
                         break;
                     case 3: // Empty Shuttle button
-                        Utils.showToast(this, "Not implemented yet!", 0);
+                        intent = new Intent(this, ScanReceptionExpeditionActivity.class);
+                        intent.putExtra(getString(R.string.selectedTab), Constants.TAB_SHUTTLE_ID);
+                        startActivity(intent);
                         break;
                     case 4: // Inventory button
-                        Utils.showToast(this, "Not implemented yet!", 0);
+                        intent = new Intent(this, ScanReceptionExpeditionActivity.class);
+                        intent.putExtra(getString(R.string.selectedTab), Constants.TAB_INVENTORY_ID);
+                        startActivity(intent);
                         break;
                 }
                 break;

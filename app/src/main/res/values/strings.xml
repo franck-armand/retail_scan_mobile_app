@@ -108,7 +108,7 @@
     <string name="expand_collapse_button">expand collapse button</string>
     <string name="scan_count">%d scan(s)</string>
     <string name="scan_resubmitted_success_msg">"%d scan(s) sent successfully!"</string>
-    <string name="session_from_to_code">%s —> %s</string>
+    <string name="session_from_to_code">%s ⇄ %s</string>
     <string name="arrow_up_w_label">↑ %s</string>
     <string name="arrow_down_w_label">↓ %s</string>
     <string name="send_session_desc">"Send Scan Session "</string>
@@ -118,6 +118,10 @@
     <string name="clear_session_desc">"Clear Scans description "</string>
     <string name="clear_session">Clear</string>
     <string name="qr_code_scanner_content_description">QR code scanner</string>
+    <string name="inventory_icon">📋</string>
+    <string name="transfer_icon">🔄</string>
+    <string name="reception_icon">📥</string>
+    <string name="expedition_icon">📤</string>
 
     <!-- Item scan record -->
     <string name="scan_status_sent">Sent</string>
@@ -149,12 +153,17 @@
     <string name="home">Home</string>
     <string name="card_icon_desc">card icon description</string>
 
-    <!-- Scan Reception/Expedition -->
-    <string name="reception_tab_label">Reception</string>
-    <string name="expedition_tab_label">Expedition</string>
+    <!-- Scan Reception/Expedition/Inventory/Shuttle -->
+    <string name="reception_tab_code">REC</string>
+    <string name="expedition_tab_code">EXP</string>
+    <string name="inventory_tab_code">INV</string>
+    <string name="shuttle_tab_code">CLR</string>
     <string name="reception_expedition_activity_title">Reception/Expedition</string>
     <string name="selectedTab">selectedTab</string>
     <string name="scan_label">Scan…</string>
-
+    <string name="reception_activity_title">Reception</string>
+    <string name="expedition_activity_title">Expedition</string>
+    <string name="inventory_activity_title">Inventory</string>
+    <string name="empty_shuttle_activity_title">Empty Shuttle</string>
 
 </resources>
