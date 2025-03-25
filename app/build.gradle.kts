@@ -37,7 +37,7 @@ android {
             keyPassword = keystoreProperties["keyPassword"] as String
         }
     }
-    namespace = "com.example.mafscan"
+    namespace = "com.maf.mafscan"
     compileSdk = 34
 
     defaultConfig {

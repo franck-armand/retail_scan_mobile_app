@@ -84,7 +84,7 @@
                 android:background="@drawable/spinner_border"
                 android:padding="4dp">
 
-                <com.example.mafscan.SearchableSpinner
+                <com.maf.mafscan.SearchableSpinner
                     android:id="@+id/fromSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -136,7 +136,7 @@
 <!--                    android:backgroundTint="@color/primary_color"-->
 <!--                    android:minHeight="48dp" />-->
 
-                <com.example.mafscan.SearchableSpinner
+                <com.maf.mafscan.SearchableSpinner
                     android:id="@+id/toSpinner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
