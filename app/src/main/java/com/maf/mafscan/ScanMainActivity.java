@@ -253,7 +253,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                 sessionId = newSessionId;
 
                 ScanSession scanSession = new ScanSession();
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS",
+                SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_LONG,
                         Locale.getDefault());
                 dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
                 String formattedDate = dateFormat.format(new Date());

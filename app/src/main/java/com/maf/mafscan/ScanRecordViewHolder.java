@@ -32,11 +32,11 @@ public class ScanRecordViewHolder extends RecyclerView.ViewHolder {
     public void bind(ScanRecord scanRecord) {
         scannedDataTextView.setText(scanRecord.scannedData);
         codeTypeTextView.setText(scanRecord.codeType);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS",
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_LONG,
                 Locale.getDefault());
         try {
             Date date = dateFormat.parse(scanRecord.scanDate);
-            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS",
+            SimpleDateFormat outputFormat = new SimpleDateFormat(Constants.DATE_FORMAT_LONG,
                     Locale.getDefault());
             assert date != null;
             scanDateTextView.setText(outputFormat.format(date));
