@@ -97,10 +97,10 @@ public class FailedOrSavedScanRepository {
         return scanRecordDao.getScanRecordByScannedData(scannedData, sessionId);
     }
 
-    public void updateScanRecord(ScanRecord scanRecord) {
-        AppDatabase.databaseWriteExecutor.execute(() -> scanRecordDao.update(scanRecord));
-    }
-
+//    public void updateScanRecord(ScanRecord scanRecord) {
+//        AppDatabase.databaseWriteExecutor.execute(() -> scanRecordDao.update(scanRecord));
+//    }
+//
 //    public void markAsSent(int id, String lastSendDate) {
 //        AppDatabase.databaseWriteExecutor.execute(() -> {
 //            scanRecordDao.markAsSent(id, lastSendDate);
