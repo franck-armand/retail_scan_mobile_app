@@ -44,8 +44,8 @@ android {
         applicationId = "com.maf.mafscan"
         minSdk = 30
         targetSdk = 33
-        versionCode = 5
-        versionName = "25_03_25_V1.4"
+        versionCode = 6
+        versionName = "26_03_25_V1.4.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

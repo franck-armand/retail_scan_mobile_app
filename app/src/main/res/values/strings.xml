@@ -97,6 +97,16 @@
     \n- Bug Fixes and Stability: Fixed UI-related crashes, optimized SQL queries, improved app bar title updates, and refined scan state management.
     \n- Navigation: Added menu items to navigate between activities, updated app bar titles dynamically based on session type.
 </string>
+    <string name="release_info_26.03.25.V1.4.1">
+    - Minor fix : Updated global date formating in this current version 1.4.1 .
+    \n** Version 1.4.0 (Previous release) release info :
+    \n- Resend Scans to SQL Server: Improved scan resubmission handling with UI updates and progress tracking.
+    \n- Session Management: Added session types (Reception, Transfer, Expedition, Inventory, Empty Shuttle).
+    \n- Enhanced UI and UX: Introduced a dynamic home screen with card-based navigation.
+    \n- Improved Messaging: Enhanced error handling, unified success messages, refined toast notifications, and added failure alerts.
+    \n- Bug Fixes and Stability: Fixed UI-related crashes, optimized SQL queries, improved app bar title updates, and refined scan state management.
+    \n- Navigation: Added menu items to navigate between activities, updated app bar titles dynamically based on session type.
+</string>
     <string name="key_features">Key Feature</string>
     <string name="scan_qr_codes"> - Scan, send and retrieve QR codes information.</string>
     <string name="view_scan_history"> - Implements an online and offline mode.</string>
