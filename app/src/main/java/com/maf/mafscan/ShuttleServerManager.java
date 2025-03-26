@@ -1,5 +1,7 @@
 package com.maf.mafscan;
 
+import static com.maf.mafscan.Utils.getCurrentUtcDateTimeString;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
@@ -10,8 +12,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -100,7 +100,7 @@ public class ShuttleServerManager {
                     sessionStatement.setString(2, sessionType);
                     sessionStatement.setString(3, fromLocationId);
                     sessionStatement.setString(4, toLocationId);
-                    sessionStatement.setTimestamp(5, new Timestamp(new Date().getTime()));
+                    sessionStatement.setString(5, getCurrentUtcDateTimeString());
                     sessionStatement.executeUpdate();
                     connection.commit();
                     handler.post(() -> showShuttleSessionSummary(
