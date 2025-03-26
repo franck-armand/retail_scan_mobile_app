@@ -23,6 +23,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
+
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -165,8 +170,7 @@ public class Utils {
     public static void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)
             throws java.sql.SQLException {
         try {
-            String datePattern = "yyyy-MM-dd HH:mm:ss:SSS";
-            SimpleDateFormat dateFormat = new SimpleDateFormat(datePattern,
+            SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_LONG,
                     Locale.getDefault());
             Date scanDate = dateFormat.parse((String) Objects.requireNonNull(data.get("scanDate")));
             assert scanDate != null;
@@ -195,6 +199,12 @@ public class Utils {
     public static void showHelpDialog(FragmentManager fragmentManager) {
         HelpDialogFragment dialog = new HelpDialogFragment();
         dialog.show(fragmentManager, "ScanCodeHelpDialogFragment");
+    }
+
+    public static String getCurrentUtcDateTimeString() {
+        DateTime utcDateTime = DateTime.now(DateTimeZone.UTC);
+        DateTimeFormatter fmt = ISODateTimeFormat.dateTime();
+        return fmt.print(utcDateTime);
     }
 }
 
