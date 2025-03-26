@@ -20,7 +20,7 @@ public class ScanRecordAdapter extends ListAdapter<ScanRecord, ScanRecordViewHol
         super(DIFF_CALLBACK);
     }
 
-    private static final DiffUtil.ItemCallback<ScanRecord> DIFF_CALLBACK = new DiffUtil.ItemCallback<ScanRecord>() {
+    private static final DiffUtil.ItemCallback<ScanRecord> DIFF_CALLBACK = new DiffUtil.ItemCallback<>() {
         @Override
         public boolean areItemsTheSame(@NonNull ScanRecord oldItem, @NonNull ScanRecord newItem) {
             return oldItem.id == newItem.id;
