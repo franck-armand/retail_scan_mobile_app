@@ -73,9 +73,8 @@ public class FailedOrSavedScanRepository {
     }
 
     public void deleteSessionWithScanBySessionId(String sessionId){
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            scanSessionDao.deleteSessionWithScanBySessionId(sessionId);
-        });
+        AppDatabase.databaseWriteExecutor.execute(() ->
+                scanSessionDao.deleteSessionWithScanBySessionId(sessionId));
     }
 
 //    public List<ScanRecord> getUnsentScanRecords() {
@@ -99,9 +98,7 @@ public class FailedOrSavedScanRepository {
     }
 
     public void updateScanRecord(ScanRecord scanRecord) {
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            scanRecordDao.update(scanRecord);
-        });
+        AppDatabase.databaseWriteExecutor.execute(() -> scanRecordDao.update(scanRecord));
     }
 
 //    public void markAsSent(int id, String lastSendDate) {
@@ -117,9 +114,8 @@ public class FailedOrSavedScanRepository {
 //    }
 
     public void deleteScanRecord(ScanRecord scanRecord) {
-        AppDatabase.databaseWriteExecutor.execute(() -> {
-            scanRecordDao.deleteScanRecord(scanRecord);
-        });
+        AppDatabase.databaseWriteExecutor.execute(() ->
+                scanRecordDao.deleteScanRecord(scanRecord));
     }
 
 //    public void deleteAllScanRecords() {
