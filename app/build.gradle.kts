@@ -107,4 +107,7 @@ dependencies {
     // Flexbox dependencies
     implementation(libs.flexbox)
 
+    // DateTime dependencies
+    implementation(libs.joda.time)
+
 }
