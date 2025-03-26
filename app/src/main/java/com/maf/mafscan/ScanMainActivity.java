@@ -1,5 +1,6 @@
 package com.maf.mafscan;
 
+import static com.maf.mafscan.Utils.getCurrentUtcDateTimeString;
 import static com.maf.mafscan.Utils.showToast;
 
 import android.annotation.SuppressLint;
@@ -28,7 +29,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -417,12 +417,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                     sessionStatement.setString(2, sessionType);
                     sessionStatement.setString(3, fromLocationId);
                     sessionStatement.setString(4, toLocationId);
-//                    java.util.Calendar calendar = java.util.Calendar.getInstance();
-//                    java.util.TimeZone utcTimeZone = java.util.TimeZone.getTimeZone("UTC");
-//                    calendar.setTimeZone(utcTimeZone);
-//                    Timestamp timestamp = new Timestamp(calendar.getTimeInMillis());
-//                    sessionStatement.setTimestamp(4, timestamp);
-                    sessionStatement.setTimestamp(5, new Timestamp(new Date().getTime()));
+                    sessionStatement.setString(5, getCurrentUtcDateTimeString());
                     sessionStatement.executeUpdate();
                     connection.commit();
                 } catch (SQLException e) {
@@ -497,7 +492,8 @@ public class ScanMainActivity extends AppCompatActivity implements
                 try {
                     connection.setAutoCommit(false);
                     String updateSessionQuery = SqlQueryUtils.UPDATE_SCAN_SESSION;
-                    try (PreparedStatement updateSessionStatement = connection.prepareStatement(updateSessionQuery)) {
+                    try (PreparedStatement updateSessionStatement = connection.prepareStatement(
+                            updateSessionQuery)) {
                         updateSessionStatement.setString(1, sessionId);
                         updateSessionStatement.executeUpdate();
                         connection.commit();
