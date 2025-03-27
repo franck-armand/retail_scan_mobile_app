@@ -137,7 +137,9 @@ public class Utils {
         }
     }
 
-    public static List<Map<String, Object>> formatScanData(List<?> dataList) {
+    public static List<Map<String, Object>> formatScanData(List<?> dataList, String fromLocationId,
+                                                           String toLocationId,
+                                                           String sessionId) {
         List<Map<String, Object>> formattedData = new ArrayList<>();
         for (Object item : dataList) {
             Map<String, Object> data = new HashMap<>();
@@ -148,9 +150,15 @@ public class Utils {
                 data.put("scanCount", scanData.getScanCount());
                 data.put("scanDate", scanData.getFormattedScanDate());
                 data.put("deviceSerialNumber", DataLogicUtils.getDeviceInfo());
-//                data.put("fromLocationId", fromLocationId);
-//                data.put("toLocationId", toLocationId);
-//                data.put("sessionId", sessionId);
+                if (fromLocationId != null) {
+                    data.put("fromLocationId", fromLocationId);
+                }
+                if (toLocationId != null) {
+                    data.put("toLocationId", toLocationId);
+                }
+                if (sessionId != null) {
+                    data.put("sessionId", sessionId);
+                }
             } else if (item instanceof ScanRecord) {
                 ScanRecord scanRecord = (ScanRecord) item;
                 data.put("sessionId", scanRecord.sessionId);
@@ -163,8 +171,13 @@ public class Utils {
                 data.put("deviceSerialNumber", DataLogicUtils.getDeviceInfo());
             }
             formattedData.add(data);
+            Log.d(TAG, "Formatted Scan Data to be sent: " + formattedData);
         }
         return formattedData;
+    }
+    // Overload the method for cases where fromLocationId, toLocationId, and sessionId are not available
+    public static List<Map<String, Object>> formatScanData(List<?> dataList) {
+        return formatScanData(dataList, null, null, null);
     }
 
     public static void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)

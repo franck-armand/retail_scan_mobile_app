@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -326,21 +325,7 @@ public class ScanMainActivity extends AppCompatActivity implements
                         " Device Serial Number: " + DataLogicUtils.getDeviceInfo());
     }
     private List<Map<String, Object>> retrieveAndFormatScanData() {
-        List<Map<String, Object>> scanDataToSend = new ArrayList<>();
-        for (ScanData scanData : scanDataList) {
-            Map<String, Object> data = new HashMap<>();
-            data.put("scannedData", scanData.getScannedData());
-            data.put("codeType", scanData.getCodeType());
-            data.put("scanCount", scanData.getScanCount());
-            data.put("scanDate", scanData.getFormattedScanDate());
-            data.put("deviceSerialNumber", DataLogicUtils.getDeviceInfo());
-            data.put("fromLocationId", fromLocationId);
-            data.put("toLocationId", toLocationId);
-            data.put("sessionId", sessionId);
-            scanDataToSend.add(data);
-            Log.d(TAG, "Scan Data to Send: " + scanDataToSend);
-        }
-        return scanDataToSend;
+        return Utils.formatScanData(scanDataList, fromLocationId, toLocationId, sessionId);
     }
     private void sendScanData() {
         createNewScanSession().thenCompose(sessionId ->
