@@ -13,4 +13,13 @@ public class Constants {
     public static final String SCAN_SESSION_EXPEDITION = "EXPEDITION";
     public static final String SCAN_SESSION_INVENTORY = "INVENTORY";
     public static final String SCAN_SESSION_SHUTTLE = "CLRSHUTTLE";
+    public static final String SCANNED_DATA = "scannedData";
+    public static final String SCAN_DATE = "scanDate";
+    public static final String CODE_TYPE = "codeType";
+    public static final String SCAN_COUNT = "scanCount";
+    public static final String SCAN_SESSION_ID = "sessionId";
+    public static final String DEVICE_SERIAL_NUMBER = "deviceSerialNumber";
+    public static final String FROM_LOCATION_ID = "fromLocationId";
+    public static final String TO_LOCATION_ID = "toLocationId";
+
 }

@@ -422,19 +422,19 @@ public class ScanMainActivity extends AppCompatActivity implements
                     // Start a new transaction for each scan
                     connection.setAutoCommit(false);
                     try (PreparedStatement readingStatement = connection.prepareStatement(readingQuery)) {
-                        readingStatement.setString(1, (String) data.get("scannedData"));
-                        readingStatement.setString(2, (String) data.get("codeType"));
-                        Float scanCount = (Float) data.get("scanCount");
+                        readingStatement.setString(1, (String) data.get(Constants.SCANNED_DATA));
+                        readingStatement.setString(2, (String) data.get(Constants.CODE_TYPE));
+                        Float scanCount = (Float) data.get(Constants.SCAN_COUNT);
                         if (scanCount == null) {
                             scanCount = 1.0f; // Default value
                             Log.w(TAG, "scanCount is null or not a Float");
                         }
                         readingStatement.setFloat(3, scanCount);
                         Utils.parseDateSqlServerFormat(data, readingStatement);
-                        readingStatement.setString(5, (String) data.get("deviceSerialNumber"));
-                        readingStatement.setString(6, (String) data.get("fromLocationId"));
-                        readingStatement.setString(7, (String) data.get("toLocationId"));
-                        readingStatement.setString(8, (String) data.get("sessionId"));
+                        readingStatement.setString(5, (String) data.get(Constants.DEVICE_SERIAL_NUMBER));
+                        readingStatement.setString(6, (String) data.get(Constants.FROM_LOCATION_ID));
+                        readingStatement.setString(7, (String) data.get(Constants.TO_LOCATION_ID));
+                        readingStatement.setString(8, (String) data.get(Constants.SCAN_SESSION_ID));
                         readingStatement.executeUpdate();
                         Log.d(TAG, "Scan Data sent to SQL Server " + data);
 
@@ -443,7 +443,7 @@ public class ScanMainActivity extends AppCompatActivity implements
 
                         // Add the record to the list for deletion later
                         ScanRecord scanRecord = scanRecordDao.getScanRecordByScannedData(
-                                (String) data.get("scannedData"), sessionId);
+                                (String) data.get(Constants.SCANNED_DATA), sessionId);
                         if (scanRecord != null) {
                             recordsToDelete.add(scanRecord);
                         }

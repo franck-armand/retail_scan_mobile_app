@@ -267,9 +267,9 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                     // Start a new transaction for each scan
                     connection.setAutoCommit(false);
                     try (PreparedStatement readingStatement = connection.prepareStatement(readingQuery)) {
-                        readingStatement.setString(1, (String) data.get("scannedData"));
-                        readingStatement.setString(2, (String) data.get("codeType"));
-                        Float scanCount = (Float) data.get("scanCount");
+                        readingStatement.setString(1, (String) data.get(Constants.SCANNED_DATA));
+                        readingStatement.setString(2, (String) data.get(Constants.CODE_TYPE));
+                        Float scanCount = (Float) data.get(Constants.SCAN_COUNT);
                         if (scanCount == null) {
                             scanCount = 1.0f; // Default value
                             Log.w(TAG, "scanCount is null or not a Float");
@@ -277,17 +277,17 @@ public class ScanSessionViewHolder extends RecyclerView.ViewHolder {
                         readingStatement.setFloat(3, scanCount);
                         // Parsing date to dateTime (sql server format)
                         Utils.parseDateSqlServerFormat(data, readingStatement);
-                        readingStatement.setString(5, (String) data.get("deviceSerialNumber"));
-                        readingStatement.setString(6, (String) data.get("fromLocationId"));
-                        readingStatement.setString(7, (String) data.get("toLocationId"));
-                        readingStatement.setString(8, (String) data.get("sessionId"));
+                        readingStatement.setString(5, (String) data.get(Constants.DEVICE_SERIAL_NUMBER));
+                        readingStatement.setString(6, (String) data.get(Constants.FROM_LOCATION_ID));
+                        readingStatement.setString(7, (String) data.get(Constants.TO_LOCATION_ID));
+                        readingStatement.setString(8, (String) data.get(Constants.SCAN_SESSION_ID));
                         readingStatement.executeUpdate();
                         Log.d(TAG, "Scan Data sent to SQL Server " + data);
                         // Commit the transaction for this scan
                         connection.commit();
                         // Add the record to the list for deletion later
                         ScanRecord scanRecord = repository.getScanRecordByScannedData(
-                                (String) data.get("scannedData"), sessionId);
+                                (String) data.get(Constants.SCANNED_DATA), sessionId);
                         if (scanRecord != null) {
                             recordsToDelete.add(scanRecord);
                         }

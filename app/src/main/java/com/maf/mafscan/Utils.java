@@ -145,30 +145,30 @@ public class Utils {
             Map<String, Object> data = new HashMap<>();
             if (item instanceof ScanData) {
                 ScanData scanData = (ScanData) item;
-                data.put("scannedData", scanData.getScannedData());
-                data.put("codeType", scanData.getCodeType());
-                data.put("scanCount", scanData.getScanCount());
-                data.put("scanDate", scanData.getFormattedScanDate());
-                data.put("deviceSerialNumber", DataLogicUtils.getDeviceInfo());
+                data.put(Constants.SCANNED_DATA, scanData.getScannedData());
+                data.put(Constants.CODE_TYPE, scanData.getCodeType());
+                data.put(Constants.SCAN_COUNT, scanData.getScanCount());
+                data.put(Constants.SCAN_DATE, scanData.getFormattedScanDate());
+                data.put(Constants.DEVICE_SERIAL_NUMBER, DataLogicUtils.getDeviceInfo());
                 if (fromLocationId != null) {
-                    data.put("fromLocationId", fromLocationId);
+                    data.put(Constants.FROM_LOCATION_ID, fromLocationId);
                 }
                 if (toLocationId != null) {
-                    data.put("toLocationId", toLocationId);
+                    data.put(Constants.TO_LOCATION_ID, toLocationId);
                 }
                 if (sessionId != null) {
-                    data.put("sessionId", sessionId);
+                    data.put(Constants.SCAN_SESSION_ID, sessionId);
                 }
             } else if (item instanceof ScanRecord) {
                 ScanRecord scanRecord = (ScanRecord) item;
-                data.put("sessionId", scanRecord.sessionId);
-                data.put("scannedData", scanRecord.scannedData);
-                data.put("scanCount", scanRecord.scanCount);
-                data.put("fromLocationId", scanRecord.fromLocationId);
-                data.put("toLocationId", scanRecord.toLocationId);
-                data.put("scanDate", scanRecord.scanDate);
-                data.put("codeType", scanRecord.codeType);
-                data.put("deviceSerialNumber", DataLogicUtils.getDeviceInfo());
+                data.put(Constants.SCAN_SESSION_ID, scanRecord.sessionId);
+                data.put(Constants.SCANNED_DATA, scanRecord.scannedData);
+                data.put(Constants.SCAN_COUNT, scanRecord.scanCount);
+                data.put(Constants.FROM_LOCATION_ID, scanRecord.fromLocationId);
+                data.put(Constants.TO_LOCATION_ID, scanRecord.toLocationId);
+                data.put(Constants.SCAN_DATE, scanRecord.scanDate);
+                data.put(Constants.CODE_TYPE, scanRecord.codeType);
+                data.put(Constants.DEVICE_SERIAL_NUMBER, DataLogicUtils.getDeviceInfo());
             }
             formattedData.add(data);
             Log.d(TAG, "Formatted Scan Data to be sent: " + formattedData);
