@@ -4,14 +4,18 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.database.SQLException;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -28,6 +32,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
@@ -178,6 +183,134 @@ public class Utils {
     // Overload the method for cases where fromLocationId, toLocationId, and sessionId are not available
     public static List<Map<String, Object>> formatScanData(List<?> dataList) {
         return formatScanData(dataList, null, null, null);
+    }
+
+    public static boolean executeScanDataDatabaseOperations(
+            List<Map<String, Object>> scanDataToSend,
+            String sessionId,
+            String sessionType,
+            String fromLocationId,
+            String toLocationId,
+            ScanRecordDao scanRecordDao,
+            Connection connection
+    ) throws SQLException, ParseException, java.sql.SQLException {
+        if (scanDataToSend.isEmpty()) {
+            return true;
+        }
+
+        List<Map<String, Object>> failedRecords = new ArrayList<>();
+        List<ScanRecord> recordsToDelete = new ArrayList<>();
+        boolean overallSuccess = true; // Initialize overall success
+
+        if (connection == null) {
+            throw new SQLException("Connection is null. Please provide a valid database connection.");
+        }
+
+        // Start transaction for the session
+        connection.setAutoCommit(false);
+
+        // Step 1: Insert into Scan_Session
+        String sessionQuery = SqlQueryUtils.INSERT_SCAN_SESSION;
+        try (PreparedStatement sessionStatement = connection.prepareStatement(sessionQuery)) {
+            sessionStatement.setString(1, sessionId);
+            sessionStatement.setString(2, sessionType);
+            sessionStatement.setString(3, fromLocationId);
+            sessionStatement.setString(4, toLocationId);
+            sessionStatement.setString(5, Utils.getCurrentUtcDateTimeString());
+            sessionStatement.executeUpdate();
+            connection.commit();
+        } catch (SQLException | ParseException e) {
+            connection.rollback();
+            overallSuccess = false; // Set overall success to false on failure
+            throw e;
+        }
+
+        // Step 2: Insert into Scan_Reading (individual transactions)
+        String readingQuery = SqlQueryUtils.INSERT_SCAN_READING;
+        for (int i = 0; i < scanDataToSend.size(); i++) {
+            Map<String, Object> data = scanDataToSend.get(i);
+            // Start a new transaction for each scan
+            connection.setAutoCommit(false);
+            try (PreparedStatement readingStatement = connection.prepareStatement(readingQuery)) {
+                readingStatement.setString(1, (String) data.get(Constants.SCANNED_DATA));
+                readingStatement.setString(2, (String) data.get(Constants.CODE_TYPE));
+                Float scanCount = (Float) data.get(Constants.SCAN_COUNT);
+                if (scanCount == null) {
+                    scanCount = 1.0f;
+                    Log.w(TAG, "scanCount is null or not a Float");
+                }
+                readingStatement.setFloat(3, scanCount);
+                Utils.parseDateSqlServerFormat(data, readingStatement);
+                readingStatement.setString(5, (String) data.get(Constants.DEVICE_SERIAL_NUMBER));
+                readingStatement.setString(6, (String) data.get(Constants.FROM_LOCATION_ID));
+                readingStatement.setString(7, (String) data.get(Constants.TO_LOCATION_ID));
+                readingStatement.setString(8, (String) data.get(Constants.SCAN_SESSION_ID));
+                readingStatement.executeUpdate();
+                Log.d(TAG, "Scan Data sent to SQL Server " + data);
+
+                // Commit the transaction for this scan
+                connection.commit();
+
+                // Add the record to the list for deletion later
+                ScanRecord scanRecord = scanRecordDao.getScanRecordByScannedData(
+                        (String) data.get(Constants.SCANNED_DATA), sessionId);
+                if (scanRecord != null) {
+                    recordsToDelete.add(scanRecord);
+                }
+
+            } catch (SQLException e) {
+                // Rollback the transaction for this scan
+                connection.rollback();
+                failedRecords.add(data);
+            } finally {
+                // Reset auto-commit for the next scan
+                connection.setAutoCommit(true);
+            }
+        }
+
+        // Step 3: Update Scan_Session
+        try {
+            connection.setAutoCommit(false);
+            String updateSessionQuery = SqlQueryUtils.UPDATE_SCAN_SESSION;
+            try (PreparedStatement updateSessionStatement = connection.prepareStatement(
+                    updateSessionQuery)) {
+                updateSessionStatement.setString(1, sessionId);
+                updateSessionStatement.executeUpdate();
+                connection.commit();
+            }
+        } catch (SQLException e) {
+            connection.rollback();
+        } finally {
+            connection.setAutoCommit(true);
+        }
+
+        // Delete records from Room after successful SQL Server operations
+        for (ScanRecord record : recordsToDelete) {
+            scanRecordDao.deleteScanRecord(record);
+        }
+
+        // Check if any records failed
+        if (!failedRecords.isEmpty()) {
+            overallSuccess = false;
+        }
+
+        return overallSuccess; // Return the overall success status
+    }
+
+    public static void updateProgressBar(
+            int progress,
+            int total,
+            ProgressBar progressBar,
+            TextView progressText,
+            Handler handler,
+            Context context
+    ) {
+        String progressLabel = context.getString(R.string.progress);
+        String formattedProgress = progressLabel + " " + progress + "/" + total;
+        handler.post(() -> {
+            progressBar.setProgress(progress);
+            progressText.setText(formattedProgress);
+        });
     }
 
     public static void parseDateSqlServerFormat(Map<String, Object> data, PreparedStatement statement)

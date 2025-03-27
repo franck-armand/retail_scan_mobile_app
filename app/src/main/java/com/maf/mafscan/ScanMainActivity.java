@@ -1,6 +1,5 @@
 package com.maf.mafscan;
 
-import static com.maf.mafscan.Utils.getCurrentUtcDateTimeString;
 import static com.maf.mafscan.Utils.showToast;
 
 import android.annotation.SuppressLint;
@@ -27,7 +26,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -370,6 +368,157 @@ public class ScanMainActivity extends AppCompatActivity implements
         });
     }
 
+//    private void sendScanActivity(List<Map<String, Object>> scanDataToSend) {
+//        if (scanDataToSend.isEmpty()) return;
+//        int total = scanDataToSend.size();
+//        progressBar.setMax(total);
+//        progressBar.setProgress(0);
+//        progressText.setText(R.string.progress_init + total);
+//
+//        List<Map<String, Object>> failedRecords = new ArrayList<>();
+//        List<ScanRecord> recordsToDelete = new ArrayList<>();
+//
+//        executor.execute(() -> {
+//            try (Connection connection = SqlServerConHandler.establishSqlServCon()) {
+//                if (connection == null) {
+//                    throw new SQLException("Connection to SQL Server failed");
+//                }
+//
+//                runOnUiThread(() -> {
+//                    showProgressBar(true);
+//                    isSendingData = true;
+//                    disableUserInteraction();
+//                });
+//
+//                // Start transaction for the session
+//                connection.setAutoCommit(false);
+//                // Step 1: Insert into Scan_Session
+//                String sessionQuery = SqlQueryUtils.INSERT_SCAN_SESSION;
+//
+//                try (PreparedStatement sessionStatement = connection.prepareStatement(sessionQuery)) {
+//                    sessionStatement.setString(1, sessionId);
+//                    sessionStatement.setString(2, sessionType);
+//                    sessionStatement.setString(3, fromLocationId);
+//                    sessionStatement.setString(4, toLocationId);
+//                    sessionStatement.setString(5, getCurrentUtcDateTimeString());
+//                    sessionStatement.executeUpdate();
+//                    connection.commit();
+//                } catch (SQLException e) {
+//                    connection.rollback();
+//                    throw e; // Re-throw the exception to be handled later
+//                } finally {
+//                    connection.setAutoCommit(true);
+//                }
+//
+//                // Step 2: Insert into Scan_Reading (individual transactions)
+//                String readingQuery = SqlQueryUtils.INSERT_SCAN_READING;
+//
+//                int successCount = 0;
+//                for (int i = 0; i < scanDataToSend.size(); i++) {
+//                    Map<String, Object> data = scanDataToSend.get(i);
+//
+//                    // Start a new transaction for each scan
+//                    connection.setAutoCommit(false);
+//                    try (PreparedStatement readingStatement = connection.prepareStatement(readingQuery)) {
+//                        readingStatement.setString(1, (String) data.get(Constants.SCANNED_DATA));
+//                        readingStatement.setString(2, (String) data.get(Constants.CODE_TYPE));
+//                        Float scanCount = (Float) data.get(Constants.SCAN_COUNT);
+//                        if (scanCount == null) {
+//                            scanCount = 1.0f; // Default value
+//                            Log.w(TAG, "scanCount is null or not a Float");
+//                        }
+//                        readingStatement.setFloat(3, scanCount);
+//                        Utils.parseDateSqlServerFormat(data, readingStatement);
+//                        readingStatement.setString(5, (String) data.get(Constants.DEVICE_SERIAL_NUMBER));
+//                        readingStatement.setString(6, (String) data.get(Constants.FROM_LOCATION_ID));
+//                        readingStatement.setString(7, (String) data.get(Constants.TO_LOCATION_ID));
+//                        readingStatement.setString(8, (String) data.get(Constants.SCAN_SESSION_ID));
+//                        readingStatement.executeUpdate();
+//                        Log.d(TAG, "Scan Data sent to SQL Server " + data);
+//
+//                        // Commit the transaction for this scan
+//                        connection.commit();
+//
+//                        // Add the record to the list for deletion later
+//                        ScanRecord scanRecord = scanRecordDao.getScanRecordByScannedData(
+//                                (String) data.get(Constants.SCANNED_DATA), sessionId);
+//                        if (scanRecord != null) {
+//                            recordsToDelete.add(scanRecord);
+//                        }
+//
+//                        // Update the success count
+//                        successCount++;
+//
+//                    } catch (SQLException e) {
+//                        // Rollback the transaction for this scan
+//                        connection.rollback();
+//                        failedRecords.add(data);
+//                    } finally {
+//                        // Reset auto-commit for the next scan
+//                        connection.setAutoCommit(true);
+//                    }
+//                    // Update the progress bar
+//                    int progress = i + 1;
+//                    String progressLabel = getString(R.string.progress);
+//                    String formattedProgress = progressLabel + " " + progress + "/" + total;
+//                    handler.post(() -> {
+//                        progressBar.setProgress(progress);
+//                        progressText.setText(formattedProgress);
+//                    });
+//                    try {
+//                        Thread.sleep(500); // 500ms delay
+//                    } catch (InterruptedException e) {
+//                        Thread.currentThread().interrupt(); // Restore interrupt status
+//                    }
+//                }
+//                // Step 3: Update Scan_Session
+//                try {
+//                    connection.setAutoCommit(false);
+//                    String updateSessionQuery = SqlQueryUtils.UPDATE_SCAN_SESSION;
+//                    try (PreparedStatement updateSessionStatement = connection.prepareStatement(
+//                            updateSessionQuery)) {
+//                        updateSessionStatement.setString(1, sessionId);
+//                        updateSessionStatement.executeUpdate();
+//                        connection.commit();
+//                    }
+//                } catch (SQLException e) {
+//                    connection.rollback();
+//                } finally {
+//                    connection.setAutoCommit(true);
+//                }
+//                // Delete records from Room after successful SQL Server operations
+//                for (ScanRecord record : recordsToDelete) {
+//                    scanRecordDao.deleteScanRecord(record);
+//                }
+//                // On success, update the UI
+//                int finalSuccessCount = successCount;
+//                handler.post(() -> {
+//                    OnProcessComplete();
+//                    if (finalSuccessCount == total) {
+//                        String message = String.format(
+//                                this.getString(R.string.scan_resubmitted_success_msg),
+//                                finalSuccessCount);
+//                        showToast(this, message, 1);
+//                    } else {
+//                        showSummary(finalSuccessCount, failedRecords.size(), total);
+//                    }
+//                    clearScanSession();
+//                });
+//            } catch (SQLException e) {
+//                handler.post(() -> {
+//                    OnProcessComplete();
+//                    // To avoid showing both dialogs
+//                    if (!scanDataList.isEmpty()) {
+//                        showSummary(0, scanDataToSend.size(), total);
+//                    }
+//                    showToast(this, "Error sending data: " + e.getMessage(), 1);
+//                    clearScanSession();
+//                });
+//                Log.e(TAG, "Error sending data: " + e.getMessage());
+//            }
+//        });
+//    }
+
     private void sendScanActivity(List<Map<String, Object>> scanDataToSend) {
         if (scanDataToSend.isEmpty()) return;
         int total = scanDataToSend.size();
@@ -377,146 +526,91 @@ public class ScanMainActivity extends AppCompatActivity implements
         progressBar.setProgress(0);
         progressText.setText(R.string.progress_init + total);
 
-        List<Map<String, Object>> failedRecords = new ArrayList<>();
-        List<ScanRecord> recordsToDelete = new ArrayList<>();
-
         executor.execute(() -> {
-            try (Connection connection = SqlServerConHandler.establishSqlServCon()) {
-                if (connection == null) {
-                    throw new SQLException("Connection to SQL Server failed");
-                }
-
+            Connection connection = null;
+            try {
                 runOnUiThread(() -> {
                     showProgressBar(true);
                     isSendingData = true;
                     disableUserInteraction();
                 });
 
-                // Start transaction for the session
-                connection.setAutoCommit(false);
-                // Step 1: Insert into Scan_Session
-                String sessionQuery = SqlQueryUtils.INSERT_SCAN_SESSION;
-
-                try (PreparedStatement sessionStatement = connection.prepareStatement(sessionQuery)) {
-                    sessionStatement.setString(1, sessionId);
-                    sessionStatement.setString(2, sessionType);
-                    sessionStatement.setString(3, fromLocationId);
-                    sessionStatement.setString(4, toLocationId);
-                    sessionStatement.setString(5, getCurrentUtcDateTimeString());
-                    sessionStatement.executeUpdate();
-                    connection.commit();
-                } catch (SQLException e) {
-                    connection.rollback();
-                    throw e; // Re-throw the exception to be handled later
-                } finally {
-                    connection.setAutoCommit(true);
+                // Establish a single connection
+                connection = SqlServerConHandler.establishSqlServCon();
+                if (connection == null) {
+                    throw new SQLException("Failed to establish database connection");
                 }
 
-                // Step 2: Insert into Scan_Reading (individual transactions)
-                String readingQuery = SqlQueryUtils.INSERT_SCAN_READING;
-
+                // Initialize success count
                 int successCount = 0;
+
+                // Process each scan record
                 for (int i = 0; i < scanDataToSend.size(); i++) {
-                    Map<String, Object> data = scanDataToSend.get(i);
+                    List<Map<String, Object>> singleScanData = new ArrayList<>();
+                    singleScanData.add(scanDataToSend.get(i));
 
-                    // Start a new transaction for each scan
-                    connection.setAutoCommit(false);
-                    try (PreparedStatement readingStatement = connection.prepareStatement(readingQuery)) {
-                        readingStatement.setString(1, (String) data.get(Constants.SCANNED_DATA));
-                        readingStatement.setString(2, (String) data.get(Constants.CODE_TYPE));
-                        Float scanCount = (Float) data.get(Constants.SCAN_COUNT);
-                        if (scanCount == null) {
-                            scanCount = 1.0f; // Default value
-                            Log.w(TAG, "scanCount is null or not a Float");
-                        }
-                        readingStatement.setFloat(3, scanCount);
-                        Utils.parseDateSqlServerFormat(data, readingStatement);
-                        readingStatement.setString(5, (String) data.get(Constants.DEVICE_SERIAL_NUMBER));
-                        readingStatement.setString(6, (String) data.get(Constants.FROM_LOCATION_ID));
-                        readingStatement.setString(7, (String) data.get(Constants.TO_LOCATION_ID));
-                        readingStatement.setString(8, (String) data.get(Constants.SCAN_SESSION_ID));
-                        readingStatement.executeUpdate();
-                        Log.d(TAG, "Scan Data sent to SQL Server " + data);
+                    boolean success = Utils.executeScanDataDatabaseOperations(
+                            singleScanData,
+                            sessionId,
+                            sessionType,
+                            fromLocationId,
+                            toLocationId,
+                            scanRecordDao,
+                            connection
+                    );
 
-                        // Commit the transaction for this scan
-                        connection.commit();
-
-                        // Add the record to the list for deletion later
-                        ScanRecord scanRecord = scanRecordDao.getScanRecordByScannedData(
-                                (String) data.get(Constants.SCANNED_DATA), sessionId);
-                        if (scanRecord != null) {
-                            recordsToDelete.add(scanRecord);
-                        }
-
-                        // Update the success count
+                    if (success) {
                         successCount++;
-
-                    } catch (SQLException e) {
-                        // Rollback the transaction for this scan
-                        connection.rollback();
-                        failedRecords.add(data);
-                    } finally {
-                        // Reset auto-commit for the next scan
-                        connection.setAutoCommit(true);
                     }
-                    // Update the progress bar
-                    int progress = i + 1;
-                    String progressLabel = getString(R.string.progress);
-                    String formattedProgress = progressLabel + " " + progress + "/" + total;
-                    handler.post(() -> {
-                        progressBar.setProgress(progress);
-                        progressText.setText(formattedProgress);
-                    });
+
+                    // Update progress bar after each record
+                    final int progress = i + 1;
+                    Utils.updateProgressBar(progress, total, progressBar, progressText, handler,
+                            this);
+
                     try {
                         Thread.sleep(500); // 500ms delay
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt(); // Restore interrupt status
                     }
                 }
-                // Step 3: Update Scan_Session
-                try {
-                    connection.setAutoCommit(false);
-                    String updateSessionQuery = SqlQueryUtils.UPDATE_SCAN_SESSION;
-                    try (PreparedStatement updateSessionStatement = connection.prepareStatement(
-                            updateSessionQuery)) {
-                        updateSessionStatement.setString(1, sessionId);
-                        updateSessionStatement.executeUpdate();
-                        connection.commit();
-                    }
-                } catch (SQLException e) {
-                    connection.rollback();
-                } finally {
-                    connection.setAutoCommit(true);
-                }
-                // Delete records from Room after successful SQL Server operations
-                for (ScanRecord record : recordsToDelete) {
-                    scanRecordDao.deleteScanRecord(record);
-                }
-                // On success, update the UI
-                int finalSuccessCount = successCount;
-                handler.post(() -> {
-                    OnProcessComplete();
-                    if (finalSuccessCount == total) {
+
+                // Handle overall success/failure after processing all records
+                final int finalSuccessCount = successCount;
+                if (finalSuccessCount == total) {
+                    handler.post(() -> {
+                        OnProcessComplete();
                         String message = String.format(
-                                this.getString(R.string.scan_resubmitted_success_msg),
+                                getString(R.string.scan_resubmitted_success_msg),
                                 finalSuccessCount);
                         showToast(this, message, 1);
-                    } else {
-                        showSummary(finalSuccessCount, failedRecords.size(), total);
-                    }
-                    clearScanSession();
-                });
-            } catch (SQLException e) {
+                        clearScanSession();
+                    });
+                } else {
+                    handler.post(() -> {
+                        OnProcessComplete();
+                        showSummary(finalSuccessCount, total - finalSuccessCount, total);
+                        clearScanSession();
+                    });
+                    Log.e(TAG, "Error sending data: Some records failed during database operations");
+                }
+            } catch (java.sql.SQLException e) {
                 handler.post(() -> {
                     OnProcessComplete();
-                    // To avoid showing both dialogs
-                    if (!scanDataList.isEmpty()) {
-                        showSummary(0, scanDataToSend.size(), total);
-                    }
+                    showSummary(0, scanDataToSend.size(), total);
                     showToast(this, "Error sending data: " + e.getMessage(), 1);
                     clearScanSession();
                 });
                 Log.e(TAG, "Error sending data: " + e.getMessage());
+            } finally {
+                if (connection != null) {
+                    try {
+                        connection.close();
+                    } catch (SQLException e) {
+                        Log.e(TAG, "Error closing database connection: " + e.getMessage());
+                    }
+                }
+                handler.post(() -> isSendingData = false);
             }
         });
     }
