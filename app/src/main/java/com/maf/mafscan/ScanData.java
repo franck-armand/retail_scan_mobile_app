@@ -27,9 +27,9 @@ public class ScanData {
     }
 
     public String getFormattedScanDate() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS",
+        SimpleDateFormat dateFormat = new SimpleDateFormat(Constants.DATE_FORMAT_LONG,
                 Locale.getDefault());
-        dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        dateFormat.setTimeZone(TimeZone.getTimeZone(Constants.TIME_ZONE));
         return dateFormat.format(scanDate);
     }
 
